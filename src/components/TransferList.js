@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,23 +43,24 @@ function intersection(a, b) {
 export default function TransferList(props) {
     const classes = useStyles();
     const indicatorArray = props.headerProp;
+    let selectedList = [];
 
-    const initState = indicatorArray;
+    const initState = ["loading indicators", "loading indicators", "loading indicators"];
 
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
 
     React.useEffect (() => {
-        setLeft( indicatorArray )
-    }, [props.headerProp])
-    console.log(left)
+        setLeft( [...indicatorArray] )
+    }, [indicatorArray]);
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
 
     const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
+        console.log(value);
+        const currentIndex = checked.indexOf(value.displayName);
         const newChecked = [...checked];
 
         if (currentIndex === -1) {
@@ -94,6 +96,7 @@ export default function TransferList(props) {
 
     const getAllRight = () => {
       console.log(right);
+      selectedList = right;
       right.map((value) => {
           console.log(value.displayName);
       });
