@@ -11,3 +11,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.rowC{
+  display:flex;
+  flex-direction:row;
+}
+
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  position: static;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 20px;
+}
+
+.mainContent{
+
+  margin-left: 15px;
+}

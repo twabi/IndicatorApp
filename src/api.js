@@ -1,4 +1,4 @@
-const basicAuth = 'Basic ' + btoa('admin:district');
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 const headers = new Headers({
     'Authorization' : basicAuth,
     'Content-type': 'application/json',
@@ -15,7 +15,7 @@ class Api {
     };
 
     getDashboards= () => {
-        return fetch(`${this.config.baseUrl}/programs.json`, {
+        return fetch(`${this.config.baseUrl}/indicators.json?paging=false&fields=*`, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include',

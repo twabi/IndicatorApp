@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component, Fragment} from 'react';
+import Api from './api'
 import './App.css';
+import NavBar from './components/NavBar'
+import Sidebar from "./components/SideBar";
+import MainContent from "./components/MainContent";
+import TransferList from "./components/TransferList";
+import CenterContent from "./components/CenterContent";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dashboards: [],
+            isLoaded: false
+        };
+    }
+
+    componentDidMount(){
+
+        Api.getDashboards()
+            .then((result) => {
+
+                console.log(result)
+                this.setState({
+                    isLoaded: true,
+                    dashboards: result.indicators
+                });
+            })
+            .catch(error => {
+                console.error('Error during data retrieval:', error);
+            });
+    }
+
+    render() {
+
+        return (
+            <Fragment>
+                <div >
+                    <NavBar named ="Indicator App for NAMIS"/>
+                    <div className="rowC">
+                        <Sidebar/>
+                        <TransferList headerProp ={this.state.dashboards}/>
+                    </div>
+
+                </div>
+            </Fragment>
+
+        )
+
+    }
 }
 
 export default App;
