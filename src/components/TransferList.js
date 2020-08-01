@@ -8,7 +8,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,10 +32,34 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(0.5, 0),
     },
 
+    table: {
+        minWidth: 650,
+        borderWidth: 1,
+        borderColor: 'black',
+        borderStyle: 'solid',
+
+    },
+
+    tableDiv: {
+        minWidth: 650,
+    },
+
     another: {
-      marginTop: 30,
+        marginTop: 30,
+        marginBottom : 20,
+    },
+
+    selContainer: {
+        marginTop: 70,
+        border: "black",
+        borderWidth: 5,
+    },
+
+    myBtn: {
+      margin: 15,
     },
 }));
+
 
 function not(a, b) {
     return a.filter((value) => b.indexOf(value) === -1);
@@ -39,21 +70,46 @@ function intersection(a, b) {
 }
 
 
-
 export default function TransferList(props) {
     const classes = useStyles();
-    const indicatorArray = props.headerProp;
-    let selectedList = [];
+    var indicatorArray = props.headerProp;
 
-    const initState = ["loading indicators", "loading indicators", "loading indicators"];
+    const initState = [...indicatorArray];
+    function createData(indicatorName, existingName, editText) {
+        return { indicatorName, existingName, editText};
+    }
 
+    const initialRows = [
+        createData('Frozen yoghurt', 159, 6.0),
+        createData('Ice cream sandwich', 237, 9.0),
+        createData('Eclair', 262, 16.0),
+        createData('Cupcake', 305, 3.7),
+        createData('Gingerbread', 356, 16.0),
+
+    ];
+
+    const [rows, setRows] = React.useState(initialRows)
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
+    const [showSelected, setShowSelected] = React.useState(false);
+    //const onClick = () => setShowSelected(true)
 
     React.useEffect (() => {
-        setLeft( [...indicatorArray] )
-    }, [indicatorArray]);
+
+        setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
+        var newRows = [];
+        right.map((value) => {
+            newRows.push(createData(value.displayName, value.id, "something"));
+            console.log("am in the useEffect pushing");
+        });
+        setRows([...newRows]);
+
+    }, [indicatorArray, right]);
+
+    const loadIndicators = () => {
+
+    }
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -94,13 +150,67 @@ export default function TransferList(props) {
         setRight([]);
     };
 
+
+
     const getAllRight = () => {
       console.log(right);
-      selectedList = right;
-      right.map((value) => {
-          console.log(value.displayName);
-      });
+
+      if(right.length === 0){
+          console.log("is empty");
+      }
+      else{
+
+          console.log("rows before: " + rows);
+
+          setShowSelected(true);
+      }
+
     };
+
+
+
+
+    const Selects = () => (
+
+        <div>
+            <div style={{textAlign: "center", margin: 10}}>
+                <h4>Rename Indicators</h4>
+            </div>
+            <TableContainer component={Paper} className={classes.table}  justify="center" alignItems="center">
+                <Table  aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><b>Indicator Name</b></TableCell>
+                            <TableCell align="center"><b>Existing ShortName</b></TableCell>
+                            <TableCell align="center"><b>New ShortName</b></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <TableRow key={row.existingName}>
+                                <TableCell component="th" scope="row">
+                                    {row.indicatorName}
+                                </TableCell>
+                                <TableCell align="center">{row.existingName}</TableCell>
+                                <TableCell align="center">{row.editText}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+
+            </TableContainer>
+
+            <Grid container justify="center" alignItems="center" className={classes.another}>
+                <Button variant="contained" color="primary">
+                    Save
+                </Button>
+            </Grid>
+
+        </div>
+
+
+
+    )
 
     const customList = (items) => (
         <Paper className={classes.paper}>
@@ -131,19 +241,21 @@ export default function TransferList(props) {
         <div className={classes.root}>
             <div style={{textAlign: "center", margin: 10}}>
                 <h4>Choose preferred Indicators</h4>
+                <Button variant="contained" color="primary" onClick={loadIndicators}>
+                    Load
+                </Button>
             </div>
             <Grid container spacing={2} justify="center" alignItems="center" >
                 <Grid item>{customList(left)}</Grid>
-                <Grid item >
-                    <Grid container direction="column" >
+                <Grid item>
+                    <Grid container direction="column">
                         <Button
                             variant="outlined"
                             size="small"
                             className={classes.button}
                             onClick={handleAllRight}
                             disabled={left.length === 0}
-                            aria-label="move all right"
-                        >
+                            aria-label="move all right">
                             ≫
                         </Button>
                         <Button
@@ -152,8 +264,7 @@ export default function TransferList(props) {
                             className={classes.button}
                             onClick={handleCheckedRight}
                             disabled={leftChecked.length === 0}
-                            aria-label="move selected right"
-                        >
+                            aria-label="move selected right">
                             &gt;
                         </Button>
                         <Button
@@ -162,8 +273,7 @@ export default function TransferList(props) {
                             className={classes.button}
                             onClick={handleCheckedLeft}
                             disabled={rightChecked.length === 0}
-                            aria-label="move selected left"
-                        >
+                            aria-label="move selected left">
                             &lt;
                         </Button>
                         <Button
@@ -172,8 +282,7 @@ export default function TransferList(props) {
                             className={classes.button}
                             onClick={handleAllLeft}
                             disabled={right.length === 0}
-                            aria-label="move all left"
-                        >
+                            aria-label="move all left">
                             ≪
                         </Button>
                     </Grid>
@@ -186,6 +295,12 @@ export default function TransferList(props) {
                     Next
                 </Button>
             </Grid>
+
+            <Grid container justify="center" border={1} className={classes.selContainer}>
+                { showSelected ? <Selects /> : null }
+
+            </Grid>
+
         </div>
 
 
