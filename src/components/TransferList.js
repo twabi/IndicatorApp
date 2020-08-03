@@ -138,35 +138,22 @@ export default React.memo(function TransferList(props) {
     const postNewName = (jsonString, id) => {
 
 
-        fetch(`https://www.namis.org/namis1/api/indicators/${id}/attributeValues`, {
-            body: JSON.stringify(jsonString),
+        fetch(`https://www.namis.org/namis1/api/indicators/${id}/shortName`, {
+            method: 'PATCH',
+            body: jsonString,
                 headers: {
                     'Authorization' : basicAuth,
-                    'Content-type': 'application/json',
+                    'Content-type': 'application/xml',
                 },
-            method: 'POST'
+
+            credentials: "include"
 
         })
-            .then(response => response.json());
+            .then(response => {
+                console.log(response);
+            });
 
-        /*
-        axios.post(`https://www.namis.org/namis1/api/indicators/${id}/attributeValues/${currentTime}`,
-            jsonString,
-            {headers: {
-                "Access-Control-Allow-Origin" : "*",
-                    "Content-type": "Application/json",
-                    "Authorization": basicAuth,
-            }
-        })
-            .then(res => {
-                console.log(res);
-                console.log(res.data);
-            })
-
-
-         */
-
-    }
+    };
 
     const editName = (indicatorID) => {
         var newName = prompt("enter new name");
@@ -179,17 +166,37 @@ export default React.memo(function TransferList(props) {
             console.log(indicatorID + "-" + newName);
             tableCell.innerHTML = newName;
 
+            var x = "{\n" +
+                "                \"lastUpdated\": \"" + currentTime + "\",\n" +
+                "                \"created\": \"" + currentTime + "\",\n" +
+                "                \"value\": \"" + newName + "\",\n" +
+                "                \"attribute\": {\n" +
+                "                    \"id\" : \"" + indicatorID + "\"\n" +
+                "                }\n" +
+                "                }"
 
-            let dataToSend ={
+            var y =
+                "<attributeValues>" +
+                "<attributeValue lastUpdated=\""+currentTime+"\" created=\""+currentTime+"\">\n" +
+                "<value>\""+newName+"\"</value>\n" +
+                "<attribute id=\""+indicatorID+"\"/>\n" +
+                "</attributeValue>\n" +
+                "</attributeValues>"
+
+            var b = "<indicator xmlns=\"http://dhis2.org/schema/dxf/2.0\" shortName=\""+newName+" \"/>"
+
+            var z = {shortName : newName};
+
+            let dataToSend =[{
                 lastUpdated: currentTime,
                 created: currentTime,
                 value: newName,
                 attribute: {
                     id : indicatorID
                 }
-                };
+                }];
 
-            postNewName(dataToSend, indicatorID);
+            postNewName(b, indicatorID);
 
         }
     }
@@ -229,16 +236,7 @@ export default React.memo(function TransferList(props) {
           var newRows = [];
           right.map((value) => {
 
-              if(value.attributeValues.length === 0){
-                  console.log("has no portal display name");
-                  newRows.push(createData(value.displayName, "", value.id));
-
-              }else {
-                  console.log(value.attributeValues[0].value);
-                  var attribute = value.attributeValues[0].value;
-
-                  newRows.push(createData(value.displayName, attribute, value.id));
-              }
+              newRows.push(createData(value.displayName, value.shortName, value.id));
 
           });
           setRows([...newRows]);
