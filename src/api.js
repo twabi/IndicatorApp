@@ -17,7 +17,6 @@ class Api {
     getDashboards= () => {
         return fetch(`${this.config.baseUrl}/indicators.json?paging=false&fields=*`, {
             method: 'GET',
-            mode: 'cors',
             credentials: 'include',
             headers,
         })

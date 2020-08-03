@@ -14,6 +14,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import * as axios from "axios";
 
 
 
@@ -55,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
         borderWidth: 5,
     },
 
+
     myBtn: {
       margin: 15,
     },
@@ -69,46 +72,38 @@ function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
 
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const headers = new Headers({
+    'Authorization' : basicAuth,
+    'Content-type': 'application/json',
+});
 
-export default function TransferList(props) {
+const moment = require('moment')
+
+let now = moment();
+
+
+export default React.memo(function TransferList(props) {
     const classes = useStyles();
     var indicatorArray = props.headerProp;
 
     const initState = [...indicatorArray];
-    function createData(indicatorName, existingName, editText) {
-        return { indicatorName, existingName, editText};
+    function createData(indicatorName, existingName, indicatorId) {
+        return { indicatorName, existingName, indicatorId};
     }
 
-    const initialRows = [
-        createData('Frozen yoghurt', 159, 6.0),
-        createData('Ice cream sandwich', 237, 9.0),
-        createData('Eclair', 262, 16.0),
-        createData('Cupcake', 305, 3.7),
-        createData('Gingerbread', 356, 16.0),
+    const initialRows = [];
 
-    ];
-
+    const [postId, setPostId] = React.useState(null);
+    const [showLoading, setShowLoading] = React.useState(false);
     const [rows, setRows] = React.useState(initialRows)
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
     const [showSelected, setShowSelected] = React.useState(false);
-    //const onClick = () => setShowSelected(true)
 
-    React.useEffect (() => {
-
-        setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
-        var newRows = [];
-        right.map((value) => {
-            newRows.push(createData(value.displayName, value.id, "something"));
-            console.log("am in the useEffect pushing");
-        });
-        setRows([...newRows]);
-
-    }, [indicatorArray, right]);
-
-    const loadIndicators = () => {
-
+    const saveNewIndicatorNames = () => {
+        console.log(rows);
     }
 
     const leftChecked = intersection(checked, left);
@@ -127,6 +122,77 @@ export default function TransferList(props) {
 
         setChecked(newChecked);
     };
+
+    const loadIndi = () => {
+        setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
+        //console.log(date + "T"+ time);
+
+        console.log(currentTime);
+    }
+
+    var date = now.format("YYYY-MM-DD");
+    var time = now.format("HH:mm:ss.SSS");
+
+    var currentTime = date + "T" + time;
+
+    const postNewName = (jsonString, id) => {
+
+
+        fetch(`https://www.namis.org/namis1/api/indicators/${id}/attributeValues`, {
+            body: JSON.stringify(jsonString),
+                headers: {
+                    'Authorization' : basicAuth,
+                    'Content-type': 'application/json',
+                },
+            method: 'POST'
+
+        })
+            .then(response => response.json());
+
+        /*
+        axios.post(`https://www.namis.org/namis1/api/indicators/${id}/attributeValues/${currentTime}`,
+            jsonString,
+            {headers: {
+                "Access-Control-Allow-Origin" : "*",
+                    "Content-type": "Application/json",
+                    "Authorization": basicAuth,
+            }
+        })
+            .then(res => {
+                console.log(res);
+                console.log(res.data);
+            })
+
+
+         */
+
+    }
+
+    const editName = (indicatorID) => {
+        var newName = prompt("enter new name");
+        var tableCell = document.getElementById(indicatorID);
+
+
+        if (newName == null || newName === "") {
+
+        } else {
+            console.log(indicatorID + "-" + newName);
+            tableCell.innerHTML = newName;
+
+
+            let dataToSend ={
+                lastUpdated: currentTime,
+                created: currentTime,
+                value: newName,
+                attribute: {
+                    id : indicatorID
+                }
+                };
+
+            postNewName(dataToSend, indicatorID);
+
+        }
+    }
 
     const handleAllRight = () => {
         setRight(right.concat(left));
@@ -160,14 +226,34 @@ export default function TransferList(props) {
       }
       else{
 
-          console.log("rows before: " + rows);
+          var newRows = [];
+          right.map((value) => {
 
+              if(value.attributeValues.length === 0){
+                  console.log("has no portal display name");
+                  newRows.push(createData(value.displayName, "", value.id));
+
+              }else {
+                  console.log(value.attributeValues[0].value);
+                  var attribute = value.attributeValues[0].value;
+
+                  newRows.push(createData(value.displayName, attribute, value.id));
+              }
+
+          });
+          setRows([...newRows]);
+
+          console.log("rows before: " + rows);
           setShowSelected(true);
       }
 
     };
 
 
+
+    const LoadingProgress = () => (
+        <CircularProgress size={20} />
+    )
 
 
     const Selects = () => (
@@ -191,8 +277,12 @@ export default function TransferList(props) {
                                 <TableCell component="th" scope="row">
                                     {row.indicatorName}
                                 </TableCell>
-                                <TableCell align="center">{row.existingName}</TableCell>
-                                <TableCell align="center">{row.editText}</TableCell>
+                                <TableCell align="center" id={row.indicatorId}>{row.existingName}</TableCell>
+                                <TableCell align="center">
+                                    <Button variant="contained" color="primary" onClick={() => editName(row.indicatorId)}>
+                                        Edit
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -201,14 +291,12 @@ export default function TransferList(props) {
             </TableContainer>
 
             <Grid container justify="center" alignItems="center" className={classes.another}>
-                <Button variant="contained" color="primary">
-                    Save
+                <Button variant="contained" color="primary" onClick={saveNewIndicatorNames}>
+                    Done
                 </Button>
             </Grid>
 
         </div>
-
-
 
     )
 
@@ -241,9 +329,18 @@ export default function TransferList(props) {
         <div className={classes.root}>
             <div style={{textAlign: "center", margin: 10}}>
                 <h4>Choose preferred Indicators</h4>
-                <Button variant="contained" color="primary" onClick={loadIndicators}>
-                    Load
-                </Button>
+                <div className={classes.wrapper}>
+                    <Button style={{margin: 10}}
+                        variant="contained"
+                            id="loadBtn"
+                            color="primary"
+                            onClick={loadIndi}>
+                        load indicators
+                        { showLoading ? <LoadingProgress/> : null }
+                    </Button>
+
+                </div>
+
             </div>
             <Grid container spacing={2} justify="center" alignItems="center" >
                 <Grid item>{customList(left)}</Grid>
@@ -305,4 +402,4 @@ export default function TransferList(props) {
 
 
     );
-}
+})
