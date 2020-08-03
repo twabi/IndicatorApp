@@ -1,14 +1,13 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, PureComponent} from 'react';
 import Api from './api'
 import './App.css';
 import NavBar from './components/NavBar'
 import Sidebar from "./components/SideBar";
-import MainContent from "./components/MainContent";
 import TransferList from "./components/TransferList";
-import CenterContent from "./components/CenterContent";
+import CustomTransferList from "./components/CustomTransferList";
 
 
-class App extends Component {
+class App extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -53,4 +52,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default React.memo(App);

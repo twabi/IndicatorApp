@@ -15,7 +15,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CircularProgress from "@material-ui/core/CircularProgress";
-import * as axios from "axios";
+import ListGroup from "react-bootstrap/ListGroup";
 
 
 
@@ -64,6 +64,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+
+
 function not(a, b) {
     return a.filter((value) => b.indexOf(value) === -1);
 }
@@ -72,19 +74,55 @@ function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
-const headers = new Headers({
-    'Authorization' : basicAuth,
-    'Content-type': 'application/json',
-});
+const postNewName = (jsonString, id) => {
 
+
+    fetch(`https://www.namis.org/namis1/api/indicators/${id}/shortName`, {
+        method: 'PATCH',
+        body: jsonString,
+        headers: {
+            'Authorization' : basicAuth,
+            'Content-type': 'application/xml',
+        },
+
+        credentials: "include"
+
+    })
+        .then(response => {
+            console.log(response);
+        });
+
+};
+
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 const moment = require('moment')
 
 let now = moment();
 
+const editName = (indicatorID) => {
+    var newName = prompt("enter new name");
+    var tableCell = document.getElementById(indicatorID);
 
-export default React.memo(function TransferList(props) {
+
+    if (newName == null || newName === "") {
+
+    } else {
+        console.log(indicatorID + "-" + newName);
+        tableCell.innerHTML = newName;
+
+        var b = "<indicator xmlns=\"http://dhis2.org/schema/dxf/2.0\" shortName=\""+newName+" \"/>"
+
+        postNewName(b, indicatorID);
+
+    }
+}
+
+
+
+function TransferList(props) {
+
     const classes = useStyles();
+
     var indicatorArray = props.headerProp;
 
     const initState = [...indicatorArray];
@@ -94,8 +132,6 @@ export default React.memo(function TransferList(props) {
 
     const initialRows = [];
 
-    const [postId, setPostId] = React.useState(null);
-    const [showLoading, setShowLoading] = React.useState(false);
     const [rows, setRows] = React.useState(initialRows)
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
@@ -135,71 +171,6 @@ export default React.memo(function TransferList(props) {
 
     var currentTime = date + "T" + time;
 
-    const postNewName = (jsonString, id) => {
-
-
-        fetch(`https://www.namis.org/namis1/api/indicators/${id}/shortName`, {
-            method: 'PATCH',
-            body: jsonString,
-                headers: {
-                    'Authorization' : basicAuth,
-                    'Content-type': 'application/xml',
-                },
-
-            credentials: "include"
-
-        })
-            .then(response => {
-                console.log(response);
-            });
-
-    };
-
-    const editName = (indicatorID) => {
-        var newName = prompt("enter new name");
-        var tableCell = document.getElementById(indicatorID);
-
-
-        if (newName == null || newName === "") {
-
-        } else {
-            console.log(indicatorID + "-" + newName);
-            tableCell.innerHTML = newName;
-
-            var x = "{\n" +
-                "                \"lastUpdated\": \"" + currentTime + "\",\n" +
-                "                \"created\": \"" + currentTime + "\",\n" +
-                "                \"value\": \"" + newName + "\",\n" +
-                "                \"attribute\": {\n" +
-                "                    \"id\" : \"" + indicatorID + "\"\n" +
-                "                }\n" +
-                "                }"
-
-            var y =
-                "<attributeValues>" +
-                "<attributeValue lastUpdated=\""+currentTime+"\" created=\""+currentTime+"\">\n" +
-                "<value>\""+newName+"\"</value>\n" +
-                "<attribute id=\""+indicatorID+"\"/>\n" +
-                "</attributeValue>\n" +
-                "</attributeValues>"
-
-            var b = "<indicator xmlns=\"http://dhis2.org/schema/dxf/2.0\" shortName=\""+newName+" \"/>"
-
-            var z = {shortName : newName};
-
-            let dataToSend =[{
-                lastUpdated: currentTime,
-                created: currentTime,
-                value: newName,
-                attribute: {
-                    id : indicatorID
-                }
-                }];
-
-            postNewName(b, indicatorID);
-
-        }
-    }
 
     const handleAllRight = () => {
         setRight(right.concat(left));
@@ -222,6 +193,10 @@ export default React.memo(function TransferList(props) {
         setLeft(left.concat(right));
         setRight([]);
     };
+
+    function reloadPage() {
+        window.location.reload(false);
+    }
 
 
 
@@ -249,18 +224,13 @@ export default React.memo(function TransferList(props) {
 
 
 
-    const LoadingProgress = () => (
-        <CircularProgress size={20} />
-    )
-
-
     const Selects = () => (
 
         <div>
             <div style={{textAlign: "center", margin: 10}}>
                 <h4>Rename Indicators</h4>
             </div>
-            <TableContainer component={Paper} className={classes.table}  justify="center" alignItems="center">
+            <TableContainer component={Paper} className={classes.table}  justify="center" alignitems="center">
                 <Table  aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -289,7 +259,7 @@ export default React.memo(function TransferList(props) {
             </TableContainer>
 
             <Grid container justify="center" alignItems="center" className={classes.another}>
-                <Button variant="contained" color="primary" onClick={saveNewIndicatorNames}>
+                <Button variant="contained" color="primary" onClick={reloadPage}>
                     Done
                 </Button>
             </Grid>
@@ -300,26 +270,26 @@ export default React.memo(function TransferList(props) {
 
     const customList = (items) => (
         <Paper className={classes.paper}>
-            <List dense component="div" role="list">
+            <ListGroup dense component="div" role="list">
                 {items.map((value) => {
-                    const labelId = `transfer-list-item-${value.displayName}-label`;
 
                     return (
-                        <ListItem key={value.id} role="listitem" button onClick={handleToggle(value)}>
-                            <ListItemIcon>
-                                <Checkbox
-                                    checked={checked.indexOf(value) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                />
-                            </ListItemIcon>
-                            <ListItemText id={labelId} primary={`${value.displayName}`} />
-                        </ListItem>
+                        <ListGroup.Item action className="my-5 border" key={value.id}  onClick={handleToggle(value)}>
+                            {['checkbox'].map((type) => (
+                                <div key={type} className="mb-3">
+
+                                    <input type="checkbox" className="mx-5"
+                                           checked={checked.indexOf(value) !== -1}/>
+                                    {value.displayName}
+
+                                </div>
+                            ))}
+
+                        </ListGroup.Item>
                     );
                 })}
                 <ListItem />
-            </List>
+            </ListGroup>
         </Paper>
     );
 
@@ -334,7 +304,6 @@ export default React.memo(function TransferList(props) {
                             color="primary"
                             onClick={loadIndi}>
                         load indicators
-                        { showLoading ? <LoadingProgress/> : null }
                     </Button>
 
                 </div>
@@ -400,4 +369,6 @@ export default React.memo(function TransferList(props) {
 
 
     );
-})
+}
+
+export default React.memo(TransferList)
