@@ -5,6 +5,7 @@ import NavBar from './components/NavBar'
 import Sidebar from "./components/SideBar";
 import TransferList from "./components/TransferList";
 import CustomTransferList from "./components/CustomTransferList";
+import BoxComponent from "./components/BoxComponent";
 
 
 class App extends PureComponent {
@@ -13,9 +14,14 @@ class App extends PureComponent {
 
         this.state = {
             dashboards: [],
-            isLoaded: false
+            isLoaded: false,
+            navBarValue: "",
         };
+
+
     }
+
+
 
     componentDidMount(){
 
@@ -33,21 +39,73 @@ class App extends PureComponent {
             });
     }
 
+    mainCallBack = (dataFromChild) => {
+        console.log(dataFromChild);
+        this.setState({
+            navBarValue : dataFromChild,
+        });
+    }
+
+
     render() {
 
-        return (
-            <Fragment>
-                <div >
-                    <NavBar named ="Indicator App for NAMIS"/>
-                    <div className="rowC">
-                        <Sidebar/>
-                        <TransferList headerProp ={this.state.dashboards}/>
+        var navigate = this.state.navBarValue
+
+        if(navigate==="Time periods"){
+
+            return (
+                <Fragment>
+                    <div >
+                        <NavBar callerBack={this.mainCallBack}/>
+
+                        <h3>Time periods</h3>
+
                     </div>
+                </Fragment>
 
-                </div>
-            </Fragment>
+            )
+        }
+        else if(navigate==="Custom Reports"){
 
-        )
+            return (
+                <Fragment>
+                    <div className="bg-grey">
+                        <NavBar callerBack={this.mainCallBack}/>
+                        <BoxComponent className="mt-4"/>
+                    </div>
+                </Fragment>
+
+            )
+        }
+        else if(navigate==="Analysis"){
+
+            return (
+                <Fragment>
+                    <div >
+                        <NavBar callerBack={this.mainCallBack}/>
+
+                        <h3>Analysis</h3>
+                    </div>
+                </Fragment>
+
+            )
+        }
+        else {
+            return (
+                <Fragment>
+                    <div >
+                        <NavBar callerBack={this.mainCallBack}/>
+                        <div className="rowC">
+                            <TransferList headerProp ={this.state.dashboards}/>
+                        </div>
+
+                    </div>
+                </Fragment>
+
+            )
+        }
+
+
 
     }
 }

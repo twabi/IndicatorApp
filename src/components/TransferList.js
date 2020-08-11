@@ -1,11 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -14,8 +10,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import CircularProgress from "@material-ui/core/CircularProgress";
 import ListGroup from "react-bootstrap/ListGroup";
+import TextField  from "@material-ui/core/TextField";
 
 
 
@@ -25,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 50,
     },
     paper: {
-        width: 400,
+        width: 500,
         height: 400,
         overflow: 'auto',
         verticalAlign: "top",
@@ -37,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 650,
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'blue',
         borderStyle: 'solid',
 
     },
@@ -53,10 +49,15 @@ const useStyles = makeStyles((theme) => ({
 
     selContainer: {
         marginTop: 70,
-        border: "black",
+        border: "blue",
         borderWidth: 5,
     },
 
+    listOutline: {
+        borderWidth: 1,
+        borderColor: 'blue',
+        borderStyle: 'solid',
+    },
 
     myBtn: {
       margin: 15,
@@ -77,12 +78,12 @@ function intersection(a, b) {
 const postNewName = (jsonString, id) => {
 
 
-    fetch(`https://www.namis.org/namis1/api/indicators/${id}/shortName`, {
-        method: 'PATCH',
-        body: jsonString,
+    fetch(`https://www.namis.org/namis1/api/29/indicators/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(jsonString),
         headers: {
             'Authorization' : basicAuth,
-            'Content-type': 'application/xml',
+            'Content-type': 'application/json',
         },
 
         credentials: "include"
@@ -99,24 +100,73 @@ const moment = require('moment')
 
 let now = moment();
 
-const editName = (indicatorID) => {
+var date = now.format("YYYY-MM-DD");
+var time = now.format("HH:mm:ss.SSS");
+
+var currentTime = date + "T" + time;
+
+const editName = (indicator) => {
     var newName = prompt("enter new name");
-    var tableCell = document.getElementById(indicatorID);
+    var tableCell = document.getElementById(indicator.id);
 
 
     if (newName == null || newName === "") {
 
     } else {
-        console.log(indicatorID + "-" + newName);
+        console.log(indicator.id + "-" + newName);
         tableCell.innerHTML = newName;
 
-        var b = "<indicator xmlns=\"http://dhis2.org/schema/dxf/2.0\" shortName=\""+newName+" \"/>"
+        var payload = {
+            "publicAccess": indicator.publicAccess,
+            "lastUpdated": indicator.lastUpdated,
+            "denominatorDescription": indicator.denominatorDescription,
+            "id": indicator.id,
+            "numeratorDescription": indicator.numeratorDescription,
+            "created": indicator.created,
+            "attributeValues": [
+                {
+                    "lastUpdated": currentTime,
+                    "created": currentTime,
+                    "value": newName,
+                    "attribute": {
+                        "name": "Portal display name",
+                        "id": "NIQlEQgDfUm",
+                        "displayName": "Portal display name"
+                    }
+                }
+            ],
+            "numerator": indicator.numerator,
+            "denominator": indicator.denominator,
+            "annualized": false,
+            "name": indicator.name,
+            "shortName": indicator.shortName,
+            "indicatorType": {
+                "id": indicator.indicatorType.id
+            },
+            "lastUpdatedBy": {
+                "id": indicator.lastUpdatedBy.id
+            },
+            "user": {
+                "id": indicator.user.id
+            },
+            "translations": [
 
-        postNewName(b, indicatorID);
+            ],
+            "userGroupAccesses": [
+
+            ],
+            "userAccesses": [
+
+            ],
+            "legendSets": [
+
+            ]
+        }
+
+        postNewName(payload, indicator.id);
 
     }
 }
-
 
 
 function TransferList(props) {
@@ -126,28 +176,25 @@ function TransferList(props) {
     var indicatorArray = props.headerProp;
 
     const initState = [...indicatorArray];
-    function createData(indicatorName, existingName, indicatorId) {
-        return { indicatorName, existingName, indicatorId};
+    function createData(indicator, indicatorName, existingName, indicatorId) {
+        return { indicator, indicatorName, existingName, indicatorId};
     }
 
     const initialRows = [];
 
+    const [searchValue, setSearchValue] = React.useState("");
     const [rows, setRows] = React.useState(initialRows)
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
     const [showSelected, setShowSelected] = React.useState(false);
 
-    const saveNewIndicatorNames = () => {
-        console.log(rows);
-    }
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
 
     const handleToggle = (value) => () => {
-        console.log(value);
-        const currentIndex = checked.indexOf(value.displayName);
+        const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
 
         if (currentIndex === -1) {
@@ -159,17 +206,50 @@ function TransferList(props) {
         setChecked(newChecked);
     };
 
+    useEffect(()=>{
+        setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
+    }, [indicatorArray, right])
+
     const loadIndi = () => {
         setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
-        //console.log(date + "T"+ time);
 
         console.log(currentTime);
     }
 
-    var date = now.format("YYYY-MM-DD");
-    var time = now.format("HH:mm:ss.SSS");
+    function handleSearch({ target: { value } }) {
 
-    var currentTime = date + "T" + time;
+        // Set captured value to input
+        setSearchValue(value)
+
+        // Variable to hold the original version of the list
+        let currentList = [];
+        // Variable to hold the filtered list before putting into state
+        let newList = [];
+
+        // If the search bar isn't empty
+        if (value !== "") {
+            // Assign the original list to currentList
+            currentList = initState;
+
+            // Use .filter() to determine which items should be displayed
+            // based on the search terms
+            newList = currentList.filter(item => {
+                // change current item to lowercase
+                const lc = item.displayName.toLowerCase();
+                // change search term to lowercase
+                const filter = value.toLowerCase();
+                // check to see if the current list item includes the search term
+                // If it does, it will be added to newList. Using lowercase eliminates
+                // issues with capitalization in search terms and search content
+                return lc.includes(filter);
+            });
+        } else {
+            // If the search bar is empty, set newList to original task list
+            newList = initState;
+        }
+        // Set the filtered state based on what our rules added to newList
+        setLeft(newList);
+    }
 
 
     const handleAllRight = () => {
@@ -211,7 +291,21 @@ function TransferList(props) {
           var newRows = [];
           right.map((value) => {
 
-              newRows.push(createData(value.displayName, value.shortName, value.id));
+              var array = value.attributeValues;
+
+              try{
+                  if (array === undefined || array.length == 0) {
+                      console.log("its null");
+                      newRows.push(createData(value, value.displayName, "", value.id));
+                  } else {
+                      newRows.push(createData(value, value.displayName, value.attributeValues[0].value, value.id));
+                      console.log("its not null");
+                  }
+
+              }catch(ex){
+                  console.log(ex)
+              }
+
 
           });
           setRows([...newRows]);
@@ -223,7 +317,6 @@ function TransferList(props) {
     };
 
 
-
     const Selects = () => (
 
         <div>
@@ -231,23 +324,23 @@ function TransferList(props) {
                 <h4>Rename Indicators</h4>
             </div>
             <TableContainer component={Paper} className={classes.table}  justify="center" alignitems="center">
-                <Table  aria-label="simple table">
+                <Table style={{ tableLayout: 'auto' }}  aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell><b>Indicator Name</b></TableCell>
-                            <TableCell align="center"><b>Existing ShortName</b></TableCell>
+                            <TableCell align="left"><b>Existing ShortName</b></TableCell>
                             <TableCell align="center"><b>New ShortName</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <TableRow key={row.existingName}>
+                        {rows.map((row, i) => (
+                            <TableRow key={i}>
                                 <TableCell component="th" scope="row">
                                     {row.indicatorName}
                                 </TableCell>
-                                <TableCell align="center" id={row.indicatorId}>{row.existingName}</TableCell>
+                                <TableCell align="left" id={row.indicatorId}>{row.existingName}</TableCell>
                                 <TableCell align="center">
-                                    <Button variant="contained" color="primary" onClick={() => editName(row.indicatorId)}>
+                                    <Button variant="contained" color="primary" onClick={() => editName(row.indicator)}>
                                         Edit
                                     </Button>
                                 </TableCell>
@@ -270,15 +363,15 @@ function TransferList(props) {
 
     const customList = (items) => (
         <Paper className={classes.paper}>
-            <ListGroup dense component="div" role="list">
+            <ListGroup dense component="div" className="m-2" role="list">
                 {items.map((value) => {
 
                     return (
-                        <ListGroup.Item action className="my-5 border" key={value.id}  onClick={handleToggle(value)}>
+                        <ListGroup.Item action className="my-1 border" key={value.id}  onClick={handleToggle(value)}>
                             {['checkbox'].map((type) => (
-                                <div key={type} className="mb-3">
+                                <div key={type} className="">
 
-                                    <input type="checkbox" className="mx-5"
+                                    <input type="checkbox" className="mx-2"
                                            checked={checked.indexOf(value) !== -1}/>
                                     {value.displayName}
 
@@ -296,74 +389,87 @@ function TransferList(props) {
     return (
         <div className={classes.root}>
             <div style={{textAlign: "center", margin: 10}}>
-                <h4>Choose preferred Indicators</h4>
+                <h4 className="my-2">Choose preferred Indicators</h4>
                 <div className={classes.wrapper}>
-                    <Button style={{margin: 10}}
-                        variant="contained"
-                            id="loadBtn"
-                            color="primary"
-                            onClick={loadIndi}>
-                        load indicators
-                    </Button>
 
                 </div>
 
             </div>
-            <Grid container spacing={2} justify="center" alignItems="center" >
-                <Grid item>{customList(left)}</Grid>
-                <Grid item>
-                    <Grid container direction="column">
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            className={classes.button}
-                            onClick={handleAllRight}
-                            disabled={left.length === 0}
-                            aria-label="move all right">
-                            ≫
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            className={classes.button}
-                            onClick={handleCheckedRight}
-                            disabled={leftChecked.length === 0}
-                            aria-label="move selected right">
-                            &gt;
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            className={classes.button}
-                            onClick={handleCheckedLeft}
-                            disabled={rightChecked.length === 0}
-                            aria-label="move selected left">
-                            &lt;
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            className={classes.button}
-                            onClick={handleAllLeft}
-                            disabled={right.length === 0}
-                            aria-label="move all left">
-                            ≪
-                        </Button>
+
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center">
+                <Grid container justify="center" alignItems="center" className={classes.another}>
+                    <Grid item>
+
+                        <TextField id="search-basic" label="Search" variant="outlined"
+                                   value={searchValue}
+                                   onChange={e => handleSearch(e)}/>
                     </Grid>
                 </Grid>
-                <Grid item>{customList(right)}</Grid>
+
+
+                <Grid container spacing={2} className={classes.listOutline} justify="center" alignItems="center" >
+
+                    <Grid item>{customList(left)}</Grid>
+                    <Grid item>
+                        <Grid container direction="column">
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                className={classes.button}
+                                onClick={handleAllRight}
+                                disabled={left.length === 0}
+                                aria-label="move all right">
+                                ≫
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                className={classes.button}
+                                onClick={handleCheckedRight}
+                                disabled={leftChecked.length === 0}
+                                aria-label="move selected right">
+                                &gt;
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                className={classes.button}
+                                onClick={handleCheckedLeft}
+                                disabled={rightChecked.length === 0}
+                                aria-label="move selected left">
+                                &lt;
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                className={classes.button}
+                                onClick={handleAllLeft}
+                                disabled={right.length === 0}
+                                aria-label="move all left">
+                                ≪
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid item>{customList(right)}</Grid>
+
+                </Grid>
+                <Grid container justify="center" alignItems="center" className={classes.another}>
+                    <Button variant="contained" color="primary" onClick={getAllRight}>
+                        Next
+                    </Button>
+                </Grid>
+
+                <Grid container justify="center" border={1} className={classes.selContainer}>
+                    { showSelected ? <Selects /> : null }
+
+                </Grid>
 
             </Grid>
-            <Grid container justify="center" alignItems="center" className={classes.another}>
-                <Button variant="contained" color="primary" onClick={getAllRight}>
-                    Next
-                </Button>
-            </Grid>
 
-            <Grid container justify="center" border={1} className={classes.selContainer}>
-                { showSelected ? <Selects /> : null }
-
-            </Grid>
 
         </div>
 

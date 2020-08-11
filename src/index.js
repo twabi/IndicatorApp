@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import Api from './api';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import * as serviceWorker from './serviceWorker';
 
 const developmentServer = 'https://www.namis.org/namis1';
@@ -10,7 +11,7 @@ const rootElement = document.getElementById('root');
 
 const withBaseUrl = baseUrl => {
     Api.setConfig({
-        baseUrl: `${baseUrl}/api`,
+        baseUrl: `${baseUrl}/api/29`,
     });
 
     ReactDOM.render(<App />, rootElement);
