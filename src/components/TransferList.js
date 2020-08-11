@@ -12,6 +12,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ListGroup from "react-bootstrap/ListGroup";
 import TextField  from "@material-ui/core/TextField";
+import DropdownPage from "./DropdownPage";
+import DropdownGroup from "./DropdownGroup";
 
 
 
@@ -182,6 +184,8 @@ function TransferList(props) {
 
     const initialRows = [];
 
+    const [filterList, setFilterList] = React.useState([])
+    const [filterValues, setFilterValues] = React.useState([])
     const [searchValue, setSearchValue] = React.useState("");
     const [rows, setRows] = React.useState(initialRows)
     const [checked, setChecked] = React.useState([]);
@@ -210,16 +214,74 @@ function TransferList(props) {
         setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
     }, [indicatorArray, right])
 
-    const loadIndi = () => {
-        setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
-
-        console.log(currentTime);
-    }
 
     function handleSearch({ target: { value } }) {
 
         // Set captured value to input
         setSearchValue(value)
+
+        // Variable to hold the original version of the list
+        let currentList = [];
+        // Variable to hold the filtered list before putting into state
+        let newList = [];
+
+        if(filterValues.length == 0){
+            currentList = left;
+
+            // If the search bar isn't empty
+            if (value !== "") {
+                // Assign the original list to currentList
+
+                // Use .filter() to determine which items should be displayed
+                // based on the search terms
+                newList = currentList.filter(item => {
+                    // change current item to lowercase
+                    const lc = item.displayName.toLowerCase();
+                    // change search term to lowercase
+                    const filter = value.toLowerCase();
+                    // check to see if the current list item includes the search term
+                    // If it does, it will be added to newList. Using lowercase eliminates
+                    // issues with capitalization in search terms and search content
+                    return lc.includes(filter);
+                });
+            } else {
+                // If the search bar is empty, set newList to original task list
+                newList = initState;
+            }
+        } else {
+            currentList = filterValues;
+
+            // If the search bar isn't empty
+            if (value !== "") {
+                // Assign the original list to currentList
+
+
+
+
+                // Use .filter() to determine which items should be displayed
+                // based on the search terms
+                newList = currentList.filter(item => {
+                    // change current item to lowercase
+                    const lc = item.displayName.toLowerCase();
+                    // change search term to lowercase
+                    const filter = value.toLowerCase();
+                    // check to see if the current list item includes the search term
+                    // If it does, it will be added to newList. Using lowercase eliminates
+                    // issues with capitalization in search terms and search content
+                    return lc.includes(filter);
+                });
+            } else {
+                // If the search bar is empty, set newList to original task list
+                newList = filterValues;
+            }
+        }
+
+
+        // Set the filtered state based on what our rules added to newList
+        setLeft(newList);
+    }
+
+    function handleFilter(value) {
 
         // Variable to hold the original version of the list
         let currentList = [];
@@ -249,6 +311,7 @@ function TransferList(props) {
         }
         // Set the filtered state based on what our rules added to newList
         setLeft(newList);
+        setFilterValues(newList);
     }
 
 
@@ -278,6 +341,11 @@ function TransferList(props) {
         window.location.reload(false);
     }
 
+    var filterGroups= ["All", "Program", "Indicator Type",  "Crop"]
+    var indicatorProgram = [ "APES", "SAPP", "T1", "T2", "T3", "MET", "Other"]
+    var crops = ["Bananas", "Maize", "Amaranthas", "Pineapple", "Rape", "Rice"]
+    var indicatorType = ["Percentage", "Average Area", "Total Area", "Total Number"]
+    var allgroups = ["All groups"];
 
 
     const getAllRight = () => {
@@ -315,6 +383,25 @@ function TransferList(props) {
       }
 
     };
+
+    const groupCallback = (dataFromChild) => {
+        if(dataFromChild === "Program") {
+            setFilterList([...indicatorProgram]);
+        } else if (dataFromChild === "Crop"){
+            setFilterList([...crops])
+        } else if (dataFromChild === "Indicator Type"){
+            setFilterList([...indicatorType]);
+        } else if (dataFromChild === "All"){
+            setFilterList([...allgroups]);
+            setLeft([...indicatorArray.filter(x => !right.includes(x))]);
+        }
+    }
+
+    const groupItemCallback = (data) => {
+        console.log(data);
+
+        handleFilter(data);
+    }
 
 
     const Selects = () => (
@@ -390,9 +477,7 @@ function TransferList(props) {
         <div className={classes.root}>
             <div style={{textAlign: "center", margin: 10}}>
                 <h4 className="my-2">Choose preferred Indicators</h4>
-                <div className={classes.wrapper}>
-
-                </div>
+                <div className={classes.wrapper}> </div>
 
             </div>
 
@@ -401,12 +486,20 @@ function TransferList(props) {
                 direction="column"
                 justify="center"
                 alignItems="center">
-                <Grid container justify="center" alignItems="center" className={classes.another}>
+                <Grid container direction="row" justify="center" alignItems="center" className={classes.another}>
                     <Grid item>
 
                         <TextField id="search-basic" label="Search" variant="outlined"
                                    value={searchValue}
                                    onChange={e => handleSearch(e)}/>
+                    </Grid>
+
+                    <Grid item style={{marginTop:5, marginLeft: 20}}>
+                        <DropdownGroup groupCaller={groupCallback} dropdownGroups={filterGroups}/>
+                    </Grid>
+
+                    <Grid item style={{marginTop:5, marginLeft: 20}}>
+                        <DropdownPage groupItemCaller={groupItemCallback} dropdownItems={filterList}/>
                     </Grid>
                 </Grid>
 
