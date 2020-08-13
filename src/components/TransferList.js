@@ -14,6 +14,16 @@ import ListGroup from "react-bootstrap/ListGroup";
 import TextField  from "@material-ui/core/TextField";
 import DropdownPage from "./DropdownPage";
 import DropdownGroup from "./DropdownGroup";
+import {
+    MDBDataTable,
+    MDBTable,
+    MDBTableBody,
+    MDBTableHead,
+    MDBCard,
+    MDBCardHeader,
+    MDBCardBody,
+    MDBCardFooter
+} from 'mdbreact';
 
 
 
@@ -34,9 +44,10 @@ const useStyles = makeStyles((theme) => ({
 
     table: {
         minWidth: 650,
-        borderWidth: 1,
-        borderColor: 'blue',
+        borderWidth: 0.5,
+        borderColor: 'grey',
         borderStyle: 'solid',
+        padding: 10,
 
     },
 
@@ -45,19 +56,19 @@ const useStyles = makeStyles((theme) => ({
     },
 
     another: {
-        marginTop: 30,
-        marginBottom : 20,
+        marginTop: 20,
+        marginBottom : 25,
     },
 
     selContainer: {
         marginTop: 70,
-        border: "blue",
+        border: "grey",
         borderWidth: 5,
     },
 
     listOutline: {
-        borderWidth: 1,
-        borderColor: 'blue',
+        borderWidth: 0.5,
+        borderColor: 'grey',
         borderStyle: 'solid',
     },
 
@@ -76,6 +87,9 @@ function not(a, b) {
 function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
+
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const moment = require('moment')
 
 const postNewName = (jsonString, id) => {
 
@@ -97,8 +111,7 @@ const postNewName = (jsonString, id) => {
 
 };
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
-const moment = require('moment')
+
 
 let now = moment();
 
@@ -107,80 +120,45 @@ var time = now.format("HH:mm:ss.SSS");
 
 var currentTime = date + "T" + time;
 
-const editName = (indicator) => {
-    var newName = prompt("enter new name");
-    var tableCell = document.getElementById(indicator.id);
 
-
-    if (newName == null || newName === "") {
-
-    } else {
-        console.log(indicator.id + "-" + newName);
-        tableCell.innerHTML = newName;
-
-        var payload = {
-            "publicAccess": indicator.publicAccess,
-            "lastUpdated": indicator.lastUpdated,
-            "denominatorDescription": indicator.denominatorDescription,
-            "id": indicator.id,
-            "numeratorDescription": indicator.numeratorDescription,
-            "created": indicator.created,
-            "attributeValues": [
-                {
-                    "lastUpdated": currentTime,
-                    "created": currentTime,
-                    "value": newName,
-                    "attribute": {
-                        "name": "Portal display name",
-                        "id": "NIQlEQgDfUm",
-                        "displayName": "Portal display name"
-                    }
-                }
-            ],
-            "numerator": indicator.numerator,
-            "denominator": indicator.denominator,
-            "annualized": false,
-            "name": indicator.name,
-            "shortName": indicator.shortName,
-            "indicatorType": {
-                "id": indicator.indicatorType.id
-            },
-            "lastUpdatedBy": {
-                "id": indicator.lastUpdatedBy.id
-            },
-            "user": {
-                "id": indicator.user.id
-            },
-            "translations": [
-
-            ],
-            "userGroupAccesses": [
-
-            ],
-            "userAccesses": [
-
-            ],
-            "legendSets": [
-
-            ]
-        }
-
-        postNewName(payload, indicator.id);
-
-    }
-}
 
 
 function TransferList(props) {
 
+    var loading = document.getElementById("loadingProgress");
+
     const classes = useStyles();
 
     var indicatorArray = props.headerProp;
+    var isLoaded = props.isLoaded;
+    var errorMessage = props.errorMessage;
+    var cropOptions = props.cropOptions;
 
     const initState = [...indicatorArray];
     function createData(indicator, indicatorName, existingName, indicatorId) {
         return { indicator, indicatorName, existingName, indicatorId};
     }
+
+    var cols =  [
+        {label: 'Indicator Name',
+            field: 'name',
+            width: 400,
+            minimal: 'sm',
+            attributes: {
+                'aria-controls': 'DataTable',
+                'aria-label': 'Name',
+            },
+        }, {
+            label: 'Existing short Name',
+            field: 'existing',
+            minimal: 'lg',
+            width: 350,
+        }, {
+            label: 'Edit Short Name',
+            field: 'edit',
+            minimal: 'sm',
+            width: 300,},
+    ]
 
     const initialRows = [];
 
@@ -192,6 +170,12 @@ function TransferList(props) {
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
     const [showSelected, setShowSelected] = React.useState(false);
+    const [optionCrops, setOptionsCrops] = React.useState([]);
+
+    const [dataTables, setDataTables] = React.useState({
+        columns: cols,
+        rows: [],
+    });
 
 
     const leftChecked = intersection(checked, left);
@@ -210,9 +194,77 @@ function TransferList(props) {
         setChecked(newChecked);
     };
 
+    console.log("loaded: " + isLoaded);
+
     useEffect(()=>{
         setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
-    }, [indicatorArray, right])
+        setOptionsCrops([...cropOptions]);
+    }, [cropOptions, indicatorArray, right]);
+
+
+    const editName = (indicator) => {
+        var newName = prompt("enter new name");
+        var tableCell = document.getElementById(indicator.id);
+
+        if (newName == null || newName === "") {
+
+            console.log(dataTables)
+
+        } else {
+            console.log(indicator.id + "-" + newName);
+            tableCell.innerHTML = newName;
+
+            var payload = {
+                "publicAccess": indicator.publicAccess,
+                "lastUpdated": indicator.lastUpdated,
+                "denominatorDescription": indicator.denominatorDescription,
+                "id": indicator.id,
+                "numeratorDescription": indicator.numeratorDescription,
+                "created": indicator.created,
+                "attributeValues": [
+                    {
+                        "lastUpdated": currentTime,
+                        "created": currentTime,
+                        "value": newName,
+                        "attribute": {
+                            "name": "Portal display name",
+                            "id": "NIQlEQgDfUm",
+                            "displayName": "Portal display name"
+                        }
+                    }
+                ],
+                "numerator": indicator.numerator,
+                "denominator": indicator.denominator,
+                "annualized": false,
+                "name": indicator.name,
+                "shortName": indicator.shortName,
+                "indicatorType": {
+                    "id": indicator.indicatorType.id
+                },
+                "lastUpdatedBy": {
+                    "id": indicator.lastUpdatedBy.id
+                },
+                "user": {
+                    "id": indicator.user.id
+                },
+                "translations": [
+
+                ],
+                "userGroupAccesses": [
+
+                ],
+                "userAccesses": [
+
+                ],
+                "legendSets": [
+
+                ]
+            }
+
+            postNewName(payload, indicator.id);
+
+        }
+    }
 
 
     function handleSearch({ target: { value } }) {
@@ -345,11 +397,9 @@ function TransferList(props) {
     var indicatorProgram = [ "APES", "SAPP", "T1", "T2", "T3", "MET", "Other"]
     var crops = ["Bananas", "Maize", "Amaranthas", "Pineapple", "Rape", "Rice"]
     var indicatorType = ["Percentage", "Average Area", "Total Area", "Total Number"]
-    var allgroups = ["All groups"];
 
 
     const getAllRight = () => {
-      console.log(right);
 
       if(right.length === 0){
           console.log("is empty");
@@ -357,6 +407,7 @@ function TransferList(props) {
       else{
 
           var newRows = [];
+          var otherRows = [];
           right.map((value) => {
 
               var array = value.attributeValues;
@@ -365,9 +416,18 @@ function TransferList(props) {
                   if (array === undefined || array.length == 0) {
                       console.log("its null");
                       newRows.push(createData(value, value.displayName, "", value.id));
+                      otherRows.push({name: value.displayName, existing: "", edit:
+                              <Button style={{marginLeft:10}} variant="contained" color="primary" onClick={() => editName(value)}>
+                              Edit
+                          </Button>,});
                   } else {
                       newRows.push(createData(value, value.displayName, value.attributeValues[0].value, value.id));
                       console.log("its not null");
+
+                      otherRows.push({name: value.displayName, existing: value.attributeValues[0].value, edit:
+                              <Button style={{marginLeft:10}} variant="contained" color="primary" onClick={() => editName(value)}>
+                              Edit
+                          </Button>,});
                   }
 
               }catch(ex){
@@ -377,31 +437,38 @@ function TransferList(props) {
 
           });
           setRows([...newRows]);
+          setDataTables({
+              columns: cols,
+              rows: [...otherRows],
+          })
 
-          console.log("rows before: " + rows);
           setShowSelected(true);
       }
 
     };
 
+    const handleChange = () => {
+
+    }
+
     const groupCallback = (dataFromChild) => {
         if(dataFromChild === "Program") {
             setFilterList([...indicatorProgram]);
         } else if (dataFromChild === "Crop"){
-            setFilterList([...crops])
+            setFilterList([...optionCrops])
         } else if (dataFromChild === "Indicator Type"){
             setFilterList([...indicatorType]);
         } else if (dataFromChild === "All"){
-            setFilterList([...allgroups]);
             setLeft([...indicatorArray.filter(x => !right.includes(x))]);
         }
     }
 
     const groupItemCallback = (data) => {
-        console.log(data);
-
         handleFilter(data);
     }
+
+    /*<MDBDataTableV5 hover autoWidth striped className={classes.table} entriesOptions={[10, 20, 30]} entries={10} pagesAmount={4}
+                    data={dataTables} />
 
 
     const Selects = () => (
@@ -448,6 +515,9 @@ function TransferList(props) {
 
     )
 
+
+     */
+
     const customList = (items) => (
         <Paper className={classes.paper}>
             <ListGroup dense component="div" className="m-2" role="list">
@@ -459,7 +529,7 @@ function TransferList(props) {
                                 <div key={type} className="">
 
                                     <input type="checkbox" className="mx-2"
-                                           checked={checked.indexOf(value) !== -1}/>
+                                           checked={checked.indexOf(value) !== -1} onChange={handleChange}/>
                                     {value.displayName}
 
                                 </div>
@@ -475,81 +545,104 @@ function TransferList(props) {
 
     return (
         <div className={classes.root}>
-            <div style={{textAlign: "center", margin: 10}}>
-                <h4 className="my-2">Choose preferred Indicators</h4>
-                <div className={classes.wrapper}> </div>
 
-            </div>
+            <MDBCard style={{padding: 10}}>
+                <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                    Choose preferred Indicators
+                </MDBCardHeader>
+
+                <MDBCardBody style={{padding: 10}}>
+                    <Grid container direction="row" justify="center" alignItems="center" className={classes.another}>
+                        <Grid item style={{marginRight: 20, marginTop:10}}>
+                            <input className="form-control" value={searchValue}
+                                   onChange={e => handleSearch(e)} type="text" placeholder="Search" aria-label="Search" />
+                        </Grid>
+
+                        <Grid item style={{marginRight: 20, marginTop:10}}>
+                            <DropdownGroup groupCaller={groupCallback} dropdownGroups={filterGroups}/>
+                        </Grid>
+
+                        <Grid item style={{marginRight: 10, marginTop:10}}>
+                            <DropdownPage groupItemCaller={groupItemCallback} dropdownItems={filterList}/>
+                        </Grid>
+
+
+
+                    </Grid>
+                    <Grid container direction={"row"} justify="center" alignItems="center">
+                        {!isLoaded ? <Grid item style={{marginRight: 10}}>
+                            <div id="loadingProgress" style={{textAlign: "center"}}
+                                 className="d-flex justify-content-center align-items-center spinner-border text-info" role="status">
+                                <span style={{textAlign: "center"}} className="sr-only">Loading...</span>
+                            </div>
+                        </Grid> : <p className="text-danger">{errorMessage}</p>}
+                    </Grid>
+
+
+                    <Grid container spacing={2} justify="center" alignItems="center" >
+
+                        <MDBCard>
+                                <Grid item>
+                                    {customList(left)}
+                                </Grid>
+                        </MDBCard>
+
+                        <Grid item>
+                            <Grid container direction="column">
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={handleAllRight}
+                                    disabled={left.length === 0}
+                                    aria-label="move all right">
+                                    ≫
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={handleCheckedRight}
+                                    disabled={leftChecked.length === 0}
+                                    aria-label="move selected right">
+                                    &gt;
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={handleCheckedLeft}
+                                    disabled={rightChecked.length === 0}
+                                    aria-label="move selected left">
+                                    &lt;
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    className={classes.button}
+                                    onClick={handleAllLeft}
+                                    disabled={right.length === 0}
+                                    aria-label="move all left">
+                                    ≪
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <MDBCard>
+                            <Grid item>{customList(right)}</Grid>
+                        </MDBCard>
+
+
+                    </Grid>
+
+                </MDBCardBody>
+            </MDBCard>
 
             <Grid
                 container
                 direction="column"
                 justify="center"
                 alignItems="center">
-                <Grid container direction="row" justify="center" alignItems="center" className={classes.another}>
-                    <Grid item>
 
-                        <TextField id="search-basic" label="Search" variant="outlined"
-                                   value={searchValue}
-                                   onChange={e => handleSearch(e)}/>
-                    </Grid>
-
-                    <Grid item style={{marginTop:5, marginLeft: 20}}>
-                        <DropdownGroup groupCaller={groupCallback} dropdownGroups={filterGroups}/>
-                    </Grid>
-
-                    <Grid item style={{marginTop:5, marginLeft: 20}}>
-                        <DropdownPage groupItemCaller={groupItemCallback} dropdownItems={filterList}/>
-                    </Grid>
-                </Grid>
-
-
-                <Grid container spacing={2} className={classes.listOutline} justify="center" alignItems="center" >
-
-                    <Grid item>{customList(left)}</Grid>
-                    <Grid item>
-                        <Grid container direction="column">
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                className={classes.button}
-                                onClick={handleAllRight}
-                                disabled={left.length === 0}
-                                aria-label="move all right">
-                                ≫
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                className={classes.button}
-                                onClick={handleCheckedRight}
-                                disabled={leftChecked.length === 0}
-                                aria-label="move selected right">
-                                &gt;
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                className={classes.button}
-                                onClick={handleCheckedLeft}
-                                disabled={rightChecked.length === 0}
-                                aria-label="move selected left">
-                                &lt;
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                className={classes.button}
-                                onClick={handleAllLeft}
-                                disabled={right.length === 0}
-                                aria-label="move all left">
-                                ≪
-                            </Button>
-                        </Grid>
-                    </Grid>
-                    <Grid item>{customList(right)}</Grid>
-
-                </Grid>
                 <Grid container justify="center" alignItems="center" className={classes.another}>
                     <Button variant="contained" color="primary" onClick={getAllRight}>
                         Next
@@ -557,7 +650,41 @@ function TransferList(props) {
                 </Grid>
 
                 <Grid container justify="center" border={1} className={classes.selContainer}>
-                    { showSelected ? <Selects /> : null }
+
+
+
+                    { showSelected ? <MDBCard>
+                        <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                            Rename Indicators
+                        </MDBCardHeader>
+
+                        <MDBCardBody style={{padding: 10}}>
+                            <MDBTable striped bordered responsive>
+                                <MDBTableHead columns={dataTables.columns} />
+                                <MDBTableBody>
+                                    {rows.map((row, key) =>
+                                        <tr id={key}>
+                                            <td>{row.indicatorName}</td>
+                                            <td id={row.indicatorId}>{row.existingName}</td>
+                                            <td>
+                                                <Button variant="contained" color="primary" onClick={() => editName(row.indicator)}>
+                                                    Edit
+                                                </Button>
+                                            </td>
+                                        </tr>)
+                                    }
+                                </MDBTableBody>
+                            </MDBTable>
+                        </MDBCardBody>
+                        <MDBCardFooter>
+                            <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+                                <Button variant="contained" color="primary" onClick={reloadPage}>
+                                    Done
+                                </Button>
+                            </Grid>
+                        </MDBCardFooter>
+
+                    </MDBCard> : null }
 
                 </Grid>
 

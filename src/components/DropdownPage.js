@@ -12,11 +12,11 @@ const DropdownPage = (props) => {
     }
 
     return (
-        <MDBDropdown>
+        <MDBDropdown >
             <MDBDropdownToggle caret color="primary">
                 {buttonName}
             </MDBDropdownToggle>
-            <MDBDropdownMenu right basic>
+            <MDBDropdownMenu right basic className="myDrop">
                 {props.dropdownItems.map((option) => (
                     <MDBDropdownItem onClick={() => itemSelected(option)}>{option}</MDBDropdownItem>
                 ))}

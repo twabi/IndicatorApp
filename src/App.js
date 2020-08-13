@@ -1,10 +1,8 @@
-import React, {Component, Fragment, PureComponent} from 'react';
+import React, {Fragment, PureComponent} from 'react';
 import Api from './api'
 import './App.css';
 import NavBar from './components/NavBar'
-import Sidebar from "./components/SideBar";
 import TransferList from "./components/TransferList";
-import CustomTransferList from "./components/CustomTransferList";
 import BoxComponent from "./components/BoxComponent";
 
 
@@ -15,27 +13,56 @@ class App extends PureComponent {
         this.state = {
             dashboards: [],
             isLoaded: false,
+            errorMessage: "",
             navBarValue: "",
+            cropOptions: [],
         };
 
 
     }
 
-
-
     componentDidMount(){
 
+        const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+
         Api.getDashboards()
+            .then(response => response.json())
             .then((result) => {
 
                 console.log(result)
                 this.setState({
                     isLoaded: true,
-                    dashboards: result.indicators
+                    dashboards: result.indicators,
+                    errorMessage: ""
                 });
             })
             .catch(error => {
-                console.error('Error during data retrieval:', error);
+                console.log('Error during data retrieval:', error);
+                this.setState({
+                    isLoaded: true,
+                    dashboards: [],
+                    errorMessage: "oops couldn't load data! poor network Connection!"
+                });
+            });
+
+        fetch(`https://www.namis.org/namis1/api/optionSets/AsrFCO1n0I3/options.json`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result);
+                var optionArray= [];
+                result.options.map((option) => (
+                    optionArray.push(option.displayName)));
+                this.setState({
+                    cropOptions : optionArray
+                });
             });
     }
 
@@ -96,7 +123,11 @@ class App extends PureComponent {
                     <div >
                         <NavBar callerBack={this.mainCallBack}/>
                         <div className="rowC">
-                            <TransferList headerProp ={this.state.dashboards}/>
+                            <TransferList
+                                cropOptions={this.state.cropOptions}
+                                errorMessage={this.state.errorMessage}
+                                isLoaded={this.state.isLoaded}
+                                          headerProp ={this.state.dashboards}/>
                         </div>
 
                     </div>

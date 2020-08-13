@@ -18,6 +18,8 @@ code {
   justify-content: center;
 }
 
+.myDrop{ max-height:250px; overflow:auto; }
+
 .sidebar {
   width: 200px;
   height: 100vh;
@@ -46,6 +48,14 @@ code {
 .mx-5 {
   margin-right: 16px;
   margin-left: 6px;
+}
+
+.force-scroll {
+
+  overflow-y: scroll;
+
+  height: 200px;
+
 }
 
 .border {

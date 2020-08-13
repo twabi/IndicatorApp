@@ -20,8 +20,7 @@ class Api {
             credentials: 'include',
             headers,
         })
-            .catch(error => error)
-            .then(response => response.json());
+
     };
 }
 
