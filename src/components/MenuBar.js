@@ -4,8 +4,11 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Button from "@material-ui/core/Button";
+import { MDBBtn } from "mdbreact";
+import 'mdbreact/dist/css/mdb.css'
 
 const options = [
+    'Home',
     'DisplayName',
     'Custom Reports',
     'Analysis',
@@ -22,41 +25,18 @@ export default function LongMenu(props) {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (option) => {
-        setAnchorEl(null);
-        props.callerBack(option);
+    function reloadPage() {
+        window.location.reload(false);
+    }
+
+    const handleClose = () => {
+        reloadPage();
+
     };
 
     return (
         <div style={{float: "right", marginLeft: "auto", marginRight: 30 }}>
-            <Button
-                aria-controls="customized-menu"
-                aria-haspopup="true"
-                variant="contained"
-                color="default"
-                onClick={handleClick}
-            >
-                Menu
-            </Button>
-            <Menu
-                id="long-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={open}
-                onClose={handleClose}
-                PaperProps={{
-                    style: {
-                        maxHeight: ITEM_HEIGHT * 4.5,
-                        width: '20ch',
-                    },
-                }}
-            >
-                {options.map((option) => (
-                    <MenuItem key={option} onClick={()=>handleClose(option)}>
-                        {option}
-                    </MenuItem>
-                ))}
-            </Menu>
+            <MDBBtn onClick={handleClose} gradient="blue">HOME</MDBBtn>
         </div>
     );
 }

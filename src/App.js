@@ -4,6 +4,15 @@ import './App.css';
 import NavBar from './components/NavBar'
 import TransferList from "./components/TransferList";
 import BoxComponent from "./components/BoxComponent";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
+import MainContent from "./components/MainContent";
+import Sidebar from "./components/SideBar";
+import CenterContent from "./components/CenterContent";
 
 
 class App extends PureComponent {
@@ -16,9 +25,8 @@ class App extends PureComponent {
             errorMessage: "",
             navBarValue: "",
             cropOptions: [],
+            boxValue: "",
         };
-
-
     }
 
     componentDidMount(){
@@ -73,10 +81,37 @@ class App extends PureComponent {
         });
     }
 
+    optionCallBack = (data) => {
+        console.log(data);
+        this.setState({
+            boxValue: data,
+        })
+    }
 
     render() {
 
-        var navigate = this.state.navBarValue
+        var navigate = this.state.navBarValue;
+
+        /*
+        * <MainContent cropOptions={this.state.cropOptions}
+                                 errorMessage={this.state.errorMessage}
+                                 isLoaded={this.state.isLoaded}
+                                 headerProps ={this.state.dashboards} className="mt-5"/>*/
+
+        return (
+            <Fragment>
+                <div >
+                    <NavBar callerBack={this.mainCallBack}/>
+
+                    <MainContent cropOptions={this.state.cropOptions}
+                                 errorMessage={this.state.errorMessage}
+                                 isLoaded={this.state.isLoaded}
+                                 headerProps ={this.state.dashboards} className="mt-5"/>
+                </div>
+            </Fragment>
+        )
+
+/*
 
         if(navigate==="Time periods"){
 
@@ -114,7 +149,6 @@ class App extends PureComponent {
                         <h3>Analysis</h3>
                     </div>
                 </Fragment>
-
             )
         }
         else {
@@ -127,7 +161,7 @@ class App extends PureComponent {
                                 cropOptions={this.state.cropOptions}
                                 errorMessage={this.state.errorMessage}
                                 isLoaded={this.state.isLoaded}
-                                          headerProp ={this.state.dashboards}/>
+                                          headerProps ={this.state.dashboards}/>
                         </div>
 
                     </div>
@@ -135,6 +169,8 @@ class App extends PureComponent {
 
             )
         }
+
+ */
 
 
 

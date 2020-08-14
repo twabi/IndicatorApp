@@ -4,26 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import ListGroup from "react-bootstrap/ListGroup";
-import TextField  from "@material-ui/core/TextField";
 import DropdownPage from "./DropdownPage";
 import DropdownGroup from "./DropdownGroup";
-import {
-    MDBDataTable,
-    MDBTable,
-    MDBTableBody,
-    MDBTableHead,
-    MDBCard,
-    MDBCardHeader,
-    MDBCardBody,
-    MDBCardFooter
-} from 'mdbreact';
+import {MDBTable, MDBTableBody, MDBBtn, MDBTableHead, MDBCard, MDBCardHeader, MDBCardBody, MDBCardFooter} from 'mdbreact';
+import Api from "../api";
+import {useHistory} from "react-router";
 
 
 
@@ -115,29 +101,14 @@ const postNewName = (jsonString, id) => {
 
 let now = moment();
 
+
 var date = now.format("YYYY-MM-DD");
 var time = now.format("HH:mm:ss.SSS");
 
 var currentTime = date + "T" + time;
 
 
-
-
 function TransferList(props) {
-
-    var loading = document.getElementById("loadingProgress");
-
-    const classes = useStyles();
-
-    var indicatorArray = props.headerProp;
-    var isLoaded = props.isLoaded;
-    var errorMessage = props.errorMessage;
-    var cropOptions = props.cropOptions;
-
-    const initState = [...indicatorArray];
-    function createData(indicator, indicatorName, existingName, indicatorId) {
-        return { indicator, indicatorName, existingName, indicatorId};
-    }
 
     var cols =  [
         {label: 'Indicator Name',
@@ -160,12 +131,23 @@ function TransferList(props) {
             width: 300,},
     ]
 
-    const initialRows = [];
+    var indicatorArray = props.headerProps;
+    var isLoaded = props.isLoaded;
+    var errorMessage = props.errorMessage;
+    var cropOptions = props.cropOptions;
 
+    console.log(indicatorArray + "-" + props)
+
+    const initState = [...indicatorArray];
+    function createData(indicator, indicatorName, existingName, indicatorId) {
+        return { indicator, indicatorName, existingName, indicatorId};
+    }
+
+    const classes = useStyles();
     const [filterList, setFilterList] = React.useState([])
     const [filterValues, setFilterValues] = React.useState([])
     const [searchValue, setSearchValue] = React.useState("");
-    const [rows, setRows] = React.useState(initialRows)
+    const [rows, setRows] = React.useState([])
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(initState);
     const [right, setRight] = React.useState([]);
@@ -196,10 +178,13 @@ function TransferList(props) {
 
     console.log("loaded: " + isLoaded);
 
+
     useEffect(()=>{
         setLeft( [...indicatorArray.filter(x => !right.includes(x))]);
-        setOptionsCrops([...cropOptions]);
-    }, [cropOptions, indicatorArray, right]);
+        setOptionsCrops(cropOptions);
+    }, [indicatorArray, right]);
+
+
 
 
     const editName = (indicator) => {
@@ -395,7 +380,6 @@ function TransferList(props) {
 
     var filterGroups= ["All", "Program", "Indicator Type",  "Crop"]
     var indicatorProgram = [ "APES", "SAPP", "T1", "T2", "T3", "MET", "Other"]
-    var crops = ["Bananas", "Maize", "Amaranthas", "Pineapple", "Rape", "Rice"]
     var indicatorType = ["Percentage", "Average Area", "Total Area", "Total Number"]
 
 
@@ -524,7 +508,7 @@ function TransferList(props) {
                 {items.map((value) => {
 
                     return (
-                        <ListGroup.Item action className="my-1 border" key={value.id}  onClick={handleToggle(value)}>
+                        <ListGroup.Item action variant="info" className="my-1 border" key={value.id}  onClick={handleToggle(value)}>
                             {['checkbox'].map((type) => (
                                 <div key={type} className="">
 
@@ -589,42 +573,39 @@ function TransferList(props) {
 
                         <Grid item>
                             <Grid container direction="column">
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={handleAllRight}
-                                    disabled={left.length === 0}
-                                    aria-label="move all right">
+
+                                <MDBBtn outline
+                                        size="sm"
+                                        onClick={handleAllRight}
+                                        disabled={left.length === 0}
+                                        color="primary">
                                     ≫
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={handleCheckedRight}
-                                    disabled={leftChecked.length === 0}
-                                    aria-label="move selected right">
+                                </MDBBtn>
+
+                                <MDBBtn outline
+                                        size="sm"
+                                        onClick={handleCheckedRight}
+                                        disabled={leftChecked.length === 0}
+                                        color="primary">
                                     &gt;
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={handleCheckedLeft}
-                                    disabled={rightChecked.length === 0}
-                                    aria-label="move selected left">
+                                </MDBBtn>
+
+                                <MDBBtn outline
+                                        onClick={handleCheckedLeft}
+                                        size="sm"
+                                        disabled={rightChecked.length === 0}
+                                        color="primary">
                                     &lt;
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    className={classes.button}
-                                    onClick={handleAllLeft}
-                                    disabled={right.length === 0}
-                                    aria-label="move all left">
+                                </MDBBtn>
+
+                                <MDBBtn outline
+                                        size="sm"
+                                        onClick={handleAllLeft}
+                                        disabled={right.length === 0}
+                                        color="primary">
                                     ≪
-                                </Button>
+                                </MDBBtn>
+
                             </Grid>
                         </Grid>
                         <MDBCard>
@@ -644,9 +625,7 @@ function TransferList(props) {
                 alignItems="center">
 
                 <Grid container justify="center" alignItems="center" className={classes.another}>
-                    <Button variant="contained" color="primary" onClick={getAllRight}>
-                        Next
-                    </Button>
+                    <MDBBtn onClick={getAllRight} color="primary">Next</MDBBtn>
                 </Grid>
 
                 <Grid container justify="center" border={1} className={classes.selContainer}>
@@ -667,9 +646,8 @@ function TransferList(props) {
                                             <td>{row.indicatorName}</td>
                                             <td id={row.indicatorId}>{row.existingName}</td>
                                             <td>
-                                                <Button variant="contained" color="primary" onClick={() => editName(row.indicator)}>
-                                                    Edit
-                                                </Button>
+                                                <MDBBtn onClick={() => editName(row.indicator)}
+                                                        color="primary">Edit</MDBBtn>
                                             </td>
                                         </tr>)
                                     }
@@ -678,9 +656,9 @@ function TransferList(props) {
                         </MDBCardBody>
                         <MDBCardFooter>
                             <Grid container justify="center" alignItems="center" style={{margin: 10}}>
-                                <Button variant="contained" color="primary" onClick={reloadPage}>
-                                    Done
-                                </Button>
+                                <MDBBtn onClick={reloadPage}
+                                        color="primary">Done</MDBBtn>
+
                             </Grid>
                         </MDBCardFooter>
 

@@ -18,7 +18,7 @@ class NavBar extends React.Component {
 
         return(
             <div>
-                <AppBar position="sticky" >
+                <AppBar position="sticky" className="mb-5">
                     <Toolbar>
                         <div >
                             <Typography variant="title" color="inherit">
@@ -28,6 +28,7 @@ class NavBar extends React.Component {
                         <MenuBar callerBack={this.myCallback} className="float-right">Hello</MenuBar>
                     </Toolbar>
                 </AppBar>
+
             </div>
         )
     }

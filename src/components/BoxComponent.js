@@ -14,6 +14,19 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
+import {
+    MDBBtn,
+    MDBCard,
+    MDBCardBody,
+    MDBCardImage,
+    MDBCardText,
+    MDBCardTitle,
+    MDBCol,
+    MDBContainer,
+    MDBRow
+} from "mdbreact";
+import 'mdbreact/dist/css/mdb.css'
+import {Link} from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -49,9 +62,6 @@ export default function BoxComponent() {
         "  </InputGroup>"
 
 
-
-
-
     const createNewReport = () => {
         console.log("creating the report");
         var div = document.getElementById("myDiv");
@@ -60,23 +70,42 @@ export default function BoxComponent() {
     }
 
     return (
-        <div className={classes.root}>
 
-            <Paper id="myDiv" className={classes.paper}>
-                <Button
-                    variant="contained"
-                    style={{margin: 10}}
-                    onClick={createNewReport}
-                    color="primary">
-                    new report
-                </Button>
-                <Button variant="contained" style={{margin: 10}} color="primary">
-                    edit report
-                </Button>
-                <Button variant="contained" style={{margin: 10}} color="primary">
-                    Delete report
-                </Button>
-            </Paper>
-        </div>
+        <MDBContainer id="myDiv">
+            <MDBRow>
+                <MDBCol md="4">
+                    <MDBCard style={{ width: "22rem" }}>
+                    <MDBCardBody>
+                        <MDBCardTitle>New Report</MDBCardTitle>
+                        <MDBCardText>
+                            Create a new custom report template
+                        </MDBCardText>
+                        <MDBBtn className="text-white" onClick={createNewReport} color="primary">
+                            Go
+                        </MDBBtn>
+                    </MDBCardBody>
+                </MDBCard></MDBCol>
+
+                <MDBCol md="4"><MDBCard style={{ width: "22rem" }}>
+                    <MDBCardBody>
+                        <MDBCardTitle>Edit Report</MDBCardTitle>
+                        <MDBCardText>
+                            Edit an existing report template
+                        </MDBCardText>
+                        <MDBBtn color="primary">Go</MDBBtn>
+                    </MDBCardBody>
+                </MDBCard></MDBCol>
+
+                <MDBCol md="4"><MDBCard style={{ width: "22rem" }}>
+                    <MDBCardBody>
+                        <MDBCardTitle>Delete Report</MDBCardTitle>
+                        <MDBCardText>
+                            Delete an existing report template
+                        </MDBCardText>
+                        <MDBBtn color="primary">Go</MDBBtn>
+                    </MDBCardBody>
+                </MDBCard></MDBCol>
+            </MDBRow>
+        </MDBContainer>
     );
 }
