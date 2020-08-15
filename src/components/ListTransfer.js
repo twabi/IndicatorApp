@@ -29,12 +29,12 @@ function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-export default function CustomTransferList(props) {
+export default function ListTransfer(props) {
 
-    var array = props.indicatorArray;
-    console.log(props.indicatorArray);
+    var array = props.array;
+    console.log(props.array);
 
-    const initState = [...array];
+    const initState = [];
 
     const classes = useStyles();
     const [checked, setChecked] = React.useState([]);
@@ -45,7 +45,11 @@ export default function CustomTransferList(props) {
     const rightChecked = intersection(checked, right);
 
     useEffect(()=>{
-        setLeft( [...array.filter(x => !right.includes(x))]);
+        try{
+            setLeft( [...array.filter(x => !right.includes(x))]);
+        }catch (error){
+            console.log(error)
+        }
 
     }, [array, right]);
 

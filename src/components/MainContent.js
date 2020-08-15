@@ -110,7 +110,9 @@ const MainContent = (props) => {
 
             { showDisplayName ? <TransferList cropOptions={crops} errorMessage={errorText} isLoaded={loaded}
                     headerProps ={indicators}/> : null }
-            { showCustom ? <BoxComponent/>: null }
+            { showCustom ? <BoxComponent cropOptions={crops}
+                                         headerProps ={indicators}
+                                         errorMessage={errorText} />: null }
 
         </div>
 

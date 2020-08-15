@@ -28,7 +28,7 @@ const withBaseUrl = baseUrl => {
         </Router>
     )
 
-    ReactDOM.render(routing, rootElement);
+    ReactDOM.render(<App/>, rootElement);
 };
 
 
