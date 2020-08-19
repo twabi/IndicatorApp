@@ -9,28 +9,81 @@ import CenterContent from "./CenterContent";
 import BoxComponent from "./BoxComponent";
 import App from "../App";
 
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+
 const MainContent = (props) => {
 
     var indicatorArray = props.headerProps;
     var isLoaded = props.isLoaded;
     var errorMessage = props.errorMessage;
     var cropOptions = props.cropOptions;
+    var programGroups = props.programs;
 
     var container = document.getElementById("myDiv");
 
     const [indicators, setIndicators] = React.useState([...indicatorArray]);
+    const [programs, setPrograms] = React.useState([]);
     const [loaded, setLoaded] = React.useState(isLoaded);
     const [errorText, setErrorText] = React.useState(errorMessage);
     const [crops, setCrops] = React.useState([...cropOptions]);
     const [showDisplayName, setshowDisplayName] = React.useState(false);
     const [showCustom, setCustom] = React.useState(false);
+    const [reports, setReports] = React.useState([]);
+    const [reportKeys, setReportKeys] = React.useState([])
 
     React.useEffect(() => {
+
+
         setLoaded(isLoaded);
         setCrops([...cropOptions]);
         setIndicators([...indicatorArray]);
         setErrorText(errorMessage)
-    }, [isLoaded, cropOptions, indicatorArray, errorMessage]);
+        setPrograms([...programGroups]);
+
+
+        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result);
+                var array = []
+                result.map((item) => {
+                    array.push(item);
+
+                    fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${item}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization' : basicAuth,
+                            'Content-type': 'application/json',
+                        },
+                        credentials: "include"
+
+                    })
+                        .then(response => response.json())
+                        .then((result) => {
+
+                            if(reports.includes(result)){
+                                console.log("possible duplication")
+                            }else{
+                                setReports(reports => [...reports, result]);
+                            }
+
+
+                        })
+                })
+                setReportKeys(array);
+
+            });
+
+
+    }, [isLoaded, cropOptions, indicatorArray, errorMessage, programGroups]);
 
 
     const gotoDisplayName = () => {
@@ -111,6 +164,8 @@ const MainContent = (props) => {
             { showDisplayName ? <TransferList cropOptions={crops} errorMessage={errorText} isLoaded={loaded}
                     headerProps ={indicators}/> : null }
             { showCustom ? <BoxComponent cropOptions={crops}
+                                         programs={programs}
+                                         reports={reports}
                                          headerProps ={indicators}
                                          errorMessage={errorText} />: null }
 

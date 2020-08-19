@@ -25,6 +25,7 @@ class App extends PureComponent {
             errorMessage: "",
             navBarValue: "",
             cropOptions: [],
+            programGroups: [],
             boxValue: "",
         };
     }
@@ -53,7 +54,7 @@ class App extends PureComponent {
                 });
             });
 
-        fetch(`https://www.namis.org/namis1/api/optionSets/AsrFCO1n0I3/options.json`, {
+        fetch(`https://www.namis.org/namis1/api/29/dataStore/crops/crops`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -64,13 +65,30 @@ class App extends PureComponent {
         })
             .then(response => response.json())
             .then((result) => {
-                console.log(result);
+                console.log(result[12].name);
                 var optionArray= [];
-                result.options.map((option) => (
-                    optionArray.push(option.displayName)));
+                result.map((option) => (
+                    optionArray.push(option.name)));
                 this.setState({
                     cropOptions : optionArray
                 });
+            });
+
+        fetch(`https://www.namis.org/namis1/api/indicatorGroups.json?paging=false&fields=*`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result.indicatorGroups);
+                this.setState({
+                    programGroups : result.indicatorGroups
+                })
             });
     }
 
@@ -106,6 +124,7 @@ class App extends PureComponent {
                     <MainContent cropOptions={this.state.cropOptions}
                                  errorMessage={this.state.errorMessage}
                                  isLoaded={this.state.isLoaded}
+                                 programs={this.state.programGroups}
                                  headerProps ={this.state.dashboards} className="mt-5"/>
                 </div>
             </Fragment>

@@ -14,6 +14,7 @@ import {
 import 'mdbreact/dist/css/mdb.css'
 import ReportForm from "./ReportForm";
 import {CreateCSSProperties} from "@material-ui/core/styles/withStyles";
+import EditForm from "./EditForm";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+
 
 export default function BoxComponent(props) {
     const classes = useStyles();
@@ -36,20 +37,26 @@ export default function BoxComponent(props) {
     var div = document.getElementById("myDiv");
     const [hideMenu, setHideMenu] = React.useState(false);
     const [showCreateForm, setShowCreateForm] = React.useState(false);
+    const [showEditForm, setShowEditForm] = React.useState(false);
 
     const [crops, setCrops] = React.useState([]);
-    const [indicators, setIndicators] = React.useState([])
+    const [programs, setPrograms] = React.useState([])
+    const [reports, setReports] = React.useState([]);
+
 
     React.useEffect(() => {
-        console.log(props.headerProps);
         setCrops(props.cropOptions);
-        setIndicators(props.headerProps);
-    }, [props.cropOptions, props.headerProps])
+        setPrograms(props.programs);
+        setReports(props.reports)
+
+    }, [props.cropOptions, props.programs, props.reports])
+
 
 
     const buttonCallback = () => {
         setHideMenu(false);
         setShowCreateForm(false);
+        setShowEditForm(false);
     }
 
 
@@ -59,12 +66,20 @@ export default function BoxComponent(props) {
         setShowCreateForm(true);
     }
 
+    const editExistingReport = () => {
+        setHideMenu(true);
+        setShowEditForm(true);
+
+        console.log(reports)
+
+    }
+
     return (
         <div>
-            {!hideMenu ? <MDBContainer id="myDiv">
+            {!hideMenu ? <MDBContainer id="myDiv" className="d-flex justify-content-center">
                 <MDBRow>
-                    <MDBCol md="4">
-                        <MDBCard style={{ width: "22rem" }}>
+                    <MDBCol md="6">
+                        <MDBCard style={{ width: "23rem" }}>
                             <MDBCardBody>
                                 <MDBCardTitle>New Report</MDBCardTitle>
                                 <MDBCardText>
@@ -76,31 +91,24 @@ export default function BoxComponent(props) {
                             </MDBCardBody>
                         </MDBCard></MDBCol>
 
-                    <MDBCol md="4"><MDBCard style={{ width: "22rem" }}>
+                    <MDBCol md="6"><MDBCard style={{ width: "23rem" }}>
                         <MDBCardBody>
                             <MDBCardTitle>Edit Report</MDBCardTitle>
                             <MDBCardText>
                                 Edit an existing report template
                             </MDBCardText>
-                            <MDBBtn color="primary">Go</MDBBtn>
+                            <MDBBtn color="primary" onClick={editExistingReport}>Go</MDBBtn>
                         </MDBCardBody>
                     </MDBCard></MDBCol>
 
-                    <MDBCol md="4"><MDBCard style={{ width: "22rem" }}>
-                        <MDBCardBody>
-                            <MDBCardTitle>Delete Report</MDBCardTitle>
-                            <MDBCardText>
-                                Delete an existing report template
-                            </MDBCardText>
-                            <MDBBtn color="primary">Go</MDBBtn>
-                        </MDBCardBody>
-                    </MDBCard></MDBCol>
                 </MDBRow>
             </MDBContainer>: null}
 
             { showCreateForm ? <ReportForm arrayProps={crops}
-                                           indicatorProps={indicators}
+                                           indicatorProps={programs}
                                            buttonCallback={buttonCallback}/>: null }
+
+            { showEditForm ? <EditForm reportProps={reports} buttonCallback={buttonCallback} /> : null}
 
         </div>
 

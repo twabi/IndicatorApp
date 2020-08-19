@@ -31,8 +31,7 @@ function intersection(a, b) {
 
 export default function ListTransfer(props) {
 
-    var array = props.array;
-    console.log(props.array);
+    var array = props.indicatorArray;
 
     const initState = [];
 
@@ -52,6 +51,8 @@ export default function ListTransfer(props) {
         }
 
     }, [array, right]);
+
+    props.getRightArray(right);
 
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
@@ -93,6 +94,11 @@ export default function ListTransfer(props) {
 
     }
 
+    const getAllRight = () => {
+        console.log(right);
+        props.getRightArray(right);
+    }
+
     const customList = (items) => (
         <Paper className={classes.paper}>
             <ListGroup dense component="div" className="m-2" role="list">
@@ -105,7 +111,7 @@ export default function ListTransfer(props) {
 
                                     <input type="checkbox" className="mx-2"
                                            checked={checked.indexOf(value) !== -1} onChange={handleChange}/>
-                                    {value}
+                                    {value.displayName}
 
                                 </div>
                             ))}

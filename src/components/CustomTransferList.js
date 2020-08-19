@@ -29,10 +29,9 @@ function intersection(a, b) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
 
-export default function CustomTransferList(props) {
+export default function ListTransfer(props) {
 
-    var array = props.indicatorArray;
-    console.log(props.indicatorArray);
+    var array = props.array;
 
     const initState = [...array];
 
@@ -45,9 +44,15 @@ export default function CustomTransferList(props) {
     const rightChecked = intersection(checked, right);
 
     useEffect(()=>{
-        setLeft( [...array.filter(x => !right.includes(x))]);
+        try{
+            setLeft( [...array.filter(x => !right.includes(x))]);
+        }catch (error){
+            console.log(error)
+        }
 
     }, [array, right]);
+
+    props.getCrops(right);
 
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
@@ -61,6 +66,7 @@ export default function CustomTransferList(props) {
 
         setChecked(newChecked);
     };
+
 
     const handleAllRight = () => {
         setRight(right.concat(left));
@@ -88,6 +94,8 @@ export default function CustomTransferList(props) {
     const handleChange = () => {
 
     }
+
+
 
     const customList = (items) => (
         <Paper className={classes.paper}>
@@ -165,7 +173,6 @@ export default function CustomTransferList(props) {
                 <MDBCard>
                     <Grid item>{customList(right)}</Grid>
                 </MDBCard>
-
 
             </Grid>
 
