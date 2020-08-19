@@ -95,7 +95,7 @@ export default function BoxComponent(props) {
                         <MDBCardBody>
                             <MDBCardTitle>Edit Report</MDBCardTitle>
                             <MDBCardText>
-                                Edit an existing report template
+                                Edit or delete an existing report template
                             </MDBCardText>
                             <MDBBtn color="primary" onClick={editExistingReport}>Go</MDBBtn>
                         </MDBCardBody>
