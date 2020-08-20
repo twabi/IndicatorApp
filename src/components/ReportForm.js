@@ -8,28 +8,6 @@ import {resolveToLocation} from "react-router-dom/modules/utils/locationUtils";
 const moment = require('moment')
 
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
-const postNewReport = (jsonString, id) => {
-
-    fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${id}`, {
-        method: 'POST',
-        body: JSON.stringify(jsonString),
-        headers: {
-            'Authorization' : basicAuth,
-            'Content-type': 'application/json',
-        },
-
-        credentials: "include"
-
-    }).then(response => {
-            console.log(response);
-            alert("Report created successfully");
-        }).then(result =>{
-        window.location.reload(false);
-    }).catch(error => {
-            alert("oops an error occurred: " + error)
-    })
-
-};
 
 let now = moment();
 
@@ -58,6 +36,29 @@ const FormPage = (props) => {
 
     }, [props.arrayProps, props.indicatorProps])
 
+
+    const postNewReport = (jsonString, id) => {
+
+        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${id}`, {
+            method: 'POST',
+            body: JSON.stringify(jsonString),
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+
+            credentials: "include"
+
+        }).then(response => {
+            console.log(response);
+            alert("Report created successfully");
+        }).then(result =>{
+            handleButton()
+        }).catch(error => {
+            alert("oops an error occurred: " + error)
+        })
+
+    };
 
     const handleButton = () => {
         props.buttonCallback();
@@ -142,15 +143,6 @@ const FormPage = (props) => {
 
 
     }
-
-    const ShowFields = () => (
-        <div>
-
-            {textfields.map((item) => (
-                <li> {item}</li>
-            ))}
-        </div>
-    )
 
     return (
         <div>
