@@ -27,7 +27,8 @@ class App extends PureComponent {
             cropOptions: [],
             programGroups: [],
             boxValue: "",
-            orgUnits: []
+            orgUnits: [],
+            periodTypes: [],
         };
     }
 
@@ -111,6 +112,23 @@ class App extends PureComponent {
                     programGroups : result.indicatorGroups
                 })
             });
+
+        fetch(`https://www.namis.org/namis1/api/periodTypes.json?paging=false&fields=*`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result.periodTypes);
+                this.setState({
+                    periodTypes : result.periodTypes
+                })
+            });
     }
 
     mainCallBack = (dataFromChild) => {
@@ -138,6 +156,7 @@ class App extends PureComponent {
                                  errorMessage={this.state.errorMessage}
                                  isLoaded={this.state.isLoaded}
                                  organizationalUnits={this.state.orgUnits}
+                                 periods={this.state.periodTypes}
                                  navBarValue={this.state.navBarValue}
                                  programs={this.state.programGroups}
                                  headerProps ={this.state.dashboards} className="mt-5"/>

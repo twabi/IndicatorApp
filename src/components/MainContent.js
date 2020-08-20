@@ -20,6 +20,7 @@ const MainContent = (props) => {
     var cropOptions = props.cropOptions;
     var programGroups = props.programs;
     var units = props.organizationalUnits
+    var pers = props.periods;
 
     console.log("units: " + units)
 
@@ -38,6 +39,7 @@ const MainContent = (props) => {
     const [showHome, setShowHome] = React.useState(true);
     const [btnPressed, setBtnPressed] = React.useState(false);
     const [orgUnits, setOrgUnits] = React.useState(units);
+    const [periods, setPeriods] = React.useState(pers);
 
     React.useEffect(() => {
 
@@ -48,6 +50,7 @@ const MainContent = (props) => {
         setErrorText(errorMessage)
         setPrograms([...programGroups]);
         setOrgUnits([...units])
+        setPeriods([...pers])
 
 
         fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
@@ -196,7 +199,8 @@ const MainContent = (props) => {
                                          headerProps ={indicators}
                                          errorMessage={errorText} />: null }
 
-            { showAnalysis ? <Analysis reportProps={reports} organization={orgUnits} buttonCallback={homeCallback}/> : null}
+            { showAnalysis ? <Analysis reportProps={reports} periodProps={periods}
+                                       organization={orgUnits} buttonCallback={homeCallback}/> : null}
 
         </div>
 
