@@ -108,7 +108,10 @@ export default function BoxComponent(props) {
                                            indicatorProps={programs}
                                            buttonCallback={buttonCallback}/>: null }
 
-            { showEditForm ? <EditForm reportProps={reports} buttonCallback={buttonCallback} /> : null}
+            { showEditForm ? <EditForm reportProps={reports}
+                                       arrayProps={crops}
+                                       indicatorProps={programs}
+                                       buttonCallback={buttonCallback} /> : null}
 
         </div>
 

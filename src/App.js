@@ -65,7 +65,6 @@ class App extends PureComponent {
         })
             .then(response => response.json())
             .then((result) => {
-                console.log(result[12].name);
                 var optionArray= [];
                 result.map((option) => (
                     optionArray.push(option.name)));

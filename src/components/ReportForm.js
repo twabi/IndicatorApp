@@ -89,17 +89,6 @@ const FormPage = (props) => {
         setDescription(value)
     }
 
-    const handleCropNames = () => {
-        var names = [];
-        for(var i=0; i<textfields.length; i++){
-            var field = document.getElementById(i);
-            console.log(field.value);
-            names.push(field.value);
-        }
-
-        //setCrops(names);
-
-    }
 
     const getRightCropArray = (data) => {
         setSelectedCrops(data);

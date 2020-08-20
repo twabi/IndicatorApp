@@ -291,10 +291,6 @@ function TransferList(props) {
             // If the search bar isn't empty
             if (value !== "") {
                 // Assign the original list to currentList
-
-
-
-
                 // Use .filter() to determine which items should be displayed
                 // based on the search terms
                 newList = currentList.filter(item => {
@@ -378,7 +374,7 @@ function TransferList(props) {
         window.location.reload(false);
     }
 
-    var filterGroups= ["All", "Program", "Indicator Type",  "Crop"]
+    var filterGroups= ["All", "Program", "Indicator Type",  " "]
     var indicatorProgram = [ "APES", "SAPP", "T1", "T2", "T3", "MET", "Other"]
     var indicatorType = ["Percentage", "Average Area", "Total Area", "Total Number"]
 
