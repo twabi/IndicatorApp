@@ -8,6 +8,7 @@ import Sidebar from "./SideBar";
 import CenterContent from "./CenterContent";
 import BoxComponent from "./BoxComponent";
 import App from "../App";
+import Analysis from "./Analysis";
 
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
@@ -18,6 +19,9 @@ const MainContent = (props) => {
     var errorMessage = props.errorMessage;
     var cropOptions = props.cropOptions;
     var programGroups = props.programs;
+    var units = props.organizationalUnits
+
+    console.log("units: " + units)
 
     var container = document.getElementById("myDiv");
 
@@ -29,7 +33,11 @@ const MainContent = (props) => {
     const [showDisplayName, setshowDisplayName] = React.useState(false);
     const [showCustom, setCustom] = React.useState(false);
     const [reports, setReports] = React.useState([]);
-    const [reportKeys, setReportKeys] = React.useState([])
+    const [reportKeys, setReportKeys] = React.useState([]);
+    const [showAnalysis, setShowAnalysis] = React.useState(false);
+    const [showHome, setShowHome] = React.useState(true);
+    const [btnPressed, setBtnPressed] = React.useState(false);
+    const [orgUnits, setOrgUnits] = React.useState(units);
 
     React.useEffect(() => {
 
@@ -39,6 +47,7 @@ const MainContent = (props) => {
         setIndicators([...indicatorArray]);
         setErrorText(errorMessage)
         setPrograms([...programGroups]);
+        setOrgUnits([...units])
 
 
         fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
@@ -83,17 +92,35 @@ const MainContent = (props) => {
             });
 
 
-    }, [isLoaded, cropOptions, indicatorArray, errorMessage, programGroups]);
+    }, [units]);
+
+    const homeCallback = () => {
+        setShowHome(true)
+        setshowDisplayName(false);
+        setCustom(false);
+        setShowAnalysis(false);
+    }
 
 
     const gotoDisplayName = () => {
-        container.innerHTML = "";
+        setShowHome(false)
         setshowDisplayName(true);
+        setCustom(false);
+        setShowAnalysis(false);
     }
 
     const gotoCustomReports = () => {
-        container.innerHTML = "";
+        setShowHome(false)
         setCustom(true);
+        setshowDisplayName(false)
+        setShowAnalysis(false);
+    }
+
+    const gotoAnalysis = () => {
+        setShowHome(false)
+        setShowAnalysis(true);
+        setshowDisplayName(false);
+        setCustom(false)
     }
 
 
@@ -101,7 +128,7 @@ const MainContent = (props) => {
 
         <div >
 
-            <MDBContainer className="pl-5" id="myDiv">
+            { showHome ? <MDBContainer className="pl-5" id="myDiv">
                 <MDBRow className="my-5 p-2">
                     <MDBCol md="4" className="mx-5">
                         <MDBCard style={{ width: "22rem" }}>
@@ -137,10 +164,10 @@ const MainContent = (props) => {
                             <MDBCardBody>
                                 <MDBCardTitle>Analysis</MDBCardTitle>
                                 <MDBCardText>
-                                    Using your own custom made report templates, get the analysis and visualisations
+                                    Using your own custom made report templates, get the analysis
                                     of the indicators in charts and tables.
                                 </MDBCardText>
-                                <MDBBtn color="primary">Go</MDBBtn>
+                                <MDBBtn color="primary" onClick={gotoAnalysis}>Go</MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -159,7 +186,7 @@ const MainContent = (props) => {
 
                 </MDBRow>
 
-            </MDBContainer>
+            </MDBContainer> : null}
 
             { showDisplayName ? <TransferList cropOptions={crops} errorMessage={errorText} isLoaded={loaded}
                     headerProps ={indicators}/> : null }
@@ -168,6 +195,8 @@ const MainContent = (props) => {
                                          reports={reports}
                                          headerProps ={indicators}
                                          errorMessage={errorText} />: null }
+
+            { showAnalysis ? <Analysis reportProps={reports} organization={orgUnits} buttonCallback={homeCallback}/> : null}
 
         </div>
 

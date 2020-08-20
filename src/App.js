@@ -27,6 +27,7 @@ class App extends PureComponent {
             cropOptions: [],
             programGroups: [],
             boxValue: "",
+            orgUnits: []
         };
     }
 
@@ -73,6 +74,27 @@ class App extends PureComponent {
                 });
             });
 
+
+        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result);
+                this.setState({
+                    orgUnits : result.organisationUnits
+                });
+
+            });
+
+
+
         fetch(`https://www.namis.org/namis1/api/indicatorGroups.json?paging=false&fields=*`, {
             method: 'GET',
             headers: {
@@ -98,16 +120,8 @@ class App extends PureComponent {
         });
     }
 
-    optionCallBack = (data) => {
-        console.log(data);
-        this.setState({
-            boxValue: data,
-        })
-    }
-
     render() {
 
-        var navigate = this.state.navBarValue;
 
         /*
         * <MainContent cropOptions={this.state.cropOptions}
@@ -123,6 +137,8 @@ class App extends PureComponent {
                     <MainContent cropOptions={this.state.cropOptions}
                                  errorMessage={this.state.errorMessage}
                                  isLoaded={this.state.isLoaded}
+                                 organizationalUnits={this.state.orgUnits}
+                                 navBarValue={this.state.navBarValue}
                                  programs={this.state.programGroups}
                                  headerProps ={this.state.dashboards} className="mt-5"/>
                 </div>

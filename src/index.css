@@ -45,6 +45,15 @@ code {
   padding: 10px;
 }
 
+.dropdown-menu{
+  min-width:inherit
+}
+
+.myDropDown {
+  width: 100%;
+  min-width:inherit;
+}
+
 .mx-5 {
   margin-right: 16px;
   margin-left: 6px;
