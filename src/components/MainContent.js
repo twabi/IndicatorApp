@@ -130,7 +130,7 @@ const MainContent = (props) => {
 
             { showHome ? <MDBContainer className="pl-5" id="myDiv">
                 <MDBRow className="my-5 p-2">
-                    <MDBCol md="4" className="mx-5">
+                    <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
                             <MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Mockups/Lightbox/Thumbnail/img%20(67).jpg" waves />
                             <MDBCardBody>
@@ -142,7 +142,7 @@ const MainContent = (props) => {
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
-                    <MDBCol md="4" className="mx-5">
+                    <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
                             <MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" waves />
                             <MDBCardBody>
@@ -158,7 +158,7 @@ const MainContent = (props) => {
                 </MDBRow>
 
                 <MDBRow className="my-5 p-2">
-                    <MDBCol md="4" className="mx-5">
+                    <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
                             <MDBCardImage className="img-fluid" style={{ height: '12rem' }} src="https://mdbootstrap.com/img/Photos/Slides/img%20(70).jpg" waves />
                             <MDBCardBody>
@@ -171,7 +171,7 @@ const MainContent = (props) => {
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
-                    <MDBCol md="4" className="mx-5">
+                    <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
                             <MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20%28131%29.jpg" waves />
                             <MDBCardBody>
@@ -206,4 +206,4 @@ const MainContent = (props) => {
     )
 }
 
-export default MainContent;
+export default React.memo(MainContent);

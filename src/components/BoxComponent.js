@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function BoxComponent(props) {
+function BoxComponent(props) {
     const classes = useStyles();
 
     var div = document.getElementById("myDiv");
@@ -118,3 +118,5 @@ export default function BoxComponent(props) {
 
     );
 }
+
+export default React.memo(BoxComponent);
