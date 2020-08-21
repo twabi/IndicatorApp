@@ -99,7 +99,7 @@ export default function ListTransfer(props) {
 
     const customList = (items) => (
         <Paper className={classes.paper}>
-            <ListGroup dense component="div" className="m-2" role="list">
+            <ListGroup dense="true" component="div" className="m-2" role="list">
                 {items.map((value, i) => {
 
                     return (
