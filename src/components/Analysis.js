@@ -1,5 +1,15 @@
 import React from "react";
-import {MDBBox, MDBBtn, MDBCard, MDBCardBody, MDBCardText, MDBCardTitle, MDBCol, MDBInput} from "mdbreact";
+import {
+    MDBBox,
+    MDBBtn,
+    MDBCard,
+    MDBCardBody,
+    MDBCardHeader,
+    MDBCardText,
+    MDBCardTitle,
+    MDBCol,
+    MDBInput
+} from "mdbreact";
 import CustomTransferList from "./CustomTransferList";
 import ListTransfer from "./ListTransfer";
 import { MDBDropdown, MDBDropdownToggle, MDBBtnGroup, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
@@ -15,6 +25,8 @@ const ShowAnalysis = (props) => {
 
     var initState = props.organization;
     var initReport = props.reportProps;
+    var initIndicators = props.indicators;
+    var initCrops = props.cropOptions;
     var financial = [
           "THIS_FINANCIAL_YEAR",
         "LAST_FINANCIAL_YEAR", "LAST_5_FINANCIAL_YEARS"]
@@ -22,14 +34,16 @@ const ShowAnalysis = (props) => {
     var max = new Date().getFullYear();
     var min = max - 100;
 
-    var allYears = [];
+    var myArray = [];
 
     for(var i=min; i<=max; i++){
-        allYears.push(i.toString());
+        myArray.push(i.toString());
     }
-    console.log(allYears);
 
-    console.log(max);
+    var allYears = myArray.reverse();
+
+    console.log(initIndicators);
+
 
     var weeks = [ "THIS_WEEK", "LAST_WEEK", "LAST_4_WEEKS", "LAST_12_WEEKS", "LAST_52_WEEKS"]
     var quarters = ["THIS_QUARTER", "LAST_QUARTER", "QUARTERS_THIS_YEAR", "QUARTERS_LAST_YEAR", "LAST_4_QUARTERS",]
@@ -42,8 +56,8 @@ const ShowAnalysis = (props) => {
     const [reports, setReports] = React.useState(initReport);
     const [orgUnits, setOrgUnits] = React.useState(initState);
     const [searchValue, setSearchValue] = React.useState("");
-    const [reportValue, setReportValue] =React.useState("")
-    const [periodTypes, setPeriodTypes] =React.useState([])
+    const [reportValue, setReportValue] = React.useState("")
+    const [periodTypes, setPeriodTypes] = React.useState([])
     const [key, setKey] = React.useState('home');
     const [relativeTime, setRelativePeriods] = React.useState([]);
     const [relCategories, setRelCategories] = React.useState(array2);
@@ -52,6 +66,14 @@ const ShowAnalysis = (props) => {
     const [relYear, setRelYear] = React.useState("Year");
     const [fixYear, setFixYear] = React.useState("Year");
     const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
+    const [selectedReport, setSelectedReport] =  React.useState({})
+    const [selectedOrgUnit, setSelectedOrgUnit] = React.useState({})
+    const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
+    const [selectedReltime, setSelectedReltime] = React.useState("")
+    const [selectedRelYear, setSelectedRelYear] = React.useState("");
+    const [selectedFixedYear, setSelectedFixedYear] = React.useState("");
+    const [indicators, setIndicators] = React.useState(initIndicators);
+    const [allCrops, setAllCrops] = React.useState(initCrops)
 
     console.log(props.organization);
 
@@ -60,7 +82,9 @@ const ShowAnalysis = (props) => {
         setReports(props.reportProps);
         setOrgUnits(props.organization)
         setPeriodTypes(props.periodProps)
-    }, [props.organization, props.periodProps, props.reportProps])
+        setIndicators(props.indicators);
+        setAllCrops(props.cropOptions);
+    }, [props.cropOptions, props.indicators, props.organization, props.periodProps, props.reportProps])
 
     console.log(reports.length);
 
@@ -147,11 +171,13 @@ const ShowAnalysis = (props) => {
     }
 
     const handleReportsClick = (value) => {
-        setReportValue(value);
+        setReportValue(value.title);
+        setSelectedReport(value);
     }
 
     const handleOrgUnitClick = (value) => {
-        setSearchValue(value);
+        setSearchValue(value.name);
+        setSelectedOrgUnit(value)
     }
 
 
@@ -176,18 +202,65 @@ const ShowAnalysis = (props) => {
 
     const handleRelTime = (value) =>{
         setRelTimeTitle(value)
+        setSelectedReltime(value);
     }
 
     const handleRelYear = (value) => {
         setRelYear(value)
+        setSelectedRelYear(value)
     }
 
     const handleFixedYear = (value) => {
         setFixYear(value);
+        setSelectedFixedYear(value)
     }
 
     const handleFixedTime = (value) => {
         setFixPeriodType(value)
+        setSelectedFixedtime(value)
+    }
+
+    const handleAnalyze = () =>{
+
+        console.log(selectedReport.programGroups[0].indicators[0].id)
+        console.log(reportValue)
+
+        var cropIndicators = []
+        for(var i=0; i<indicators.length; i++){
+            for(var j=0; j<selectedReport.programGroups.length; j++){
+                for(var m=0; m<selectedReport.programGroups[j].indicators.length; m++){
+                    if(indicators[i].id === selectedReport.programGroups[j].indicators[m].id){
+                        for(var y=0; y<selectedReport.crops.length; y++){
+                            if(indicators[i].name.includes(selectedReport.crops[y])){
+                                console.log("this is the crop: " + selectedReport.crops[y])
+                                console.log("this is the indicator: " + indicators[i].name)
+                                cropIndicators.push(indicators[i]);
+                            } else {
+                                console.log("found no matching indicators")
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        console.log(cropIndicators)
+        /*
+                if(selectedFixedtime.length === 0 || false){
+                    console.log(selectedReport);
+                    console.log(selectedOrgUnit);
+                    console.log(selectedRelYear);
+                    console.log(selectedReltime)
+                } else if(selectedReltime.length === 0 || false){
+                    console.log(selectedReport);
+                    console.log(selectedOrgUnit);
+                    console.log(selectedFixedYear);
+                    console.log(selectedFixedtime);
+                }
+
+                 */
+
     }
 
     return (
@@ -234,7 +307,7 @@ const ShowAnalysis = (props) => {
 
                                                     {reports.slice(0, (reports.length/2)).map((report, index) => (
 
-                                                        <MDBDropdownItem onClick={()=>{handleReportsClick(report.title)}} key={index}>
+                                                        <MDBDropdownItem onClick={()=>{handleReportsClick(report)}} key={index}>
                                                             {report.title}
                                                         </MDBDropdownItem>
                                                     ))}
@@ -258,7 +331,7 @@ const ShowAnalysis = (props) => {
                                                 </MDBDropdownToggle>
                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
                                                     {orgUnits.map((item, index) => (
-                                                        <MDBDropdownItem onClick={()=>{handleOrgUnitClick(item.name)}} key={index}>
+                                                        <MDBDropdownItem onClick={()=>{handleOrgUnitClick(item)}} key={index}>
                                                             {item.name}
                                                         </MDBDropdownItem>
                                                     ))}
@@ -275,6 +348,9 @@ const ShowAnalysis = (props) => {
 
                                         <MDBCol className="mb-5 width-custom" md="13">
                                             <MDBCard display="flex" justifyContent="center" className="text-xl-center w-100 width-custom">
+                                                <MDBCardHeader tag="h6" className="text-center font-weight-bold text-uppercase py-4">
+                                                    Select Period Type
+                                                </MDBCardHeader>
 
                                                 <MDBCardBody>
 
@@ -408,7 +484,7 @@ const ShowAnalysis = (props) => {
                             </MDBContainer>
 
                             <div className="text-center py-4 mt-2">
-                                <MDBBtn color="cyan" className="text-white">
+                                <MDBBtn color="cyan" onClick={handleAnalyze} className="text-white">
                                     Analyze
                                 </MDBBtn>
                             </div>

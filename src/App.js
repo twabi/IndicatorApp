@@ -67,7 +67,7 @@ class App extends PureComponent {
         })
             .then(response => response.json())
             .then((result) => {
-                var optionArray= [];
+                var optionArray= ["Apples", "Amaranthas", "Avocado", "Banana"];
                 result.map((option) => (
                     optionArray.push(option.name)));
                 this.setState({
@@ -76,7 +76,7 @@ class App extends PureComponent {
             });
 
 
-        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name`, {
+        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,

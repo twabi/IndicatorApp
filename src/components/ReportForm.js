@@ -9,7 +9,7 @@ import {
     MDBCardBody,
     MDBCardHeader,
     MDBTable,
-    MDBTableHead, MDBTableBody, MDBCardFooter
+    MDBTableHead, MDBTableBody, MDBCardFooter, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem
 } from 'mdbreact';
 import { MDBCardImage, MDBCardTitle, MDBCardText, MDBIcon } from 'mdbreact';
 import ListTransfer from "./ListTransfer";
@@ -42,14 +42,32 @@ const FormPage = (props) => {
     const [selectedCrops, setSelectedCrops] = React.useState([])
     const [description, setDescription] = React.useState("");
     const [showPreview, setShowPreview] = React.useState(false);
-    const [groupTitles, setGroupTitles] = React.useState([]);
-    const [cropTitle, setCropTitle] = React.useState("Crops");
+    const [rowHeaders, setRowHeaders] = React.useState([]);
+    const [colHeaders, setColHeaders] = React.useState([]);
+    const [selectedIndicators, setSelectedIndicators] = React.useState([]);
+    const [initIndicators, setInitIndicators] = React.useState([])
+    const [cellValues, setCellValues] = React.useState([])
 
     React.useEffect(() => {
         setPrograms(props.indicatorProps)
         setCrops(props.arrayProps);
 
     }, [props.arrayProps, props.indicatorProps])
+
+
+    React.useEffect(()=>{
+        var indicators = [];
+        groups.map((group) => (
+            group.indicators.map((item) => (
+                indicators.push(fetchIndicator(item.id))
+            )))
+        )
+
+        if(!indicators.length == 0){
+            setSelectedIndicators(indicators)
+            setInitIndicators(indicators)
+        }
+    }, [groups])
 
 
     const postNewReport = (jsonString, id) => {
@@ -73,6 +91,35 @@ const FormPage = (props) => {
             alert("oops an error occurred: " + error)
         })
 
+
+    };
+
+
+    const fetchIndicator = (id) => {
+
+        var array = {"name" : "", "id" : ""};
+
+        fetch(`https://www.namis.org/namis1/api/indicators/${id}.json?paging=false&fields=id&fields=name`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+
+            credentials: "include"
+
+        }).then(response => response.json())
+            .then(result =>{
+                //array.push(result);
+                array.name = result.name
+                array.id = result.id
+
+        }).catch(error => {
+            //alert("oops an error occurred: " + error)
+        })
+
+        return array;
+
     };
 
     const handleButton = () => {
@@ -86,10 +133,10 @@ const FormPage = (props) => {
 
         var numbers = []
         for(var i=0; i<value; i++){
-            numbers.push(i);
+            numbers.push({"name":"row header", "id":"rowheader"+i+"", });
         }
 
-        settextfields(numbers)
+        setRowHeaders(numbers);
 
     }
 
@@ -99,6 +146,12 @@ const FormPage = (props) => {
 
     const handleIndicatorNumber = ({target : {value}}) => {
         setIndicatorNumber(value);
+        var array =[];
+        for(var i=0; i<value; i++){
+            array.push({"name":"Col Header", "id" : "colheader"+i+"",});
+        }
+
+        setColHeaders(array)
     }
 
     const handleReportDesc = ({target : {value}}) => {
@@ -118,6 +171,8 @@ const FormPage = (props) => {
 
     const getRightArray = (data) => {
         setGroups(data);
+        //console.log(data);
+
     }
 
     function reloadPage() {
@@ -126,21 +181,20 @@ const FormPage = (props) => {
 
     const editProgramNames = (program) => {
         var newName = prompt("enter new cell name");
-        var tableCell = document.getElementById(program.displayName);
+        var tableCell = document.getElementById(program.id);
 
         if (newName == null || newName === "") {
             //console.log(dataTables)
 
         } else {
-            console.log(program.displayName+ "-" + newName);
             tableCell.innerHTML = newName;
-            program.displayName = newName;
+            program.name = newName;
         }
     }
 
     const editCropNames = (program) => {
         var newName = prompt("enter new cell name");
-        var tableCell = document.getElementById(program);
+        var tableCell = document.getElementById(program.id);
 
 
         if (newName == null || newName === "") {
@@ -148,52 +202,108 @@ const FormPage = (props) => {
             //console.log(dataTables)
 
         } else {
-            console.log(program+ "-" + newName);
             tableCell.innerHTML = newName;
-            setCropTitle(newName);
+            program.name = newName
         }
     }
 
 
     const handleSubmit = () => {
 
+        console.log(colHeaders);
+        console.log(rowHeaders);
+        console.log(cellValues);
 
-        if((groups.length === 0) || (crops.length === 0) || (title === "") || indicatorNumber === 0){
+
+
+        if((groups.length === 0) || (cropNumber === 0) || (title === "") || indicatorNumber === 0){
             alert("some fields have been left empty. Please fill them up")
         } else {
 
-            if (((indicatorNumber > groups.length) || (indicatorNumber < groups.length))) {
-
-                alert("you've selected more or less indicator groups than the columns indicated! \n " +
-                    "please make sure your column number equals the number of selected indicator groups")
-
-            } else if (((cropNumber > selectedCrops.length) || (cropNumber < selectedCrops.length))) {
-
-                alert("you've selected more or less crops than the rows indicated! \n " +
-                    "please make sure your row number equals the number of selected crops")
-            } else {
-
-                var id = title + "-" + currentTime;
-                var payload = {
-                    "id": id,
-                    "title": title,
-                    "description": description,
-                    "rows": cropNumber,
-                    "columns": indicatorNumber,
-                    "programGroups": groups,
-                    "crops": selectedCrops,
-                    "cropTitle" : cropTitle,
-                }
-
-                console.log(JSON.stringify(payload));
-                postNewReport(payload, id);
-
+            var id = title + "-" + currentTime;
+            var payload = {
+                "id": id,
+                "title": title,
+                "description": description,
+                "rows": cropNumber,
+                "columns": indicatorNumber,
+                "columnHeaders": colHeaders,
+                "rowHeaders": rowHeaders,
+                "cellData" : cellValues,
             }
 
+            console.log(JSON.stringify(payload));
+            postNewReport(payload, id);
+
+
         }
+
+
     }
 
-    const ReportPreview = (programList, cropList) => (
+    const handleItemClick = (indicator, id) => {
+        //setInput(indicator.name);
+        var sear = document.getElementById(id);
+        sear.value = indicator.name;
+        setSelectedIndicators(initIndicators);
+
+        var cell = {"id" : id, "indicator" : indicator}
+
+        setCellValues(cellValues => [...cellValues, cell]);
+
+        console.log(id)
+
+    }
+
+    const handleChange = (id) => {
+        var input = document.getElementById(id)
+        var searchValue = input.value;
+        console.log(searchValue);
+
+        handleSearch(searchValue, id);
+    }
+
+    function handleSearch(value, id) {
+
+        var input = document.getElementById(id)
+        input.value = value;
+
+        // Set captured value to input
+        //setInput(value)
+
+        // Variable to hold the original version of the list
+        let currentList = [];
+        // Variable to hold the filtered list before putting into state
+        let newList = [];
+
+        // If the search bar isn't empty
+        if (value !== "") {
+            // Assign the original list to currentList
+            currentList = initIndicators;
+
+            // Use .filter() to determine which items should be displayed
+            // based on the search terms
+            newList = currentList.filter(item => {
+                // change current item to lowercase
+                const lc = item.name.toLowerCase();
+                // change search term to lowercase
+                const filter = value.toLowerCase();
+                // check to see if the current list item includes the search term
+                // If it does, it will be added to newList. Using lowercase eliminates
+                // issues with capitalization in search terms and search content
+                return lc.includes(filter);
+            });
+        } else {
+            // If the search bar is empty, set newList to original task list
+            newList = selectedIndicators;
+        }
+
+
+        // Set the filtered state based on what our rules added to newList
+        setSelectedIndicators(newList);
+    }
+
+    const ReportPreview = (programList, cropList, indicatorList) => (
         <MDBCard >
             <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
                 Report Preview
@@ -203,18 +313,10 @@ const FormPage = (props) => {
                 <MDBTable striped bordered responsive>
                     <MDBTableHead>
                         <tr>
-                            <th >
-                                <div id="cropHeader">
-                                    Crops
-                                </div>
-                                <MDBBtn color="primary" onClick={() => editCropNames("cropHeader")}>
-                                    edit
-                                </MDBBtn>
-                            </th>
                             {programList.map((item, key) => (
                                 <th key={key} >
-                                    <div id={item.displayName}>
-                                        {item.displayName}
+                                    <div id={item.id}>
+                                        {item.name}
                                     </div>
                                     <MDBBtn onClick={() => editProgramNames(item)}
                                             color="primary">edit</MDBBtn>
@@ -226,12 +328,41 @@ const FormPage = (props) => {
                     </MDBTableHead>
                     <MDBTableBody>
                         {cropList.map((row, key) => (
-                            <tr key={key} id={key}>
+                            <tr key={key} >
                                 <td key={key}>
-                                    <div id={row}>
-                                        {row}
+                                    <div id={row.id}>
+                                        {row.name}
                                     </div>
+                                    <MDBBtn onClick={() => editCropNames(row)}
+                                            color="primary">edit</MDBBtn>
                                 </td>
+
+                                {programList.slice(1, programList.length).map((item, int) => (
+                                    <td key={int}>
+
+                                        <MDBDropdown key={int} className="myDropDown">
+                                            <MDBDropdownToggle  caret color="primary">
+                                                <input id={"cell" +int+"-"+key} className="form-control myDropDown"
+                                                       type="text"
+                                                       placeholder="insert indicator"
+                                                       onChange={()=>{handleChange("cell" +int+"-"+key)}}
+                                                       aria-label="Search" />
+                                            </MDBDropdownToggle>
+                                            <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
+
+                                                {indicatorList.map((indicator, index) => (
+
+                                                    <MDBDropdownItem key={index} onClick={()=>handleItemClick(indicator, "cell" +int+"-"+key)}>
+                                                        {indicator.name}
+                                                    </MDBDropdownItem>
+                                                ))}
+                                            </MDBDropdownMenu>
+                                        </MDBDropdown>
+
+
+                                    </td>
+                                ))}
+
                             </tr>)
                         )}
                     </MDBTableBody>
@@ -313,12 +444,6 @@ const FormPage = (props) => {
                                                 success="right"
                                             />
 
-
-                                            <div className="mt-5">
-                                                <p className="text-center">Select crops to be on the report</p>
-                                                <CustomTransferList getCrops={getRightCropArray} array={crops}/>
-                                            </div>
-
                                             <div className="mt-5">
                                                 <p className="text-center">Select indicator groups to be on the report</p>
                                                 <ListTransfer getRightArray={getRightArray} indicatorArray={programs}/>
@@ -335,7 +460,7 @@ const FormPage = (props) => {
 
                             {showPreview ? <MDBCard className="mt-2">
                                 <Grid item>
-                                    {ReportPreview(groups, selectedCrops)}
+                                    {ReportPreview(colHeaders, rowHeaders, selectedIndicators)}
                                 </Grid>
                             </MDBCard>: null}
                         </MDBCol>

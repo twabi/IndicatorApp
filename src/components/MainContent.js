@@ -199,7 +199,9 @@ const MainContent = (props) => {
                                          headerProps ={indicators}
                                          errorMessage={errorText} />: null }
 
-            { showAnalysis ? <Analysis reportProps={reports} periodProps={periods}
+            { showAnalysis ? <Analysis reportProps={reports} indicators={indicators}
+                                       cropOptions={crops}
+                                       periodProps={periods}
                                        organization={orgUnits} buttonCallback={homeCallback}/> : null}
 
         </div>
