@@ -91,7 +91,7 @@ const EditForm = (props) => {
 
             <hr className='hr-light' />
 
-        {showEditMenu ?<MDBBox className="ml-5" display="flex" justifyContent="center" >
+        {showEditMenu ? <MDBBox className="ml-5" display="flex" justifyContent="center" >
                 <MDBRow>
 
                     {reports.slice(0, (reports.length/2)).map((report, index) => (

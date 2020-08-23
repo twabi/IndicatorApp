@@ -3,29 +3,57 @@ import {
     MDBBox,
     MDBBtn,
     MDBCard,
-    MDBCardBody,
+    MDBCardBody, MDBCardFooter,
     MDBCardHeader,
     MDBCardText,
     MDBCardTitle,
     MDBCol,
-    MDBInput
+    MDBInput, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
-import CustomTransferList from "./CustomTransferList";
-import ListTransfer from "./ListTransfer";
+
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
 import { MDBDropdown, MDBDropdownToggle, MDBBtnGroup, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
 import { MDBContainer, MDBRow } from "mdbreact";
-import PeriodTabs from "./PeriodTabs";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from '@material-ui/core/styles';
+import FormControl from '@material-ui/core/FormControl';
+
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+        margin: theme.spacing(0.5),
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+}));
 
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+
+const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
 
 const ShowAnalysis = (props) => {
-
+    const classes = useStyles();
     var initState = props.organization;
     var initReport = props.reportProps;
-    var initIndicators = props.indicators;
     var initCrops = props.cropOptions;
     var financial = [
           "THIS_FINANCIAL_YEAR",
@@ -35,15 +63,17 @@ const ShowAnalysis = (props) => {
     var min = max - 100;
 
     var myArray = [];
+    var array3 = [];
+    for(var i=0; i<54; i++){
+        array3.push(i.toString())
+    }
+    var weekNumbers = array3;
 
     for(var i=min; i<=max; i++){
         myArray.push(i.toString());
     }
 
     var allYears = myArray.reverse();
-
-    console.log(initIndicators);
-
 
     var weeks = [ "THIS_WEEK", "LAST_WEEK", "LAST_4_WEEKS", "LAST_12_WEEKS", "LAST_52_WEEKS"]
     var quarters = ["THIS_QUARTER", "LAST_QUARTER", "QUARTERS_THIS_YEAR", "QUARTERS_LAST_YEAR", "LAST_4_QUARTERS",]
@@ -72,19 +102,60 @@ const ShowAnalysis = (props) => {
     const [selectedReltime, setSelectedReltime] = React.useState("")
     const [selectedRelYear, setSelectedRelYear] = React.useState("");
     const [selectedFixedYear, setSelectedFixedYear] = React.useState("");
-    const [indicators, setIndicators] = React.useState(initIndicators);
     const [allCrops, setAllCrops] = React.useState(initCrops)
+    const [fixedYears, setfixedYears] = React.useState(["2020"]);
+    const [showAnalysis, setShowAnalysis] = React.useState(false);
+    const [periodNumber, setPeriodNumber] = React.useState([])
+    const [numberTitle, setNumberTitle] = React.useState("NaN")
 
-    console.log(props.organization);
+    const handleChange = (event) => {
+        setfixedYears(event.target.value);
+        console.log(event.target.value);
+    };
+
+    const handleChangeMultiple = (event) => {
+        const { options } = event.target;
+        const value = [];
+        for (let i = 0, l = options.length; i < l; i += 1) {
+            if (options[i].selected) {
+                value.push(options[i].value);
+            }
+        }
+        setfixedYears(value);
+    };
+
+    const getAnalytics = (ouID, dxID, pe) => {
+
+        var analysis = {"analytics" : ""};
+
+        fetch(`https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+
+            credentials: "include"
+
+        }).then(response => response.json)
+            .then((result) =>{
+            analysis.analytics = result;
+        }).catch(error => {
+            alert("oops an error occurred: " + error)
+        })
+
+
+        return analysis;
+    };
+
 
     React.useEffect(()=>{
         console.log(props.organization);
         setReports(props.reportProps);
         setOrgUnits(props.organization)
         setPeriodTypes(props.periodProps)
-        setIndicators(props.indicators);
         setAllCrops(props.cropOptions);
-    }, [props.cropOptions, props.indicators, props.organization, props.periodProps, props.reportProps])
+    } )
 
     console.log(reports.length);
 
@@ -185,18 +256,25 @@ const ShowAnalysis = (props) => {
         setRelCategoriesTitle(value)
         if(value === "Weeks"){
             setRelativePeriods(weeks)
+
         } else if (value === "Months"){
             setRelativePeriods(month)
+
         } else if (value === "Bi-Months"){
             setRelativePeriods(bimonth)
+
         } else if(value ===  "Six-Months"){
             setRelativePeriods(sixmonth)
+
         } else if (value === "Years") {
             setRelativePeriods(year)
+
         } else if (value === "Quarters") {
             setRelativePeriods(quarters)
+
         } else if (value === "Financial Years"){
             setRelativePeriods(financial)
+
         }
     }
 
@@ -205,26 +283,102 @@ const ShowAnalysis = (props) => {
         setSelectedReltime(value);
     }
 
-    const handleRelYear = (value) => {
-        setRelYear(value)
-        setSelectedRelYear(value)
-    }
-
-    const handleFixedYear = (value) => {
-        setFixYear(value);
-        setSelectedFixedYear(value)
-    }
-
     const handleFixedTime = (value) => {
         setFixPeriodType(value)
-        setSelectedFixedtime(value)
+
+        if(value === "Weekly"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers)
+            setSelectedFixedtime("W")
+
+        } else if (value === "Monthly"){
+            setNumberTitle("Month Number");
+            setPeriodNumber(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"])
+            setSelectedFixedtime("")
+
+        }else if(value === "WeeklyWednesday"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers)
+            setSelectedFixedtime("WedW")
+
+        }else if(value === "WeeklyThursday"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers)
+            setSelectedFixedtime("ThuW")
+
+        }else if(value === "WeeklySunday"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers)
+            setSelectedFixedtime("SunW")
+        }
+        else if(value === "WeeklySaturday"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers)
+            setSelectedFixedtime("SatW")
+
+        }else if(value === "BiWeekly"){
+            setNumberTitle("Week Number");
+            setPeriodNumber(weekNumbers.splice(0, weekNumbers.length/2))
+            setSelectedFixedtime("BiW")
+
+        } else if (value === "BiMonthly"){
+            setNumberTitle("Bi-Month Number");
+            setPeriodNumber(["01", "02", "03", "04", "05", "06"])
+            setSelectedFixedtime("B")
+
+        } else if(value ===  "SixMonthly"){
+            setNumberTitle("Six-Month Number");
+            setPeriodNumber(["1", "2"])
+            setSelectedFixedtime("S")
+
+        } else if(value ===  "SixMonthlyApril"){
+            setNumberTitle("Six-Month Number");
+            setPeriodNumber(["1", "2"])
+            setSelectedFixedtime("AprilS")
+
+        }else if (value === "Yearly") {
+            setNumberTitle("");
+            setPeriodNumber([])
+            setSelectedFixedtime("")
+        } else if (value === "Quarterly") {
+            setNumberTitle("Quarter Number");
+            setPeriodNumber(["1", "2", "3", "4"])
+            setSelectedFixedtime("Q")
+        } else if (value === "FinancialYearApril"){
+            setSelectedFixedtime("April")
+        }else if (value === "FinancialYearJuly"){
+            setSelectedFixedtime("July")
+        }
+        else if (value === "FinancialYearOct"){
+            setSelectedFixedtime("Oct")
+        }
+    }
+    const handlePeriodNumber = (value) => {
+        setNumberTitle(value)
     }
 
     const handleAnalyze = () =>{
 
-        console.log(selectedReport.programGroups[0].indicators[0].id)
-        console.log(reportValue)
+        var fixedTime = [];
 
+        fixedYears.map((item)=>(
+            fixedTime.push(item+selectedFixedtime+numberTitle)
+        ))
+
+        var analyzed = [];
+        selectedReport.cellData.map((item)=>(
+            analyzed.push({"id":item.id, "analysis" : getAnalytics(selectedOrgUnit.id, item.indicator.id, fixedTime[0])})
+        ))
+
+        console.log(selectedReport);
+        console.log(selectedOrgUnit);
+        console.log(fixedYears)
+        console.log(relTimeTitle);
+        console.log(fixedTime)
+        console.log(analyzed)
+        setShowAnalysis(true)
+
+        /*
         var cropIndicators = []
         for(var i=0; i<indicators.length; i++){
             for(var j=0; j<selectedReport.programGroups.length; j++){
@@ -246,7 +400,7 @@ const ShowAnalysis = (props) => {
         }
 
         console.log(cropIndicators)
-        /*
+
                 if(selectedFixedtime.length === 0 || false){
                     console.log(selectedReport);
                     console.log(selectedOrgUnit);
@@ -262,6 +416,47 @@ const ShowAnalysis = (props) => {
                  */
 
     }
+
+    const AnalysisTable = () => (
+
+        <MDBBox display="flex" justifyContent="center" >
+            <MDBCol className="mb-5" md="9">
+        <MDBCard>
+            <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                {selectedReport.title}
+            </MDBCardHeader>
+
+            <MDBCardBody >
+                <MDBTable striped bordered responsive>
+                    <MDBTableHead>
+                        <tr>
+                            {selectedReport.columnHeaders.map((item, key) => (
+                                <th key={key} >
+                                    {item.name}
+                                </th>
+
+                            ))}
+                        </tr>
+                    </MDBTableHead>
+                    <MDBTableBody>
+                        {selectedReport.rowHeaders.map((row, key) => (
+                            <tr key={key} >
+                                <td key={key}>
+                                    {row.name}
+                                </td>
+                        </tr>
+                        ))}
+                    </MDBTableBody>
+                </MDBTable>
+            </MDBCardBody>
+            <MDBCardFooter>
+                <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+                    <MDBBtn color="primary">Print CSV</MDBBtn>
+                </Grid>
+            </MDBCardFooter>
+
+        </MDBCard></MDBCol></MDBBox>
+    )
 
     return (
 
@@ -320,7 +515,8 @@ const ShowAnalysis = (props) => {
                                             <label className="grey-text ml-2">
                                                 <strong>Select Organizational Unit</strong>
                                             </label>
-                                            <MDBDropdown className=" myDropDown">
+
+                                            <MDBDropdown className="myDropDown">
                                                 <MDBDropdownToggle caret color="primary">
                                                     <input className="form-control myDropDown" style={{ width: "18rem" }}
                                                            type="text"
@@ -330,13 +526,16 @@ const ShowAnalysis = (props) => {
                                                            aria-label="Search" />
                                                 </MDBDropdownToggle>
                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
+
                                                     {orgUnits.map((item, index) => (
+
                                                         <MDBDropdownItem onClick={()=>{handleOrgUnitClick(item)}} key={index}>
                                                             {item.name}
                                                         </MDBDropdownItem>
                                                     ))}
                                                 </MDBDropdownMenu>
                                             </MDBDropdown>
+
                                         </div>
                                     </MDBCol>
 
@@ -363,7 +562,7 @@ const ShowAnalysis = (props) => {
 
                                                             <Tab eventKey="home" title="Fixed Periods">
                                                                 <MDBRow>
-                                                                    <MDBCol md="6">
+                                                                    <MDBCol md="4">
                                                                         <div className="text-left my-3">
                                                                             <label className="grey-text ml-2">
                                                                                 <strong>Select Time Period Type</strong>
@@ -383,24 +582,52 @@ const ShowAnalysis = (props) => {
                                                                             </MDBDropdown>
                                                                         </div>
                                                                     </MDBCol>
-                                                                    <MDBCol md="6">
+
+                                                                    <MDBCol md="4">
                                                                         <div className="text-left my-3">
                                                                             <label className="grey-text ml-2">
-                                                                                <strong>Year</strong>
+                                                                                <strong>Period Number</strong>
                                                                             </label>
                                                                             <MDBDropdown className=" myDropDown">
                                                                                 <MDBDropdownToggle caret color="primary">
-                                                                                    {fixYear}
+                                                                                    {numberTitle}
                                                                                 </MDBDropdownToggle>
                                                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                                                    {allYears.map((item, index) => (
-                                                                                        <MDBDropdownItem
-                                                                                            onClick={()=>{handleFixedYear(item)}} key={index}>
+                                                                                    {periodNumber.map((item, index) => (
+                                                                                        <MDBDropdownItem onClick={()=>{handlePeriodNumber(item)}}
+                                                                                                         key={index}>
                                                                                             {item}
                                                                                         </MDBDropdownItem>
                                                                                     ))}
                                                                                 </MDBDropdownMenu>
                                                                             </MDBDropdown>
+                                                                        </div>
+                                                                    </MDBCol>
+
+                                                                    <MDBCol md="4">
+                                                                        <div className="text-left my-3">
+                                                                            <label className="grey-text ml-2">
+                                                                                <strong>Select period Year</strong>
+                                                                            </label>
+                                                                            <FormControl variant="outlined" className={classes.formControl}>
+                                                                                <Select
+                                                                                    labelId="demo-mutiple-checkbox-label"
+                                                                                    id="demo-mutiple-checkbox"
+                                                                                    multiple
+                                                                                    value={fixedYears}
+                                                                                    onChange={handleChange}
+                                                                                    renderValue={(selected) => selected.join(', ')}
+                                                                                    MenuProps={MenuProps}
+                                                                                >
+                                                                                    {allYears.map((name) => (
+                                                                                        <MenuItem key={name} value={name}>
+                                                                                            <Checkbox checked={fixedYears.indexOf(name) > -1} />
+                                                                                            <ListItemText primary={name} />
+                                                                                        </MenuItem>
+                                                                                    ))}
+                                                                                </Select>
+                                                                            </FormControl>
+
                                                                         </div>
                                                                     </MDBCol>
 
@@ -410,7 +637,7 @@ const ShowAnalysis = (props) => {
 
                                                             <Tab eventKey="profile" title="Relative Periods">
                                                                 <MDBRow>
-                                                                    <MDBCol md="4">
+                                                                    <MDBCol md="6">
                                                                         <div className="text-left my-3">
                                                                             <label className="grey-text ml-2">
                                                                                 <strong>Select Time Period Type</strong>
@@ -429,7 +656,7 @@ const ShowAnalysis = (props) => {
                                                                             </MDBDropdown>
                                                                         </div>
                                                                     </MDBCol>
-                                                                    <MDBCol md="4">
+                                                                    <MDBCol md="6">
                                                                         <div className="text-left my-3">
                                                                             <label className="grey-text ml-2">
                                                                                 <strong>Select Actual period</strong>
@@ -442,26 +669,6 @@ const ShowAnalysis = (props) => {
                                                                                     {relativeTime.map((item, index) => (
                                                                                         <MDBDropdownItem
                                                                                             onClick={()=>{handleRelTime(item)}} key={index}>
-                                                                                            {item}
-                                                                                        </MDBDropdownItem>
-                                                                                    ))}
-                                                                                </MDBDropdownMenu>
-                                                                            </MDBDropdown>
-                                                                        </div>
-                                                                    </MDBCol>
-                                                                    <MDBCol md="4">
-                                                                        <div className="text-left my-3">
-                                                                            <label className="grey-text ml-2">
-                                                                                <strong>Select Year</strong>
-                                                                            </label>
-                                                                            <MDBDropdown className=" myDropDown">
-                                                                                <MDBDropdownToggle caret color="primary">
-                                                                                    {relYear}
-                                                                                </MDBDropdownToggle>
-                                                                                <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                                                    {allYears.map((item, index) => (
-                                                                                        <MDBDropdownItem
-                                                                                            onClick={()=>{handleRelYear(item)}} key={index}>
                                                                                             {item}
                                                                                         </MDBDropdownItem>
                                                                                     ))}
@@ -494,6 +701,7 @@ const ShowAnalysis = (props) => {
                 </MDBCol>
             </MDBBox>
 
+            { showAnalysis ? <AnalysisTable/> : null }
 
         </div>
     )
