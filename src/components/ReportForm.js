@@ -237,22 +237,20 @@ const FormPage = (props) => {
 
 
         }
-
-
     }
 
     const handleItemClick = (indicator, id) => {
-        //setInput(indicator.name);
+
         var sear = document.getElementById(id);
         sear.value = indicator.name;
         setSelectedIndicators(initIndicators);
+        selectedIndicators.splice(selectedIndicators.indexOf(indicator), 1)
+
+        //setSelectedIndicators(newArray);
 
         var cell = {"id" : id, "indicator" : indicator}
 
         setCellValues(cellValues => [...cellValues, cell]);
-
-        console.log(id)
-
     }
 
     const handleChange = (id) => {

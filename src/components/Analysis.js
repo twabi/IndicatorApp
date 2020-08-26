@@ -107,6 +107,7 @@ const ShowAnalysis = (props) => {
     const [showAnalysis, setShowAnalysis] = React.useState(false);
     const [periodNumber, setPeriodNumber] = React.useState([])
     const [numberTitle, setNumberTitle] = React.useState("NaN")
+    const [showMenu, setShowMenu] = React.useState(true);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -160,7 +161,13 @@ const ShowAnalysis = (props) => {
     console.log(reports.length);
 
     const handleButton = () => {
-        props.buttonCallback();
+
+        if(showMenu == true){
+            props.buttonCallback();
+        } else if(showMenu == false){
+            setShowMenu(true);
+            setShowAnalysis(false);
+        }
     }
 
 
@@ -377,6 +384,7 @@ const ShowAnalysis = (props) => {
         console.log(fixedTime)
         console.log(analyzed)
         setShowAnalysis(true)
+        setShowMenu(false);
 
         /*
         var cropIndicators = []
@@ -469,7 +477,7 @@ const ShowAnalysis = (props) => {
 
             <hr className='hr-light' />
 
-            <MDBBox display="flex" justifyContent="center" >
+            {showMenu ? <MDBBox display="flex" justifyContent="center" >
                 <MDBCol className="mb-5" md="13">
                     <MDBCard display="flex" justifyContent="center" className="text-xl-center w-100">
                         <MDBCardBody>
@@ -699,7 +707,7 @@ const ShowAnalysis = (props) => {
                         </MDBCardBody>
                     </MDBCard>
                 </MDBCol>
-            </MDBBox>
+            </MDBBox> : null}
 
             { showAnalysis ? <AnalysisTable/> : null }
 
