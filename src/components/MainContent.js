@@ -49,7 +49,7 @@ const MainContent = (props) => {
         setIndicators([...indicatorArray]);
         setErrorText(errorMessage)
         setPrograms([...programGroups]);
-        setOrgUnits([...units])
+        setOrgUnits(props.organizationalUnits)
         setPeriods([...pers])
 
 

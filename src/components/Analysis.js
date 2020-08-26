@@ -23,6 +23,8 @@ import Tab from "react-bootstrap/Tab";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
+import 'react-dropdown-tree-select/dist/styles.css'
+import TreeView from "./TreeView";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -125,6 +127,31 @@ const ShowAnalysis = (props) => {
         setfixedYears(value);
     };
 
+    const getNodeDetails = (id) => {
+
+        var analysis ;
+
+        fetch(`https://www.namis.org/namis1/api/29/organisationUnits/${id}.json?`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+
+            credentials: "include"
+
+        }).then(response => response.json)
+            .then((result) =>{
+                analysis = result;
+            }).catch(error => {
+            alert("oops an error occurred: " + error)
+        })
+
+
+        return analysis;
+
+    }
+
     const getAnalytics = (ouID, dxID, pe) => {
 
         var analysis = {"analytics" : ""};
@@ -156,6 +183,8 @@ const ShowAnalysis = (props) => {
         setOrgUnits(props.organization)
         setPeriodTypes(props.periodProps)
         setAllCrops(props.cropOptions);
+
+
     } )
 
     console.log(reports.length);
@@ -519,6 +548,7 @@ const ShowAnalysis = (props) => {
                                         </div>
                                     </MDBCol>
                                     <MDBCol md="6">
+                                        <TreeView/>
                                         <div className="text-left my-3">
                                             <label className="grey-text ml-2">
                                                 <strong>Select Organizational Unit</strong>

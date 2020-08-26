@@ -235,7 +235,6 @@ const FormPage = (props) => {
             console.log(JSON.stringify(payload));
             postNewReport(payload, id);
 
-
         }
     }
 

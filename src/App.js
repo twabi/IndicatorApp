@@ -13,6 +13,7 @@ import {
 import MainContent from "./components/MainContent";
 import Sidebar from "./components/SideBar";
 import CenterContent from "./components/CenterContent";
+import until from "@material-ui/core/test-utils/until";
 
 
 class App extends PureComponent {
@@ -76,7 +77,7 @@ class App extends PureComponent {
             });
 
 
-        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id`, {
+        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=level`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -129,6 +130,7 @@ class App extends PureComponent {
                     periodTypes : result.periodTypes
                 })
             });
+
     }
 
     mainCallBack = (dataFromChild) => {
