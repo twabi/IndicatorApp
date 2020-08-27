@@ -10,6 +10,7 @@ import {
     MDBCol,
     MDBInput, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
+import SuperTreeview from 'react-super-treeview';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -24,7 +25,8 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import 'react-dropdown-tree-select/dist/styles.css'
-import TreeView from "./TreeView";
+import DropdownTreeSelect from 'react-dropdown-tree-select'
+import 'react-dropdown-tree-select/dist/styles.css'
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -50,7 +52,6 @@ const MenuProps = {
 
 
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
-
 
 const ShowAnalysis = (props) => {
     const classes = useStyles();
@@ -127,31 +128,6 @@ const ShowAnalysis = (props) => {
         setfixedYears(value);
     };
 
-    const getNodeDetails = (id) => {
-
-        var analysis ;
-
-        fetch(`https://www.namis.org/namis1/api/29/organisationUnits/${id}.json?`, {
-            method: 'GET',
-            headers: {
-                'Authorization' : basicAuth,
-                'Content-type': 'application/json',
-            },
-
-            credentials: "include"
-
-        }).then(response => response.json)
-            .then((result) =>{
-                analysis = result;
-            }).catch(error => {
-            alert("oops an error occurred: " + error)
-        })
-
-
-        return analysis;
-
-    }
-
     const getAnalytics = (ouID, dxID, pe) => {
 
         var analysis = {"analytics" : ""};
@@ -185,7 +161,11 @@ const ShowAnalysis = (props) => {
         setAllCrops(props.cropOptions);
 
 
+
+
     } )
+
+
 
     console.log(reports.length);
 
@@ -454,6 +434,16 @@ const ShowAnalysis = (props) => {
 
     }
 
+    const onChange = (currentNode, selectedNodes) => {
+        console.log('onChange::', currentNode, selectedNodes)
+    }
+    const onAction = (node, action) => {
+        console.log('onAction::', action, node)
+    }
+    const onNodeToggle = currentNode => {
+        console.log('onNodeToggle::', currentNode)
+    }
+
     const AnalysisTable = () => (
 
         <MDBBox display="flex" justifyContent="center" >
@@ -548,31 +538,17 @@ const ShowAnalysis = (props) => {
                                         </div>
                                     </MDBCol>
                                     <MDBCol md="6">
-                                        <TreeView/>
+
                                         <div className="text-left my-3">
                                             <label className="grey-text ml-2">
                                                 <strong>Select Organizational Unit</strong>
                                             </label>
 
-                                            <MDBDropdown className="myDropDown">
-                                                <MDBDropdownToggle caret color="primary">
-                                                    <input className="form-control myDropDown" style={{ width: "18rem" }}
-                                                           type="text"
-                                                           value={searchValue}
-                                                           onChange={e => handleOrgSearch(e)}
-                                                           placeholder="search organizational units"
-                                                           aria-label="Search" />
-                                                </MDBDropdownToggle>
-                                                <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-
-                                                    {orgUnits.map((item, index) => (
-
-                                                        <MDBDropdownItem onClick={()=>{handleOrgUnitClick(item)}} key={index}>
-                                                            {item.name}
-                                                        </MDBDropdownItem>
-                                                    ))}
-                                                </MDBDropdownMenu>
-                                            </MDBDropdown>
+                                            <DropdownTreeSelect data={orgUnits}
+                                                                onChange={onChange}
+                                                                onAction={onAction}
+                                                                className="mt-4"
+                                                                onNodeToggle={onNodeToggle} />
 
                                         </div>
                                     </MDBCol>

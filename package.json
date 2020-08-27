@@ -12,8 +12,11 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@welldone-software/why-did-you-render": "^4.2.7",
+    "array-to-tree": "^3.3.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
+    "js-tree-list": "^1.2.2",
+    "list-to-tree": "^2.2.3",
     "mdbreact": "^4.27.0",
     "moment": "^2.27.0",
     "react": "^16.13.1",
@@ -25,6 +28,7 @@
     "react-router-config": "^5.1.1",
     "react-scripts": "3.4.1",
     "react-spring": "^8.0.27",
+    "react-super-treeview": "^0.3.3",
     "recompose": "^0.30.0"
   },
   "scripts": {

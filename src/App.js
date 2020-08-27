@@ -14,6 +14,7 @@ import MainContent from "./components/MainContent";
 import Sidebar from "./components/SideBar";
 import CenterContent from "./components/CenterContent";
 import until from "@material-ui/core/test-utils/until";
+import JsTreeList from "js-tree-list"
 
 
 class App extends PureComponent {
@@ -77,7 +78,9 @@ class App extends PureComponent {
             });
 
 
-        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=level`, {
+        var arrayToTree = require('array-to-tree');
+
+        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=parent`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -89,8 +92,29 @@ class App extends PureComponent {
             .then(response => response.json())
             .then((result) => {
                 console.log(result);
+
+                result.organisationUnits.map((item) => {
+                    //
+
+                    item.label = item.name;
+                    item.value = item.name.replace(/ /g, "");
+                    if(item.parent != null){
+                        //console.log(item.parent.id)
+                        item.parent = item.parent.id
+                    } else {
+                        item.parent = undefined
+                    }
+                });
+
+                var tree = arrayToTree(result.organisationUnits, {
+                    parentProperty: 'parent',
+                    customID: 'id'
+                });
+
+                console.log( tree );
+
                 this.setState({
-                    orgUnits : result.organisationUnits
+                    orgUnits : tree
                 });
 
             });
@@ -139,6 +163,7 @@ class App extends PureComponent {
             navBarValue : dataFromChild,
         });
     }
+
 
     render() {
 
