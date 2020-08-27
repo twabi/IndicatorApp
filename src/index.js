@@ -9,6 +9,7 @@ import * as serviceWorker from './serviceWorker';
 import BoxComponent from "./components/BoxComponent";
 import TransferList from "./components/TransferList";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'antd/dist/antd.css'
 
 const developmentServer = 'https://www.namis.org/namis1';
 const rootElement = document.getElementById('root');

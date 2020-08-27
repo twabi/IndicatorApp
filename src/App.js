@@ -93,11 +93,11 @@ class App extends PureComponent {
             .then((result) => {
                 console.log(result);
 
-                result.organisationUnits.map((item) => {
+                result.organisationUnits.map((item, index) => {
                     //
 
-                    item.label = item.name;
-                    item.value = item.name.replace(/ /g, "");
+                    item.title = item.name;
+                    item.value = item.name.replace(/ /g, "") + "-" + index;
                     if(item.parent != null){
                         //console.log(item.parent.id)
                         item.parent = item.parent.id

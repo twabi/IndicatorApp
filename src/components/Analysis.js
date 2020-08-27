@@ -10,11 +10,9 @@ import {
     MDBCol,
     MDBInput, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
-import SuperTreeview from 'react-super-treeview';
-
+import 'antd/dist/antd.css'
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import { MDBDropdown, MDBDropdownToggle, MDBBtnGroup, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
@@ -25,8 +23,9 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import 'react-dropdown-tree-select/dist/styles.css'
-import DropdownTreeSelect from 'react-dropdown-tree-select'
 import 'react-dropdown-tree-select/dist/styles.css'
+import { TreeSelect } from 'antd';
+
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -88,7 +87,7 @@ const ShowAnalysis = (props) => {
 
     const [reports, setReports] = React.useState(initReport);
     const [orgUnits, setOrgUnits] = React.useState(initState);
-    const [searchValue, setSearchValue] = React.useState("");
+    const [searchValue, setSearchValue] = React.useState("select ...");
     const [reportValue, setReportValue] = React.useState("")
     const [periodTypes, setPeriodTypes] = React.useState([])
     const [key, setKey] = React.useState('home');
@@ -100,7 +99,6 @@ const ShowAnalysis = (props) => {
     const [fixYear, setFixYear] = React.useState("Year");
     const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
     const [selectedReport, setSelectedReport] =  React.useState({})
-    const [selectedOrgUnit, setSelectedOrgUnit] = React.useState({})
     const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
     const [selectedReltime, setSelectedReltime] = React.useState("")
     const [selectedRelYear, setSelectedRelYear] = React.useState("");
@@ -111,6 +109,7 @@ const ShowAnalysis = (props) => {
     const [periodNumber, setPeriodNumber] = React.useState([])
     const [numberTitle, setNumberTitle] = React.useState("NaN")
     const [showMenu, setShowMenu] = React.useState(true);
+    const [selectedOrgUnits, setSelectedOrgUnits] = React.useState([]);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -159,9 +158,6 @@ const ShowAnalysis = (props) => {
         setOrgUnits(props.organization)
         setPeriodTypes(props.periodProps)
         setAllCrops(props.cropOptions);
-
-
-
 
     } )
 
@@ -264,7 +260,7 @@ const ShowAnalysis = (props) => {
 
     const handleOrgUnitClick = (value) => {
         setSearchValue(value.name);
-        setSelectedOrgUnit(value)
+        //setSelectedOrgUnit(value)
     }
 
 
@@ -381,17 +377,18 @@ const ShowAnalysis = (props) => {
             fixedTime.push(item+selectedFixedtime+numberTitle)
         ))
 
-        var analyzed = [];
-        selectedReport.cellData.map((item)=>(
-            analyzed.push({"id":item.id, "analysis" : getAnalytics(selectedOrgUnit.id, item.indicator.id, fixedTime[0])})
-        ))
+        //var analyzed = [];
+       // selectedReport.cellData.map((item)=>(
+            //analyzed.push({"id":item.id, "analysis" : getAnalytics(selectedOrgUnits[0].id, item.indicator.id, fixedTime[0])})
+        //))
 
+        console.log(variable);
         console.log(selectedReport);
-        console.log(selectedOrgUnit);
+        console.log(selectedOrgUnits);
         console.log(fixedYears)
         console.log(relTimeTitle);
         console.log(fixedTime)
-        console.log(analyzed)
+        //console.log(analyzed)
         setShowAnalysis(true)
         setShowMenu(false);
 
@@ -434,14 +431,17 @@ const ShowAnalysis = (props) => {
 
     }
 
-    const onChange = (currentNode, selectedNodes) => {
-        console.log('onChange::', currentNode, selectedNodes)
-    }
-    const onAction = (node, action) => {
-        console.log('onAction::', action, node)
-    }
-    const onNodeToggle = currentNode => {
-        console.log('onNodeToggle::', currentNode)
+    const [variable, setVariable] = React.useState({});
+
+    const handle = (value, label, extra) => {
+        setSearchValue(value)
+    };
+
+    const onSelect = (value, node) => {
+
+        console.log(node.id)
+        setVariable(node)
+
     }
 
     const AnalysisTable = () => (
@@ -478,7 +478,7 @@ const ShowAnalysis = (props) => {
             </MDBCardBody>
             <MDBCardFooter>
                 <Grid container justify="center" alignItems="center" style={{margin: 10}}>
-                    <MDBBtn color="primary">Print CSV</MDBBtn>
+                    <MDBBtn color="primary">Print PDF</MDBBtn>
                 </Grid>
             </MDBCardFooter>
 
@@ -541,14 +541,19 @@ const ShowAnalysis = (props) => {
 
                                         <div className="text-left my-3">
                                             <label className="grey-text ml-2">
-                                                <strong>Select Organizational Unit</strong>
+                                                <strong>select Organization Units</strong>
                                             </label>
 
-                                            <DropdownTreeSelect data={orgUnits}
-                                                                onChange={onChange}
-                                                                onAction={onAction}
-                                                                className="mt-4"
-                                                                onNodeToggle={onNodeToggle} />
+                                            <TreeSelect
+                                                style={{ width: '100%' }}
+                                                value={searchValue}
+                                                className="mt-4"
+                                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                                treeData={orgUnits}
+                                                placeholder="Please select org unit"
+                                                onChange={handle}
+                                                onSelect={onSelect}
+                                            />
 
                                         </div>
                                     </MDBCol>
