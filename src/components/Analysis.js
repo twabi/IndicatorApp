@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
     MDBBox,
     MDBBtn,
@@ -128,8 +128,8 @@ const ShowAnalysis = (props) => {
         setfixedYears(value);
     };
 
-    const getAnalytics = (ouID, dxID, pe, id, callBack) => {
-
+    const getAnalytics = (item, row, pe, ouID,  callBack) => {
+        var dxID = row.indicatorID;
         //var analysis = [];
 
         return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
@@ -145,7 +145,7 @@ const ShowAnalysis = (props) => {
             .then((result) =>{
                // console.log(result.rows)
                 //analysis = result.rows;
-                callBack(result, id);
+                callBack(item, row, result);
 
         }).catch(error => {
             alert("oops an error occurred: " + error)
@@ -383,28 +383,33 @@ const ShowAnalysis = (props) => {
         ))
 
         var analyzed = [];
-        const callback = (result, id) => {
-            console.log(id +"-"+result)
-            analyzed.push({"id": id, "analysis" : result.rows});
+        const callback = (item, row, result) => {
+            console.log(selectedReport)
+            row.indicatorName = result.rows[0][2];
+            analyzed.push(item);
             setAnalytics([...analyzed]);
         }
 
 
         selectedReport.cellData.map((item)=>{
             item.rowData.map((row, index) =>{
-                /*
-                getAnalytics(variable.id, row.indicatorID, fixedTime[0], row.id, callback)
+
+                getAnalytics(item, row, fixedTime[0], variable.id, callback)
                     .then((r) => {
                         setAnalytics([...analyzed]);
                     })
                     .then(()=>{
                         console.log(analyzed)
+                        setAnalytics([...analyzed]);
                         console.log(analytics)
+                        setShowAnalysis(true)
+                        setShowMenu(false);
 
                     })
 
-                 */
 
+
+                /*
                 fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${row.indicatorID}&dimension=pe:${fixedTime[0]}&filter=ou:${variable.id}&displayProperty=NAME&outputIdScheme=NAME`, {
                     method: 'GET',
                     mode: 'cors',
@@ -416,31 +421,24 @@ const ShowAnalysis = (props) => {
 
                 }).then(response => response.json())
                     .then((result) =>{
-                        console.log(result.rows[0])
+                        console.log(result.rows[0][2])
                         //setAnalytics(result.rows);
                         //analyzed.push({"id":item.id, "analysisRow" : result.rows})
                         console.log(result.rows)
-                        row.indicatorValue = result.rows;
+                        row.indicatorName = result.rows[0][2];
 
                     }).then(()=>{
                         console.log(selectedReport)
+
                 }).catch(error => {
                     alert("oops an error occurred: " + error)
-                });
+                });*/
             })
 
-
-            /*
-
-
-
-             */
 
         });
 
 
-        setShowAnalysis(true)
-        setShowMenu(false);
         console.log(variable);
         console.log(selectedReport);
         console.log(fixedYears)
@@ -448,6 +446,7 @@ const ShowAnalysis = (props) => {
         //console.log(relTimeTitle);
         console.log(fixedTime)
         //console.log(analyzed)
+
 
 
 
@@ -505,7 +504,7 @@ const ShowAnalysis = (props) => {
 
     }
 
-    const AnalysisTable = () => (
+    const AnalysisTable = (report) => (
 
         <MDBBox display="flex" justifyContent="center" >
             <MDBCol className="mb-5" md="9">
@@ -534,15 +533,13 @@ const ShowAnalysis = (props) => {
                                 </td>
                                 {selectedReport.columnHeaders
                                     .slice(0,selectedReport.columns-1).map((dat, index)=>(
-                                    <td key={i}>
-                                        {item.rowData[index].indicatorValue}
-                                    </td>
-                                ))}
+                                        <td key={i}>
+                                            {item.rowData[index].indicatorName}
+                                        </td>
+                                    ))}
 
                             </tr>
                         ))}
-
-
 
                     </MDBTableBody>
                 </MDBTable>
@@ -793,7 +790,13 @@ const ShowAnalysis = (props) => {
                 </MDBCol>
             </MDBBox> : null}
 
-            { showAnalysis ? <AnalysisTable/> : null }
+            { showAnalysis ?
+                <MDBCard className="mt-2">
+                    <Grid item>
+                        {AnalysisTable(analytics)}
+                    </Grid>
+                </MDBCard>: null }
+
 
         </div>
     )
