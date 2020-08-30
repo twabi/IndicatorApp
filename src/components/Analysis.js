@@ -791,11 +791,9 @@ const ShowAnalysis = (props) => {
             </MDBBox> : null}
 
             { showAnalysis ?
-                <MDBCard className="mt-2">
                     <Grid item>
                         {AnalysisTable(analytics)}
-                    </Grid>
-                </MDBCard>: null }
+                    </Grid> : null }
 
 
         </div>
