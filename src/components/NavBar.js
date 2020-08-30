@@ -27,11 +27,11 @@ class NavBar extends React.Component {
 
         return(
             <div>
-                <AppBar position="sticky" className="mb-5">
+                <AppBar position="sticky" className="mb-5 text-white">
                     <Toolbar>
                         <div >
                             <Typography variant="title" color="inherit">
-                                <h3>Indicator App for NAMIS</h3>
+                                <h3 className="text-white">Indicator App for NAMIS</h3>
                             </Typography>
                         </div>
                         <MDBBtn style={{float: "right", marginLeft: "auto", marginRight: 30 }}

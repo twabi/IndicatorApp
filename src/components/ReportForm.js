@@ -174,6 +174,9 @@ const FormPage = (props) => {
         //console.log(data);
 
     }
+    function createTaData(indicator, indicatorName, existingName, indicatorId) {
+        return { indicator, indicatorName, existingName, indicatorId};
+    }
 
     function reloadPage() {
         window.location.reload(false);
@@ -208,11 +211,83 @@ const FormPage = (props) => {
     }
 
 
+
+    function chunkArray(arr,n){
+        var chunkLength = Math.max(arr.length/n ,1);
+        var chunks = [];
+        for (var i = 0; i < n; i++) {
+            if(chunkLength*(i+1)<=arr.length)chunks.push(arr.slice(chunkLength*i, chunkLength*(i+1)));
+        }
+        return chunks;
+    }
+
+    var reA = /[^a-zA-Z]/g;
+    var reN = /[^0-9]/g;
+
+    function sortAlphaNum(a, b) {
+        var aA = a.id.replace(reA, "");
+        var bA = b.id.replace(reA, "");
+        if (aA === bA) {
+            var aN = parseInt(a.id.replace(reN, ""), 10);
+            var bN = parseInt(b.id.replace(reN, ""), 10);
+            return aN === bN ? 0 : aN > bN ? 1 : -1;
+        } else {
+            return aA > bA ? 1 : -1;
+        }
+    }
+
+
     const handleSubmit = () => {
 
         console.log(colHeaders);
         console.log(rowHeaders);
         console.log(cellValues);
+
+        var arrayOfData = []
+
+
+        var itemsObj = {};
+        var itemsList = [];
+
+        for (var i = 0; i < cellValues.length; i++) {
+            var item = cellValues[i];
+            if (!itemsObj[item.id]) {
+                itemsObj[item.id] = item;
+                console.log(itemsObj[item.id])
+                itemsList.push(item);
+            } else{
+                var index = itemsList.indexOf(itemsObj[item.id])
+                console.log(index);
+                //delete itemsList[index]
+                itemsList.splice(index, 1);
+                //console.log(itemsList.slice(itemsObj[item.id]))
+                itemsObj[item.id] = item;
+                itemsList.push(item);
+                console.log(itemsList)
+            }
+        }
+
+        //console.log(itemsList);
+
+        itemsList.map((item) => {
+            console.log(document.getElementById(item.id).value);
+            arrayOfData.push(
+                {"id":item.id, "indicatorID":item.indicator.id, "indicatorName":document.getElementById(item.id).value})
+        })
+
+
+        //console.log(arrayOfData.sort())
+        var sortedArray = arrayOfData.sort(sortAlphaNum);
+        //console.log(sortedArray);
+        //console.log(chunkArray(sortedArray, rowHeaders.length));
+        var rowArrays = chunkArray(sortedArray, rowHeaders.length);
+
+        var rowdata = []
+        rowHeaders.map((row, index) =>{
+            rowdata.push({"rowDetails" : row, "rowData": rowArrays[index]})
+        })
+
+        console.log(rowdata);
 
 
 
@@ -228,14 +303,15 @@ const FormPage = (props) => {
                 "rows": cropNumber,
                 "columns": indicatorNumber,
                 "columnHeaders": colHeaders,
-                "rowHeaders": rowHeaders,
-                "cellData" : cellValues,
+                "cellData" : rowdata,
             }
 
             console.log(JSON.stringify(payload));
             postNewReport(payload, id);
 
         }
+
+
     }
 
     const handleItemClick = (indicator, id) => {
@@ -248,8 +324,12 @@ const FormPage = (props) => {
         //setSelectedIndicators(newArray);
 
         var cell = {"id" : id, "indicator" : indicator}
+        //console.log(cellValues.includes(x => x.id === id))
+        console.log(cellValues.includes(id))
 
         setCellValues(cellValues => [...cellValues, cell]);
+
+
     }
 
     const handleChange = (id) => {
@@ -307,7 +387,7 @@ const FormPage = (props) => {
             </MDBCardHeader>
 
             <MDBCardBody style={{padding: 10}}>
-                <MDBTable striped bordered responsive>
+                <MDBTable id="tableId" striped bordered responsive>
                     <MDBTableHead>
                         <tr>
                             {programList.map((item, key) => (
@@ -339,17 +419,17 @@ const FormPage = (props) => {
 
                                         <MDBDropdown key={int} className="myDropDown">
                                             <MDBDropdownToggle  caret color="primary">
-                                                <input id={"cell" +int+"-"+key} className="form-control myDropDown"
+                                                <input id={"cell" +key+"-"+int} className="form-control myDropDown"
                                                        type="text"
                                                        placeholder="insert indicator"
-                                                       onChange={()=>{handleChange("cell" +int+"-"+key)}}
+                                                       onChange={()=>{handleChange("cell" +key+"-"+int)}}
                                                        aria-label="Search" />
                                             </MDBDropdownToggle>
                                             <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
 
                                                 {indicatorList.map((indicator, index) => (
 
-                                                    <MDBDropdownItem key={index} onClick={()=>handleItemClick(indicator, "cell" +int+"-"+key)}>
+                                                    <MDBDropdownItem key={index} onClick={()=>handleItemClick(indicator, "cell" +key+"-"+int)}>
                                                         {indicator.name}
                                                     </MDBDropdownItem>
                                                 ))}

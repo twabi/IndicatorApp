@@ -168,12 +168,6 @@ class App extends PureComponent {
     render() {
 
 
-        /*
-        * <MainContent cropOptions={this.state.cropOptions}
-                                 errorMessage={this.state.errorMessage}
-                                 isLoaded={this.state.isLoaded}
-                                 headerProps ={this.state.dashboards} className="mt-5"/>*/
-
         return (
             <Fragment>
                 <div >
@@ -190,69 +184,6 @@ class App extends PureComponent {
                 </div>
             </Fragment>
         )
-
-/*
-
-        if(navigate==="Time periods"){
-
-            return (
-                <Fragment>
-                    <div >
-                        <NavBar callerBack={this.mainCallBack}/>
-
-                        <h3>Time periods</h3>
-
-                    </div>
-                </Fragment>
-
-            )
-        }
-        else if(navigate==="Custom Reports"){
-
-            return (
-                <Fragment>
-                    <div className="bg-grey">
-                        <NavBar callerBack={this.mainCallBack}/>
-                        <BoxComponent className="mt-4"/>
-                    </div>
-                </Fragment>
-
-            )
-        }
-        else if(navigate==="Analysis"){
-
-            return (
-                <Fragment>
-                    <div >
-                        <NavBar callerBack={this.mainCallBack}/>
-
-                        <h3>Analysis</h3>
-                    </div>
-                </Fragment>
-            )
-        }
-        else {
-            return (
-                <Fragment>
-                    <div >
-                        <NavBar callerBack={this.mainCallBack}/>
-                        <div className="rowC">
-                            <TransferList
-                                cropOptions={this.state.cropOptions}
-                                errorMessage={this.state.errorMessage}
-                                isLoaded={this.state.isLoaded}
-                                          headerProps ={this.state.dashboards}/>
-                        </div>
-
-                    </div>
-                </Fragment>
-
-            )
-        }
-
- */
-
-
 
     }
 }

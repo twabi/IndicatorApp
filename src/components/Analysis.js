@@ -110,6 +110,7 @@ const ShowAnalysis = (props) => {
     const [numberTitle, setNumberTitle] = React.useState("NaN")
     const [showMenu, setShowMenu] = React.useState(true);
     const [selectedOrgUnits, setSelectedOrgUnits] = React.useState([]);
+    const [analytics, setAnalytics] = React.useState([]);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -127,28 +128,31 @@ const ShowAnalysis = (props) => {
         setfixedYears(value);
     };
 
-    const getAnalytics = (ouID, dxID, pe) => {
+    const getAnalytics = (ouID, dxID, pe, id, callBack) => {
 
-        var analysis = {"analytics" : ""};
+        //var analysis = [];
 
-        fetch(`https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
+        return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
             method: 'GET',
+            mode: 'cors',
             headers: {
                 'Authorization' : basicAuth,
                 'Content-type': 'application/json',
-            },
 
-            credentials: "include"
+            }
 
-        }).then(response => response.json)
+        }).then(response => response.json())
             .then((result) =>{
-            analysis.analytics = result;
+               // console.log(result.rows)
+                //analysis = result.rows;
+                callBack(result, id);
+
         }).catch(error => {
             alert("oops an error occurred: " + error)
         })
 
 
-        return analysis;
+
     };
 
 
@@ -373,24 +377,81 @@ const ShowAnalysis = (props) => {
 
         var fixedTime = [];
 
+
         fixedYears.map((item)=>(
             fixedTime.push(item+selectedFixedtime+numberTitle)
         ))
 
-        //var analyzed = [];
-       // selectedReport.cellData.map((item)=>(
-            //analyzed.push({"id":item.id, "analysis" : getAnalytics(selectedOrgUnits[0].id, item.indicator.id, fixedTime[0])})
-        //))
+        var analyzed = [];
+        const callback = (result, id) => {
+            console.log(id +"-"+result)
+            analyzed.push({"id": id, "analysis" : result.rows});
+            setAnalytics([...analyzed]);
+        }
 
-        console.log(variable);
-        console.log(selectedReport);
-        console.log(selectedOrgUnits);
-        console.log(fixedYears)
-        console.log(relTimeTitle);
-        console.log(fixedTime)
-        //console.log(analyzed)
+
+        selectedReport.cellData.map((item)=>{
+            item.rowData.map((row, index) =>{
+                /*
+                getAnalytics(variable.id, row.indicatorID, fixedTime[0], row.id, callback)
+                    .then((r) => {
+                        setAnalytics([...analyzed]);
+                    })
+                    .then(()=>{
+                        console.log(analyzed)
+                        console.log(analytics)
+
+                    })
+
+                 */
+
+                fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${row.indicatorID}&dimension=pe:${fixedTime[0]}&filter=ou:${variable.id}&displayProperty=NAME&outputIdScheme=NAME`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Authorization' : basicAuth,
+                        'Content-type': 'application/json',
+
+                    }
+
+                }).then(response => response.json())
+                    .then((result) =>{
+                        console.log(result.rows[0])
+                        //setAnalytics(result.rows);
+                        //analyzed.push({"id":item.id, "analysisRow" : result.rows})
+                        console.log(result.rows)
+                        row.indicatorValue = result.rows;
+
+                    }).then(()=>{
+                        console.log(selectedReport)
+                }).catch(error => {
+                    alert("oops an error occurred: " + error)
+                });
+            })
+
+
+            /*
+
+
+
+             */
+
+        });
+
+
         setShowAnalysis(true)
         setShowMenu(false);
+        console.log(variable);
+        console.log(selectedReport);
+        console.log(fixedYears)
+        console.log(selectedFixedtime);
+        //console.log(relTimeTitle);
+        console.log(fixedTime)
+        //console.log(analyzed)
+
+
+
+        //console.log(getAnalytics())
 
         /*
         var cropIndicators = []
@@ -466,19 +527,31 @@ const ShowAnalysis = (props) => {
                         </tr>
                     </MDBTableHead>
                     <MDBTableBody>
-                        {selectedReport.rowHeaders.map((row, key) => (
+                        {selectedReport.cellData.map((item, key) => (
                             <tr key={key} >
                                 <td key={key}>
-                                    {row.name}
+                                    {item.rowDetails.name}
                                 </td>
-                        </tr>
+                                {selectedReport.columnHeaders
+                                    .slice(0,selectedReport.columns-1).map((dat, index)=>(
+                                    <td key={i}>
+                                        {item.rowData[index].indicatorValue}
+                                    </td>
+                                ))}
+
+                            </tr>
                         ))}
+
+
+
                     </MDBTableBody>
                 </MDBTable>
             </MDBCardBody>
             <MDBCardFooter>
                 <Grid container justify="center" alignItems="center" style={{margin: 10}}>
-                    <MDBBtn color="primary">Print PDF</MDBBtn>
+
+                    <MDBBtn color="primary">Print PDF </MDBBtn>
+
                 </Grid>
             </MDBCardFooter>
 
