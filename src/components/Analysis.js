@@ -111,6 +111,8 @@ const ShowAnalysis = (props) => {
     const [showMenu, setShowMenu] = React.useState(true);
     const [selectedOrgUnits, setSelectedOrgUnits] = React.useState([]);
     const [analytics, setAnalytics] = React.useState([]);
+    const [fixedTimeClicked, setFixedTimeClicked] = React.useState(false);
+    const [relTimeClicked, setRelTimeClicked] = React.useState(false);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -148,11 +150,10 @@ const ShowAnalysis = (props) => {
                 callBack(item, row, result);
 
         }).catch(error => {
-            alert("oops an error occurred: " + error)
+            //alert("oops an error occurred: " + error);
+            var result = {"rows" : ["-", "-", "-"]}
+            //callBack(item, row, result);
         })
-
-
-
     };
 
 
@@ -177,45 +178,6 @@ const ShowAnalysis = (props) => {
             setShowMenu(true);
             setShowAnalysis(false);
         }
-    }
-
-
-    function handleOrgSearch({ target: { value } }) {
-
-        // Set captured value to input
-        setSearchValue(value)
-
-        // Variable to hold the original version of the list
-        let currentList = [];
-        // Variable to hold the filtered list before putting into state
-        let newList = [];
-
-        currentList = orgUnits;
-
-        // If the search bar isn't empty
-        if (value !== "") {
-            // Assign the original list to currentList
-
-            // Use .filter() to determine which items should be displayed
-            // based on the search terms
-            newList = currentList.filter(item => {
-                // change current item to lowercase
-                const lc = item.name.toLowerCase();
-                // change search term to lowercase
-                const filter = value.toLowerCase();
-                // check to see if the current list item includes the search term
-                // If it does, it will be added to newList. Using lowercase eliminates
-                // issues with capitalization in search terms and search content
-                return lc.includes(filter);
-            });
-        } else {
-            // If the search bar is empty, set newList to original task list
-            newList = initState;
-        }
-
-
-        // Set the filtered state based on what our rules added to newList
-        setOrgUnits(newList);
     }
 
 
@@ -262,12 +224,6 @@ const ShowAnalysis = (props) => {
         setSelectedReport(value);
     }
 
-    const handleOrgUnitClick = (value) => {
-        setSearchValue(value.name);
-        //setSelectedOrgUnit(value)
-    }
-
-
     const periodTypeClick =(value)=>{
         setRelCategoriesTitle(value)
         if(value === "Weeks"){
@@ -297,10 +253,14 @@ const ShowAnalysis = (props) => {
     const handleRelTime = (value) =>{
         setRelTimeTitle(value)
         setSelectedReltime(value);
+        setRelTimeClicked(true);
+        setFixedTimeClicked(false);
     }
 
     const handleFixedTime = (value) => {
         setFixPeriodType(value)
+        setFixedTimeClicked(true);
+        setRelTimeClicked(false);
 
         if(value === "Weekly"){
             setNumberTitle("Week Number");
@@ -356,45 +316,60 @@ const ShowAnalysis = (props) => {
             setNumberTitle("");
             setPeriodNumber([])
             setSelectedFixedtime("")
+
         } else if (value === "Quarterly") {
             setNumberTitle("Quarter Number");
             setPeriodNumber(["1", "2", "3", "4"])
             setSelectedFixedtime("Q")
-        } else if (value === "FinancialYearApril"){
+
+        } else if (value === "FinancialApril"){
             setSelectedFixedtime("April")
-        }else if (value === "FinancialYearJuly"){
+            setNumberTitle("");
+            setPeriodNumber([])
+
+        }else if (value === "FinancialJuly"){
             setSelectedFixedtime("July")
+            setNumberTitle("");
+            setPeriodNumber([])
         }
-        else if (value === "FinancialYearOct"){
+        else if (value === "FinancialOct"){
             setSelectedFixedtime("Oct")
+            setNumberTitle("");
+            setPeriodNumber([])
         }
     }
     const handlePeriodNumber = (value) => {
         setNumberTitle(value)
     }
 
-    const handleAnalyze = () =>{
-
-        var fixedTime = [];
-
-
-        fixedYears.map((item)=>(
-            fixedTime.push(item+selectedFixedtime+numberTitle)
-        ))
+    const Analysis = (report, timePeriod, orgUnit ) => {
 
         var analyzed = [];
         const callback = (item, row, result) => {
-            console.log(selectedReport)
-            row.indicatorName = result.rows[0][2];
-            analyzed.push(item);
-            setAnalytics([...analyzed]);
+            if(result.rows == null || result.rows.length == 0){
+                console.log("this year has no data!");
+                row.indicatorValue = "-";
+                analyzed.push(item);
+                setAnalytics([...analyzed]);
+
+            } else {
+                console.log(result)
+                var value = [];
+                for(var i =0; i<result.rows.length; i++){
+                    value.push(result.rows[i][2]);
+                }
+                row.indicatorValue = value.join(", ");
+                analyzed.push(item);
+                setAnalytics([...analyzed]);
+            }
+
         }
 
 
-        selectedReport.cellData.map((item)=>{
+        report.cellData.map((item)=>{
             item.rowData.map((row, index) =>{
 
-                getAnalytics(item, row, fixedTime[0], variable.id, callback)
+                getAnalytics(item, row, timePeriod, orgUnit.id, callback)
                     .then((r) => {
                         setAnalytics([...analyzed]);
                     })
@@ -406,88 +381,38 @@ const ShowAnalysis = (props) => {
                         setShowMenu(false);
 
                     })
-
-
-
-                /*
-                fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${row.indicatorID}&dimension=pe:${fixedTime[0]}&filter=ou:${variable.id}&displayProperty=NAME&outputIdScheme=NAME`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Authorization' : basicAuth,
-                        'Content-type': 'application/json',
-
-                    }
-
-                }).then(response => response.json())
-                    .then((result) =>{
-                        console.log(result.rows[0][2])
-                        //setAnalytics(result.rows);
-                        //analyzed.push({"id":item.id, "analysisRow" : result.rows})
-                        console.log(result.rows)
-                        row.indicatorName = result.rows[0][2];
-
-                    }).then(()=>{
-                        console.log(selectedReport)
-
-                }).catch(error => {
-                    alert("oops an error occurred: " + error)
-                });*/
             })
 
 
         });
+    }
 
+    const handleAnalyze = () =>{
 
-        console.log(variable);
-        console.log(selectedReport);
-        console.log(fixedYears)
-        console.log(selectedFixedtime);
-        //console.log(relTimeTitle);
-        console.log(fixedTime)
-        //console.log(analyzed)
+        var fixedTime = [];
 
+        fixedYears.map((item)=>(
+            fixedTime.push(item+selectedFixedtime+numberTitle)
+        ))
 
+        if(relTimeClicked === true ){
+            console.log(selectedReport);
+            console.log(relTimeTitle);
+            console.log(variable);
+            console.log("relative time")
 
+            Analysis(selectedReport, relTimeTitle, variable);
 
-        //console.log(getAnalytics())
+        } else if(fixedTimeClicked === true){
+            console.log(selectedReport);
+            console.log(variable);
+            console.log(fixedTime);
+            console.log("fixed time");
 
-        /*
-        var cropIndicators = []
-        for(var i=0; i<indicators.length; i++){
-            for(var j=0; j<selectedReport.programGroups.length; j++){
-                for(var m=0; m<selectedReport.programGroups[j].indicators.length; m++){
-                    if(indicators[i].id === selectedReport.programGroups[j].indicators[m].id){
-                        for(var y=0; y<selectedReport.crops.length; y++){
-                            if(indicators[i].name.includes(selectedReport.crops[y])){
-                                console.log("this is the crop: " + selectedReport.crops[y])
-                                console.log("this is the indicator: " + indicators[i].name)
-                                cropIndicators.push(indicators[i]);
-                            } else {
-                                console.log("found no matching indicators")
-                            }
-                        }
-                    }
-                }
+            Analysis(selectedReport, fixedTime.join(";"), variable);
 
-            }
         }
 
-        console.log(cropIndicators)
-
-                if(selectedFixedtime.length === 0 || false){
-                    console.log(selectedReport);
-                    console.log(selectedOrgUnit);
-                    console.log(selectedRelYear);
-                    console.log(selectedReltime)
-                } else if(selectedReltime.length === 0 || false){
-                    console.log(selectedReport);
-                    console.log(selectedOrgUnit);
-                    console.log(selectedFixedYear);
-                    console.log(selectedFixedtime);
-                }
-
-                 */
 
     }
 
@@ -504,7 +429,7 @@ const ShowAnalysis = (props) => {
 
     }
 
-    const AnalysisTable = (report) => (
+    const AnalysisTable = () => (
 
         <MDBBox display="flex" justifyContent="center" >
             <MDBCol className="mb-5" md="9">
@@ -534,7 +459,7 @@ const ShowAnalysis = (props) => {
                                 {selectedReport.columnHeaders
                                     .slice(0,selectedReport.columns-1).map((dat, index)=>(
                                         <td key={i}>
-                                            {item.rowData[index].indicatorName}
+                                            {item.rowData[index].indicatorValue}
                                         </td>
                                     ))}
 
@@ -545,6 +470,7 @@ const ShowAnalysis = (props) => {
                 </MDBTable>
             </MDBCardBody>
             <MDBCardFooter>
+                <p className="my-2">Years key = {fixedYears.join(", ")}</p>
                 <Grid container justify="center" alignItems="center" style={{margin: 10}}>
 
                     <MDBBtn color="primary">Print PDF </MDBBtn>
@@ -794,8 +720,6 @@ const ShowAnalysis = (props) => {
                     <Grid item>
                         {AnalysisTable(analytics)}
                     </Grid> : null }
-
-
         </div>
     )
 
