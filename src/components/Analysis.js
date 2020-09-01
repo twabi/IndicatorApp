@@ -151,8 +151,7 @@ const ShowAnalysis = (props) => {
 
         }).catch(error => {
             //alert("oops an error occurred: " + error);
-            var result = {"rows" : ["-", "-", "-"]}
-            //callBack(item, row, result);
+
         })
     };
 
@@ -356,9 +355,10 @@ const ShowAnalysis = (props) => {
                 console.log(result)
                 var value = [];
                 for(var i =0; i<result.rows.length; i++){
-                    value.push(result.rows[i][2]);
+                    value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+
                 }
-                row.indicatorValue = value.join(", ");
+                row.indicatorValue = value.join("  \n ");
                 analyzed.push(item);
                 setAnalytics([...analyzed]);
             }
@@ -458,7 +458,7 @@ const ShowAnalysis = (props) => {
                                 </td>
                                 {selectedReport.columnHeaders
                                     .slice(0,selectedReport.columns-1).map((dat, index)=>(
-                                        <td key={i}>
+                                        <td className="new-line" key={i}>
                                             {item.rowData[index].indicatorValue}
                                         </td>
                                     ))}
@@ -470,7 +470,6 @@ const ShowAnalysis = (props) => {
                 </MDBTable>
             </MDBCardBody>
             <MDBCardFooter>
-                <p className="my-2">Years key = {fixedYears.join(", ")}</p>
                 <Grid container justify="center" alignItems="center" style={{margin: 10}}>
 
                     <MDBBtn color="primary">Print PDF </MDBBtn>

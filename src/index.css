@@ -33,6 +33,10 @@ code {
   margin-left: 15px;
 }
 
+.new-line {
+  white-space: pre-line;
+}
+
 .bg-grey{
   background-color: #f2f2f2;
   height: 100vh;
