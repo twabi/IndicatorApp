@@ -75,7 +75,10 @@ class App extends PureComponent {
                 this.setState({
                     cropOptions : optionArray
                 });
-            });
+            }).catch(error => {
+            alert("oops an error occurred: " + error + " .Try reloading your page");
+
+        });
 
 
         var arrayToTree = require('array-to-tree');
@@ -117,7 +120,10 @@ class App extends PureComponent {
                     orgUnits : tree
                 });
 
-            });
+            }).catch(error => {
+            alert("oops an error occurred: " + error + " .Try reloading your page");
+
+        });
 
 
 
@@ -136,7 +142,10 @@ class App extends PureComponent {
                 this.setState({
                     programGroups : result.indicatorGroups
                 })
-            });
+            }).catch(error => {
+            alert("oops an error occurred: " + error + " .Try reloading your page");
+
+        });
 
         fetch(`https://www.namis.org/namis1/api/periodTypes.json?paging=false&fields=*`, {
             method: 'GET',
@@ -153,7 +162,10 @@ class App extends PureComponent {
                 this.setState({
                     periodTypes : result.periodTypes
                 })
-            });
+            }).catch(error => {
+            alert("oops an error occurred: " + error + " .Try reloading your page");
+
+        });
 
     }
 

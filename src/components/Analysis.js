@@ -113,6 +113,7 @@ const ShowAnalysis = (props) => {
     const [analytics, setAnalytics] = React.useState([]);
     const [fixedTimeClicked, setFixedTimeClicked] = React.useState(false);
     const [relTimeClicked, setRelTimeClicked] = React.useState(false);
+    const [showLoading, setShowLoading] = React.useState(false);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -150,7 +151,7 @@ const ShowAnalysis = (props) => {
                 callBack(item, row, result);
 
         }).catch(error => {
-            //alert("oops an error occurred: " + error);
+            alert("oops an error occurred: " + error + " .Try reloading your page");
 
         })
     };
@@ -345,24 +346,28 @@ const ShowAnalysis = (props) => {
 
         var analyzed = [];
         const callback = (item, row, result) => {
-            if(result.rows == null || result.rows.length == 0){
-                console.log("this year has no data!");
-                row.indicatorValue = "-";
-                analyzed.push(item);
-                setAnalytics([...analyzed]);
+            if(result == null){
+                alert("oops, an error occurred! Try reloading your page");
 
-            } else {
-                console.log(result)
-                var value = [];
-                for(var i =0; i<result.rows.length; i++){
-                    value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+            }else {
+                if(result.rows == null || result.rows.length == 0){
+                    console.log("this year has no data!");
+                    row.indicatorValue = "-";
+                    analyzed.push(item);
+                    setAnalytics([...analyzed]);
 
+                } else {
+                    console.log(result)
+                    var value = [];
+                    for(var i =0; i<result.rows.length; i++){
+                        value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+
+                    }
+                    row.indicatorValue = value.join("  \n ");
+                    analyzed.push(item);
+                    setAnalytics([...analyzed]);
                 }
-                row.indicatorValue = value.join("  \n ");
-                analyzed.push(item);
-                setAnalytics([...analyzed]);
             }
-
         }
 
 
@@ -379,20 +384,20 @@ const ShowAnalysis = (props) => {
                         console.log(analytics)
                         setShowAnalysis(true)
                         setShowMenu(false);
+                        setShowLoading(false);
 
                     })
             })
-
-
         });
     }
 
-    const handleAnalyze = () =>{
+    const handleAnalyze = () => {
 
+        setShowLoading(true);
         var fixedTime = [];
 
         fixedYears.map((item)=>(
-            fixedTime.push(item+selectedFixedtime+numberTitle)
+            fixedTime.push(item + selectedFixedtime + numberTitle)
         ))
 
         if(relTimeClicked === true ){
@@ -410,15 +415,12 @@ const ShowAnalysis = (props) => {
             console.log("fixed time");
 
             Analysis(selectedReport, fixedTime.join(";"), variable);
-
         }
-
-
     }
 
     const [variable, setVariable] = React.useState({});
 
-    const handle = (value, label, extra) => {
+    const handle = (value) => {
         setSearchValue(value)
     };
 
@@ -706,7 +708,9 @@ const ShowAnalysis = (props) => {
 
                             <div className="text-center py-4 mt-2">
                                 <MDBBtn color="cyan" onClick={handleAnalyze} className="text-white">
-                                    Analyze
+                                    Analyze {showLoading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                                                                <span className="sr-only">Loading...</span>
+                                                            </div> : null}
                                 </MDBBtn>
                             </div>
 
