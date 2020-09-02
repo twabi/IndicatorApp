@@ -7,15 +7,15 @@ import {
     MDBCardHeader,
     MDBCardText,
     MDBCardTitle,
-    MDBCol,
-    MDBInput, MDBTable, MDBTableBody, MDBTableHead
+    MDBCol, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
 import 'antd/dist/antd.css'
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-import { MDBDropdown, MDBDropdownToggle, MDBBtnGroup, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
+import jsPDF from 'jspdf'
+import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
 import { MDBContainer, MDBRow } from "mdbreact";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
@@ -25,6 +25,8 @@ import FormControl from '@material-ui/core/FormControl';
 import 'react-dropdown-tree-select/dist/styles.css'
 import 'react-dropdown-tree-select/dist/styles.css'
 import { TreeSelect } from 'antd';
+import "jspdf-autotable";
+import html2canvas from "html2canvas";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -114,6 +116,7 @@ const ShowAnalysis = (props) => {
     const [fixedTimeClicked, setFixedTimeClicked] = React.useState(false);
     const [relTimeClicked, setRelTimeClicked] = React.useState(false);
     const [showLoading, setShowLoading] = React.useState(false);
+    const [showDownloading, setShowDownloading] = React.useState(false);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -248,6 +251,23 @@ const ShowAnalysis = (props) => {
             setRelativePeriods(financial)
 
         }
+    }
+
+    const exportPDF = (title) => {
+        setShowDownloading(true);
+        const input = document.getElementById('tableDiv');
+        html2canvas(input)
+            .then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF();
+                //pdf.addImage(imgData, 'PNG', 10, 10);
+                pdf.setFontSize(15);
+                pdf.autoTable({startY: 20, html: '#tableDiv'});
+                pdf.text(title, 50, 15);
+                pdf.save(title + ".pdf");
+            }).then(()=>{
+                setShowDownloading(false);
+            });
     }
 
     const handleRelTime = (value) =>{
@@ -433,15 +453,15 @@ const ShowAnalysis = (props) => {
 
     const AnalysisTable = () => (
 
-        <MDBBox display="flex" justifyContent="center" >
+        <MDBBox  display="flex" justifyContent="center" >
             <MDBCol className="mb-5" md="9">
-        <MDBCard>
+        <MDBCard >
             <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
                 {selectedReport.title}
             </MDBCardHeader>
 
-            <MDBCardBody >
-                <MDBTable striped bordered responsive>
+            <MDBCardBody  >
+                <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
                     <MDBTableHead>
                         <tr>
                             {selectedReport.columnHeaders.map((item, key) => (
@@ -471,15 +491,18 @@ const ShowAnalysis = (props) => {
                     </MDBTableBody>
                 </MDBTable>
             </MDBCardBody>
-            <MDBCardFooter>
+
+        </MDBCard>
                 <Grid container justify="center" alignItems="center" style={{margin: 10}}>
 
-                    <MDBBtn color="primary">Print PDF </MDBBtn>
+                    <MDBBtn color="primary" onClick={()=>{exportPDF(selectedReport.title)}}>
+                        Print PDF {showDownloading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div> : null}
+                    </MDBBtn>
 
                 </Grid>
-            </MDBCardFooter>
-
-        </MDBCard></MDBCol></MDBBox>
+            </MDBCol></MDBBox>
     )
 
     return (
