@@ -167,7 +167,7 @@ const ShowAnalysis = (props) => {
         setPeriodTypes(props.periodProps)
         setAllCrops(props.cropOptions);
 
-    } )
+    }, [props.cropOptions, props.organization, props.periodProps, props.reportProps])
 
 
 
@@ -517,7 +517,7 @@ const ShowAnalysis = (props) => {
             <hr className='hr-light' />
 
             {showMenu ? <MDBBox display="flex" justifyContent="center" >
-                <MDBCol className="mb-5" md="13">
+                <MDBCol className="mb-5" md="10">
                     <MDBCard display="flex" justifyContent="center" className="text-xl-center w-100">
                         <MDBCardBody>
                             <MDBCardTitle >

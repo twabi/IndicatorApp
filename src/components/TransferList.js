@@ -8,8 +8,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import DropdownPage from "./DropdownPage";
 import DropdownGroup from "./DropdownGroup";
 import {MDBTable, MDBTableBody, MDBBtn, MDBTableHead, MDBCard, MDBCardHeader, MDBCardBody, MDBCardFooter} from 'mdbreact';
-import Api from "../api";
-import {useHistory} from "react-router";
 
 
 
@@ -446,57 +444,6 @@ function TransferList(props) {
     const groupItemCallback = (data) => {
         handleFilter(data);
     }
-
-    /*<MDBDataTableV5 hover autoWidth striped className={classes.table} entriesOptions={[10, 20, 30]} entries={10} pagesAmount={4}
-                    data={dataTables} />
-
-
-    const Selects = () => (
-
-        <div>
-            <div style={{textAlign: "center", margin: 10}}>
-                <h4>Rename Indicators</h4>
-            </div>
-            <TableContainer component={Paper} className={classes.table}  justify="center" alignitems="center">
-                <Table style={{ tableLayout: 'auto' }}  aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><b>Indicator Name</b></TableCell>
-                            <TableCell align="left"><b>Existing ShortName</b></TableCell>
-                            <TableCell align="center"><b>New ShortName</b></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((row, i) => (
-                            <TableRow key={i}>
-                                <TableCell component="th" scope="row">
-                                    {row.indicatorName}
-                                </TableCell>
-                                <TableCell align="left" id={row.indicatorId}>{row.existingName}</TableCell>
-                                <TableCell align="center">
-                                    <Button variant="contained" color="primary" onClick={() => editName(row.indicator)}>
-                                        Edit
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
-            </TableContainer>
-
-            <Grid container justify="center" alignItems="center" className={classes.another}>
-                <Button variant="contained" color="primary" onClick={reloadPage}>
-                    Done
-                </Button>
-            </Grid>
-
-        </div>
-
-    )
-
-
-     */
 
     const customList = (items) => (
         <Paper className={classes.paper}>

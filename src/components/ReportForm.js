@@ -458,12 +458,6 @@ const FormPage = (props) => {
 
     return (
         <div>
-                    <MDBBtn color="cyan"
-                            onClick={handleButton}
-                            className="text-white float-lg-right mr-5" type="submit">
-                        Back
-                    </MDBBtn>
-
                     <hr className='hr-light' />
 
                     <MDBBox display="flex" justifyContent="center" >

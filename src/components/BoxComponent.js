@@ -74,8 +74,17 @@ function BoxComponent(props) {
 
     }
 
+    const handleButton = () => {
+        props.btnCallback();
+    }
+
     return (
         <div>
+            <MDBBtn color="cyan"
+                    onClick={handleButton}
+                    className="text-white float-lg-right mr-2" type="submit">
+                Back
+            </MDBBtn>
             {!hideMenu ? <MDBContainer id="myDiv" className="d-flex justify-content-center">
                 <MDBRow>
                     <MDBCol md="6">

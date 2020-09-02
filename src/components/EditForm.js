@@ -84,11 +84,6 @@ const EditForm = (props) => {
     return (
         <div className="ml-5">
 
-            <MDBBtn color="cyan" onClick={handleButton}
-                    className="text-white float-lg-right mr-2" type="submit">
-                Back to Menu
-            </MDBBtn>
-
             <hr className='hr-light' />
 
         {showEditMenu ? <MDBBox className="ml-5" display="flex" justifyContent="center" >

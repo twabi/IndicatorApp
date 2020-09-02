@@ -9,6 +9,7 @@ import CenterContent from "./CenterContent";
 import BoxComponent from "./BoxComponent";
 import App from "../App";
 import Analysis from "./Analysis";
+import TimePeriods from "./TimePeriods";
 
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
@@ -33,6 +34,7 @@ const MainContent = (props) => {
     const [crops, setCrops] = React.useState([...cropOptions]);
     const [showDisplayName, setshowDisplayName] = React.useState(false);
     const [showCustom, setCustom] = React.useState(false);
+    const [showTimePeriods, setShowTimePeriods] = React.useState(false);
     const [reports, setReports] = React.useState([]);
     const [reportKeys, setReportKeys] = React.useState([]);
     const [showAnalysis, setShowAnalysis] = React.useState(false);
@@ -102,6 +104,7 @@ const MainContent = (props) => {
         setshowDisplayName(false);
         setCustom(false);
         setShowAnalysis(false);
+        setShowTimePeriods(false)
     }
 
 
@@ -110,6 +113,7 @@ const MainContent = (props) => {
         setshowDisplayName(true);
         setCustom(false);
         setShowAnalysis(false);
+        setShowTimePeriods(false)
     }
 
     const gotoCustomReports = () => {
@@ -117,6 +121,7 @@ const MainContent = (props) => {
         setCustom(true);
         setshowDisplayName(false)
         setShowAnalysis(false);
+        setShowTimePeriods(false)
     }
 
     const gotoAnalysis = () => {
@@ -124,6 +129,15 @@ const MainContent = (props) => {
         setShowAnalysis(true);
         setshowDisplayName(false);
         setCustom(false)
+        setShowTimePeriods(false)
+    }
+
+    const gotoTimePeriods = () => {
+        setShowHome(false)
+        setShowAnalysis(false);
+        setshowDisplayName(false);
+        setCustom(false)
+        setShowTimePeriods(true)
     }
 
 
@@ -180,9 +194,9 @@ const MainContent = (props) => {
                             <MDBCardBody>
                                 <MDBCardTitle>Time Periods</MDBCardTitle>
                                 <MDBCardText>
-                                    Relative and comparative time periods of indicators
+                                    Compare an indicator across two different time periods
                                 </MDBCardText>
-                                <MDBBtn color="primary">Go</MDBBtn>
+                                <MDBBtn onClick={gotoTimePeriods} color="primary">Go</MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -196,6 +210,7 @@ const MainContent = (props) => {
             { showCustom ? <BoxComponent cropOptions={crops}
                                          programs={programs}
                                          reports={reports}
+                                         btnCallback={homeCallback}
                                          headerProps ={indicators}
                                          errorMessage={errorText} />: null }
 
@@ -203,6 +218,10 @@ const MainContent = (props) => {
                                        cropOptions={crops}
                                        periodProps={periods}
                                        organization={orgUnits} buttonCallback={homeCallback}/> : null}
+
+            { showTimePeriods ? <TimePeriods indicatorProps={indicators}
+                                             periodTypeProps={periods}
+                                             btnCallback={homeCallback}/> : null}
 
         </div>
 
