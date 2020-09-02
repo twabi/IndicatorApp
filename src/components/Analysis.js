@@ -97,21 +97,14 @@ const ShowAnalysis = (props) => {
     const [relCategories, setRelCategories] = React.useState(array2);
     const [relCategoriesTitle, setRelCategoriesTitle] = React.useState("Period Type");
     const [relTimeTitle, setRelTimeTitle] = React.useState("Actual Period");
-    const [relYear, setRelYear] = React.useState("Year");
-    const [fixYear, setFixYear] = React.useState("Year");
     const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
     const [selectedReport, setSelectedReport] =  React.useState({})
     const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
-    const [selectedReltime, setSelectedReltime] = React.useState("")
-    const [selectedRelYear, setSelectedRelYear] = React.useState("");
-    const [selectedFixedYear, setSelectedFixedYear] = React.useState("");
-    const [allCrops, setAllCrops] = React.useState(initCrops)
     const [fixedYears, setfixedYears] = React.useState(["2020"]);
     const [showAnalysis, setShowAnalysis] = React.useState(false);
     const [periodNumber, setPeriodNumber] = React.useState([])
     const [numberTitle, setNumberTitle] = React.useState("NaN")
     const [showMenu, setShowMenu] = React.useState(true);
-    const [selectedOrgUnits, setSelectedOrgUnits] = React.useState([]);
     const [analytics, setAnalytics] = React.useState([]);
     const [fixedTimeClicked, setFixedTimeClicked] = React.useState(false);
     const [relTimeClicked, setRelTimeClicked] = React.useState(false);
@@ -165,9 +158,8 @@ const ShowAnalysis = (props) => {
         setReports(props.reportProps);
         setOrgUnits(props.organization)
         setPeriodTypes(props.periodProps)
-        setAllCrops(props.cropOptions);
 
-    }, [props.cropOptions, props.organization, props.periodProps, props.reportProps])
+    }, [ props.organization, props.periodProps, props.reportProps])
 
     const handleButton = () => {
 
@@ -268,7 +260,6 @@ const ShowAnalysis = (props) => {
 
     const handleRelTime = (value) =>{
         setRelTimeTitle(value)
-        setSelectedReltime(value);
         setRelTimeClicked(true);
         setFixedTimeClicked(false);
     }
