@@ -169,10 +169,6 @@ const ShowAnalysis = (props) => {
 
     }, [props.cropOptions, props.organization, props.periodProps, props.reportProps])
 
-
-
-    console.log(reports.length);
-
     const handleButton = () => {
 
         if(showMenu == true){
@@ -261,7 +257,7 @@ const ShowAnalysis = (props) => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF();
                 //pdf.addImage(imgData, 'PNG', 10, 10);
-                pdf.setFontSize(15);
+                pdf.setFontSize(25);
                 pdf.autoTable({startY: 20, html: '#tableDiv'});
                 pdf.text(title, 50, 15);
                 pdf.save(title + ".pdf");
@@ -561,7 +557,7 @@ const ShowAnalysis = (props) => {
 
                                         <div className="text-left my-3">
                                             <label className="grey-text ml-2">
-                                                <strong>select Organization Units</strong>
+                                                <strong>select Organization Unit</strong>
                                             </label>
 
                                             <TreeSelect
@@ -611,7 +607,8 @@ const ShowAnalysis = (props) => {
                                                                                     {fixPeriodType}
                                                                                 </MDBDropdownToggle>
                                                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                                                    {periodTypes.map((item, index) => (
+                                                                                    {periodTypes.slice(1, periodTypes.length)
+                                                                                        .map((item, index) => (
                                                                                         <MDBDropdownItem onClick={()=>{handleFixedTime(item.name)}}
                                                                                             key={index}>
                                                                                             {item.name}

@@ -42,6 +42,8 @@ const MainContent = (props) => {
     const [btnPressed, setBtnPressed] = React.useState(false);
     const [orgUnits, setOrgUnits] = React.useState(units);
     const [periods, setPeriods] = React.useState(pers);
+    const [showPeLoading, setShowPeLoading] = React.useState(false);
+    const [showAnLoading, setShowAnLoading] = React.useState(false);
 
     React.useEffect(() => {
 
@@ -105,6 +107,8 @@ const MainContent = (props) => {
         setCustom(false);
         setShowAnalysis(false);
         setShowTimePeriods(false)
+        setShowAnLoading(false);
+        setShowPeLoading(false);
     }
 
 
@@ -125,6 +129,7 @@ const MainContent = (props) => {
     }
 
     const gotoAnalysis = () => {
+        setShowAnLoading(true)
         setShowHome(false)
         setShowAnalysis(true);
         setshowDisplayName(false);
@@ -133,11 +138,13 @@ const MainContent = (props) => {
     }
 
     const gotoTimePeriods = () => {
+        setShowPeLoading(true)
         setShowHome(false)
         setShowAnalysis(false);
         setshowDisplayName(false);
         setCustom(false)
         setShowTimePeriods(true)
+
     }
 
 
@@ -184,7 +191,11 @@ const MainContent = (props) => {
                                     Using your own custom made report templates, get the analysis
                                     of the indicators in charts and tables.
                                 </MDBCardText>
-                                <MDBBtn color="primary" onClick={gotoAnalysis}>Go</MDBBtn>
+                                <MDBBtn color="primary" onClick={gotoAnalysis}>
+                                    Go {showAnLoading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </div> : null}
+                                </MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -196,7 +207,11 @@ const MainContent = (props) => {
                                 <MDBCardText>
                                     Compare an indicator across two different time periods
                                 </MDBCardText>
-                                <MDBBtn onClick={gotoTimePeriods} color="primary">Go</MDBBtn>
+                                <MDBBtn onClick={gotoTimePeriods} color="primary">
+                                    Go{showPeLoading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </div> : null}
+                                </MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -221,6 +236,7 @@ const MainContent = (props) => {
 
             { showTimePeriods ? <TimePeriods indicatorProps={indicators}
                                              periodTypeProps={periods}
+                                             orgProps={orgUnits}
                                              btnCallback={homeCallback}/> : null}
 
         </div>
