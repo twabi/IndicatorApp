@@ -357,6 +357,13 @@ const ShowAnalysis = (props) => {
                 alert("oops, an error occurred! Try reloading your page");
 
             }else {
+                var periods = result.metaData.dimensions.pe;
+                console.log(periods);
+                var columns = [];
+                periods.map((pe)=>{
+                    columns.push({"year" : pe})
+                })
+
                 if(result.rows == null || result.rows.length == 0){
                     console.log("this year has no data!");
                     row.indicatorValue = "-";
@@ -365,15 +372,31 @@ const ShowAnalysis = (props) => {
 
                 } else {
                     console.log(result)
+
                     var value = [];
                     for(var i =0; i<result.rows.length; i++){
-                        value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+
+                        var year = result.rows[i][1];
+                        columns.map((item)=>{
+                            if(item.year.includes(year)){
+                                //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+                                item.value = result.rows[i][2]
+                            }
+                        })
 
                     }
-                    row.indicatorValue = value.join("  \n ");
+                    columns.map((item)=>{
+                        if(item.value == null || item.value === ""){
+                            item.value = "-";
+                        }
+                    });
+                    console.log(columns);
+                    row.indicatorValue = columns;
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
                 }
+
+
             }
         }
 
@@ -438,59 +461,63 @@ const ShowAnalysis = (props) => {
 
     }
 
-    const AnalysisTable = () => (
+    const AnalysisTable = () => {
+        return (
 
-        <MDBBox  display="flex" justifyContent="center" >
-            <MDBCol className="mb-5" md="9">
-        <MDBCard >
-            <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
-                {selectedReport.title}
-            </MDBCardHeader>
+            <MDBBox  display="flex" justifyContent="center" >
+                <MDBCol className="mb-5" md="9">
+                    <MDBCard >
+                        <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                            {selectedReport.title}
+                        </MDBCardHeader>
 
-            <MDBCardBody  >
-                <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
-                    <MDBTableHead>
-                        <tr>
-                            {selectedReport.columnHeaders.map((item, key) => (
-                                <th key={key} >
-                                    {item.name}
-                                </th>
+                        <MDBCardBody  >
+                            <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
+                                <MDBTableHead>
+                                    <tr>
+                                        {selectedReport.columnHeaders.map((item, key) => (
+                                            <th key={key} >
+                                                {item.name}
+                                            </th>
 
-                            ))}
-                        </tr>
-                    </MDBTableHead>
-                    <MDBTableBody>
-                        {selectedReport.cellData.map((item, key) => (
-                            <tr key={key} >
-                                <td key={key}>
-                                    {item.rowDetails.name}
-                                </td>
-                                {selectedReport.columnHeaders
-                                    .slice(0,selectedReport.columns-1).map((dat, index)=>(
-                                        <td className="new-line" key={i}>
-                                            {item.rowData[index].indicatorValue}
-                                        </td>
+                                        ))}
+                                    </tr>
+                                </MDBTableHead>
+                                <MDBTableBody>
+                                    {selectedReport.cellData.map((item, key) => (
+                                        <tr key={key} >
+                                            <td key={key}>
+                                                {item.rowDetails.name}
+                                            </td>
+                                            {selectedReport.columnHeaders
+                                                .slice(0,selectedReport.columns-1).map((dat, index)=>(
+                                                    <td className="new-line" key={i}>
+                                                        {item.rowData[index].indicatorValue && item.rowData[index].indicatorValue.map((item)=>(
+                                                            <p>{item.year} : {item.value}</p>
+                                                        ))}
+                                                    </td>
+                                                ))}
+
+                                        </tr>
                                     ))}
 
-                            </tr>
-                        ))}
+                                </MDBTableBody>
+                            </MDBTable>
+                        </MDBCardBody>
 
-                    </MDBTableBody>
-                </MDBTable>
-            </MDBCardBody>
+                    </MDBCard>
+                    <Grid container justify="center" alignItems="center" style={{margin: 10}}>
 
-        </MDBCard>
-                <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+                        <MDBBtn color="primary" onClick={()=>{exportPDF(selectedReport.title)}}>
+                            Print PDF {showDownloading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                            <span className="sr-only">Loading...</span>
+                        </div> : null}
+                        </MDBBtn>
 
-                    <MDBBtn color="primary" onClick={()=>{exportPDF(selectedReport.title)}}>
-                        Print PDF {showDownloading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div> : null}
-                    </MDBBtn>
-
-                </Grid>
-            </MDBCol></MDBBox>
-    )
+                    </Grid>
+                </MDBCol></MDBBox>
+        )
+    }
 
     return (
 

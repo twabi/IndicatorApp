@@ -230,12 +230,12 @@ const TimePeriods = (props) => {
                 columns.push({"column" : result.metaData.items[thisPeriod].name})
                 columns.push({"column": result.metaData.items[lastPeriod].name})
 
-                var value = [];
+                //var value = [];
 
                 if(result.rows == null || result.rows.length == 0){
                     console.log("this year has no data!");
                     //row.indicatorValue = "-";
-                    value.push({"value" : "-"})
+                    //value.push({"value" : "-"})
 
                 } else {
                     console.log(result)
@@ -244,7 +244,7 @@ const TimePeriods = (props) => {
                     for(var i = 0; i<result.rows.length; i++){
                         //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
                         var year = result.rows[i][1]
-                        value.push({"year": result.rows[i][1], "value" : result.rows[i][2]});
+                        //value.push({"year": result.rows[i][1], "value" : result.rows[i][2]});
                         columns.map((item) => {
                             console.log(item.column)
                             if(item.column.includes(year)){
