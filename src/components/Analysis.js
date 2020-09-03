@@ -493,7 +493,7 @@ const ShowAnalysis = (props) => {
                                                 .slice(0,selectedReport.columns-1).map((dat, index)=>(
                                                     <td className="new-line" key={i}>
                                                         {item.rowData[index].indicatorValue && item.rowData[index].indicatorValue.map((item)=>(
-                                                            <p>{item.year} : {item.value}</p>
+                                                            <p>{item.year} : {item.value} <br /></p>
                                                         ))}
                                                     </td>
                                                 ))}
