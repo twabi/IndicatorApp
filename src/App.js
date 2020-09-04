@@ -158,14 +158,18 @@ class App extends PureComponent {
                         .then(response => response.json())
                         .then((result) => {
 
-                            if(this.state.reports.includes(result)){
-                                console.log("possible duplication")
-                            }else{
-                                //setReports(reports => [...reports, result]);
-                                this.setState({
-                                    reports : reports => [...reports, result]
-                                })
+                            try{
+                                console.log(this.state.reports)
+                                if(this.state.reports.includes(result)){
+                                    console.log("possible duplication")
+                                }else{
+                                    //setReports(reports => [...reports, result]);
+                                    this.setState({ reports: [...this.state.reports, result] })
+                                }
+                            }catch (e){
+                                console.log(e)
                             }
+
 
 
                         })

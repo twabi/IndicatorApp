@@ -11,6 +11,7 @@ import {
     MDBTable,
     MDBTableHead, MDBTableBody, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBCardFooter
 } from 'mdbreact';
+import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { MDBCardImage, MDBCardTitle, MDBCardText, MDBIcon } from 'mdbreact';
 import ListTransfer from "./ListTransfer";
 import Grid from "@material-ui/core/Grid";
@@ -40,6 +41,7 @@ const ShowForm = (props) => {
     const [selectedIndicators, setSelectedIndicators] = React.useState([])
     const [colHeaders, setColHeaders] = React.useState([])
     const [cellData, setCellData] = React.useState([])
+    const [dummy, setDummy] = React.useState("");
 
     React.useEffect(() => {
 
@@ -172,6 +174,38 @@ const ShowForm = (props) => {
 
     }
 
+    const editRowNames = (index) => {
+        var newName = prompt("enter new cell name");
+
+        if (newName == null || newName === "") {
+            //console.log(dataTables)
+        } else {
+            //tableCell.innerHTML = newName;
+            report.cellData[index].rowDetails.name = newName;
+            setDummy(newName);
+        }
+    }
+
+    const editColumnNames = (index) => {
+        var newName = prompt("enter new cell name");
+
+        if (newName == null || newName === "") {
+            //console.log(dataTables)
+        } else {
+            //tableCell.innerHTML = newName;
+            report.columnHeaders[index].name = newName;
+            setDummy(newName);
+        }
+    }
+
+    const handleItemClick = (indicator, id, index1, index2) =>{
+        console.log(indicator.name)
+        report.cellData[index1].rowData[index2].indicatorID = indicator.id;
+        report.cellData[index1].rowData[index2].indicatorName = indicator.name;
+        console.log(report);
+        setDummy(indicator.name);
+    }
+
     const showTable =()=>{
         setShowPreview(true);
     }
@@ -191,7 +225,7 @@ const ShowForm = (props) => {
                                     <div id={item.id}>
                                         {item.name}
                                     </div>
-                                    <MDBBtn color="primary">edit</MDBBtn>
+                                    <MDBBtn color="primary" onClick={()=>{editColumnNames(key)}}>edit</MDBBtn>
                                 </th>
 
                             ))}
@@ -205,7 +239,7 @@ const ShowForm = (props) => {
                                     <div id={row.id}>
                                         {row.rowDetails.name}
                                     </div>
-                                    <MDBBtn color="primary">edit</MDBBtn>
+                                    <MDBBtn color="primary" onClick={()=>{editRowNames(key)}}>edit</MDBBtn>
                                 </td>
 
                                 {row.rowData.map((item, int) => (
@@ -223,7 +257,7 @@ const ShowForm = (props) => {
 
                                                 {selectedIndicators.map((indicator, index) => (
 
-                                                    <MDBDropdownItem key={index}>
+                                                    <MDBDropdownItem key={index} onClick={()=>{handleItemClick(indicator, item.id, key, int)}}>
                                                         {indicator.name}
                                                     </MDBDropdownItem>
                                                 ))}
@@ -317,7 +351,7 @@ const ShowForm = (props) => {
                                     />
 
                                     <div className="mt-5">
-                                        <p className="text-center">Select new indicator groups to be on the report</p>
+                                        <p className="text-center">Select new indicator groups that you want to include in the report</p>
                                         <ListTransfer getRightArray={getRightArray}  indicatorArray={programs}/>
                                     </div>
                                 </div>

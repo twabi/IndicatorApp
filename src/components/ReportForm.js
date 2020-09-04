@@ -123,7 +123,7 @@ const FormPage = (props) => {
     };
 
     const handleButton = () => {
-        props.buttonCallback();
+        window.location.href="/customReports";
     }
 
     const handleCropNumber = ({ target: { value } }) => {
