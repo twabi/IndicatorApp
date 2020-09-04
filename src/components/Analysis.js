@@ -24,7 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import 'react-dropdown-tree-select/dist/styles.css'
 import 'react-dropdown-tree-select/dist/styles.css'
-import { TreeSelect } from 'antd';
+import {DatePicker, TreeSelect} from 'antd';
 import "jspdf-autotable";
 import html2canvas from "html2canvas";
 
@@ -110,11 +110,21 @@ const ShowAnalysis = (props) => {
     const [relTimeClicked, setRelTimeClicked] = React.useState(false);
     const [showLoading, setShowLoading] = React.useState(false);
     const [showDownloading, setShowDownloading] = React.useState(false);
+    const [showButton, setShowButton] = React.useState(false);
+    const [showDayDiv, setShowDayDiv] = React.useState(false);
+    const [showYearSelect, setShowYearSelect] = React.useState(true);
+    const [dateString, setDateString] = React.useState("");
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
         console.log(event.target.value);
     };
+
+    function onChange(date, dateString) {
+        //console.log(date, dateString);
+        console.log(dateString.replace(/-/g,""));
+        setDateString(dateString.replace(/-/g,""));
+    }
 
     const handleChangeMultiple = (event) => {
         const { options } = event.target;
@@ -164,10 +174,11 @@ const ShowAnalysis = (props) => {
     const handleButton = () => {
 
         if(showMenu == true){
-            props.buttonCallback();
+            //props.buttonCallback();
         } else if(showMenu == false){
             setShowMenu(true);
             setShowAnalysis(false);
+            setShowButton(false);
         }
     }
 
@@ -273,56 +284,82 @@ const ShowAnalysis = (props) => {
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers)
             setSelectedFixedtime("W")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
-        } else if (value === "Monthly"){
+        } else if(value==="Daily"){
+            setShowDayDiv(true);
+            setShowYearSelect(false);
+
+        }else if (value === "Monthly"){
             setNumberTitle("Month Number");
             setPeriodNumber(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"])
             setSelectedFixedtime("")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if(value === "WeeklyWednesday"){
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers)
             setSelectedFixedtime("WedW")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if(value === "WeeklyThursday"){
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers)
             setSelectedFixedtime("ThuW")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if(value === "WeeklySunday"){
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers)
             setSelectedFixedtime("SunW")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
         }
         else if(value === "WeeklySaturday"){
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers)
             setSelectedFixedtime("SatW")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if(value === "BiWeekly"){
             setNumberTitle("Week Number");
             setPeriodNumber(weekNumbers.splice(0, weekNumbers.length/2))
             setSelectedFixedtime("BiW")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         } else if (value === "BiMonthly"){
             setNumberTitle("Bi-Month Number");
             setPeriodNumber(["01", "02", "03", "04", "05", "06"])
             setSelectedFixedtime("B")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         } else if(value ===  "SixMonthly"){
             setNumberTitle("Six-Month Number");
             setPeriodNumber(["1", "2"])
             setSelectedFixedtime("S")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         } else if(value ===  "SixMonthlyApril"){
             setNumberTitle("Six-Month Number");
             setPeriodNumber(["1", "2"])
             setSelectedFixedtime("AprilS")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if (value === "Yearly") {
             setNumberTitle("");
             setPeriodNumber([])
             setSelectedFixedtime("")
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         } else if (value === "Quarterly") {
             setNumberTitle("Quarter Number");
@@ -333,16 +370,22 @@ const ShowAnalysis = (props) => {
             setSelectedFixedtime("April")
             setNumberTitle("");
             setPeriodNumber([])
+            setShowDayDiv(false);
+            setShowYearSelect(true);
 
         }else if (value === "FinancialJuly"){
             setSelectedFixedtime("July")
             setNumberTitle("");
             setPeriodNumber([])
+            setShowDayDiv(false);
+            setShowYearSelect(true);
         }
         else if (value === "FinancialOct"){
             setSelectedFixedtime("Oct")
             setNumberTitle("");
             setPeriodNumber([])
+            setShowDayDiv(false);
+            setShowYearSelect(true);
         }
     }
     const handlePeriodNumber = (value) => {
@@ -365,15 +408,20 @@ const ShowAnalysis = (props) => {
                 })
 
                 if(result.rows == null || result.rows.length == 0){
-                    console.log("this year has no data!");
-                    row.indicatorValue = "-";
+                    console.log("this year has no data!" + columns);
+                    //row.indicatorValue = "-";
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
+                    columns.map((item)=>{
+                        if(item.year.includes(year)){
+                            //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+                            item.value = "-"
+                        }
+                    })
 
                 } else {
                     console.log(result)
 
-                    var value = [];
                     for(var i =0; i<result.rows.length; i++){
 
                         var year = result.rows[i][1];
@@ -415,6 +463,7 @@ const ShowAnalysis = (props) => {
                         setShowAnalysis(true)
                         setShowMenu(false);
                         setShowLoading(false);
+                        setShowButton(true);
 
                     })
             })
@@ -439,12 +488,19 @@ const ShowAnalysis = (props) => {
             Analysis(selectedReport, relTimeTitle, variable);
 
         } else if(fixedTimeClicked === true){
-            console.log(selectedReport);
-            console.log(variable);
-            console.log(fixedTime);
-            console.log("fixed time");
 
-            Analysis(selectedReport, fixedTime.join(";"), variable);
+            if(dateString !== ""){
+                console.log(dateString);
+                Analysis(selectedReport, dateString, variable);
+            }else{
+                console.log(selectedReport);
+                console.log(variable);
+                console.log(fixedTime);
+                console.log("fixed time");
+
+                Analysis(selectedReport, fixedTime.join(";"), variable);
+            }
+
         }
     }
 
@@ -522,11 +578,11 @@ const ShowAnalysis = (props) => {
     return (
 
         <div>
-            <MDBBtn color="cyan"
-                    onClick={handleButton}
-                    className="text-white float-lg-right mr-2" type="submit">
+            {showButton ? <MDBBtn color="cyan"
+                                  onClick={handleButton}
+                                  className="text-white float-lg-right mr-2" type="submit">
                 Back
-            </MDBBtn>
+            </MDBBtn> : null}
 
             <hr className='hr-light' />
 
@@ -625,8 +681,7 @@ const ShowAnalysis = (props) => {
                                                                                     {fixPeriodType}
                                                                                 </MDBDropdownToggle>
                                                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                                                    {periodTypes.slice(1, periodTypes.length)
-                                                                                        .map((item, index) => (
+                                                                                    {periodTypes.map((item, index) => (
                                                                                         <MDBDropdownItem onClick={()=>{handleFixedTime(item.name)}}
                                                                                             key={index}>
                                                                                             {item.name}
@@ -659,30 +714,39 @@ const ShowAnalysis = (props) => {
                                                                     </MDBCol>
 
                                                                     <MDBCol md="4">
-                                                                        <div className="text-left my-3">
-                                                                            <label className="grey-text ml-2">
-                                                                                <strong>Select period Year</strong>
-                                                                            </label>
-                                                                            <FormControl variant="outlined" className={classes.formControl}>
-                                                                                <Select
-                                                                                    labelId="demo-mutiple-checkbox-label"
-                                                                                    id="demo-mutiple-checkbox"
-                                                                                    multiple
-                                                                                    value={fixedYears}
-                                                                                    onChange={handleChange}
-                                                                                    renderValue={(selected) => selected.join(', ')}
-                                                                                    MenuProps={MenuProps}
-                                                                                >
-                                                                                    {allYears.map((name) => (
-                                                                                        <MenuItem key={name} value={name}>
-                                                                                            <Checkbox checked={fixedYears.indexOf(name) > -1} />
-                                                                                            <ListItemText primary={name} />
-                                                                                        </MenuItem>
-                                                                                    ))}
-                                                                                </Select>
-                                                                            </FormControl>
+                                                                        {showYearSelect ?
+                                                                            <div className="text-left my-3">
+                                                                                <label className="grey-text ml-2">
+                                                                                    <strong>Select period Year</strong>
+                                                                                </label>
+                                                                                <FormControl variant="outlined" className={classes.formControl}>
+                                                                                    <Select
+                                                                                        labelId="demo-mutiple-checkbox-label"
+                                                                                        id="demo-mutiple-checkbox"
+                                                                                        multiple
+                                                                                        value={fixedYears}
+                                                                                        onChange={handleChange}
+                                                                                        renderValue={(selected) => selected.join(', ')}
+                                                                                        MenuProps={MenuProps}
+                                                                                    >
+                                                                                        {allYears.map((name) => (
+                                                                                            <MenuItem key={name} value={name}>
+                                                                                                <Checkbox checked={fixedYears.indexOf(name) > -1} />
+                                                                                                <ListItemText primary={name} />
+                                                                                            </MenuItem>
+                                                                                        ))}
+                                                                                    </Select>
+                                                                                </FormControl>
 
-                                                                        </div>
+                                                                            </div>: null}
+
+                                                                        {showDayDiv ?
+                                                                            <div className="text-left my-3 d-flex flex-column">
+                                                                                <label className="grey-text ml-2">
+                                                                                    <strong>Day Number</strong>
+                                                                                </label>
+                                                                                <DatePicker className="mt-3" onChange={onChange} />
+                                                                            </div> : null}
                                                                     </MDBCol>
 
                                                                 </MDBRow>

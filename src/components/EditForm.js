@@ -89,7 +89,7 @@ const EditForm = (props) => {
         {showEditMenu ? <MDBBox className="ml-5" display="flex" justifyContent="center" >
                 <MDBRow>
 
-                    {reports.slice(0, (reports.length/2)).map((report, index) => (
+                    {reports.map((report, index) => (
 
 
                                 <MDBCard key={index} className="m-4" style={{ width: "19rem" }}>

@@ -15,6 +15,10 @@ import Sidebar from "./components/SideBar";
 import CenterContent from "./components/CenterContent";
 import until from "@material-ui/core/test-utils/until";
 import JsTreeList from "js-tree-list"
+import Analysis from "./components/Analysis";
+import TimePeriods from "./components/TimePeriods";
+import ReportForm from "./components/ReportForm";
+import EditForm from "./components/EditForm";
 
 
 class App extends PureComponent {
@@ -31,6 +35,7 @@ class App extends PureComponent {
             boxValue: "",
             orgUnits: [],
             periodTypes: [],
+            reports: [],
         };
     }
 
@@ -125,6 +130,50 @@ class App extends PureComponent {
 
         });
 
+        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
+            method: 'GET',
+            headers: {
+                'Authorization' : basicAuth,
+                'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result);
+                var array = []
+                result.map((item) => {
+                    array.push(item);
+
+                    fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${item}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization' : basicAuth,
+                            'Content-type': 'application/json',
+                        },
+                        credentials: "include"
+
+                    })
+                        .then(response => response.json())
+                        .then((result) => {
+
+                            if(this.state.reports.includes(result)){
+                                console.log("possible duplication")
+                            }else{
+                                //setReports(reports => [...reports, result]);
+                                this.setState({
+                                    reports : reports => [...reports, result]
+                                })
+                            }
+
+
+                        })
+                })
+                //setReportKeys(array);
+
+            });
+
 
 
         fetch(`https://www.namis.org/namis1/api/indicatorGroups.json?paging=false&fields=*`, {
@@ -176,11 +225,16 @@ class App extends PureComponent {
         });
     }
 
+     homeCallback = () => {
+        console.log("anything");
+    }
+
 
     render() {
 
 
         return (
+            /*
             <Fragment>
                 <div >
                     <NavBar callerBack={this.mainCallBack}/>
@@ -195,6 +249,68 @@ class App extends PureComponent {
                                  headerProps ={this.state.dashboards} className="mt-5"/>
                 </div>
             </Fragment>
+
+             */
+        <Fragment>
+            <Switch>
+                <Route path="/"  render={(props) => (
+                    <MainContent {...props} cropOptions={this.state.cropOptions}
+                                 errorMessage={this.state.errorMessage}
+                                 isLoaded={this.state.isLoaded}
+                                 organizationalUnits={this.state.orgUnits}
+                                 periods={this.state.periodTypes}
+                                 navBarValue={this.state.navBarValue}
+                                 programs={this.state.programGroups}
+                                 headerProps ={this.state.dashboards} />
+                )} exact/>
+
+                <Route path="/displayName" render={(props) => (
+                    <TransferList {...props} cropOptions={this.state.cropOptions}
+                                 errorMessage={this.state.errorMessage}
+                                 isLoaded={this.state.isLoaded}
+                                 headerProps ={this.state.dashboards} />
+                )} exact/>
+
+                <Route path="/analysis" render={(props) => (
+                    <Analysis {...props} reportProps={this.state.reports}
+                              indicators={this.state.dashboards}
+                              cropOptions={this.state.cropOptions}
+                              periodProps={this.state.periodTypes}
+                              organization={this.state.orgUnits}
+                              buttonCallback={this.homeCallback} />
+                )} exact/>
+
+                <Route path="/timePeriods" render={(props) => (
+                    <TimePeriods {...props} indicatorProps={this.state.dashboards}
+                              periodTypeProps={this.state.periodTypes}
+                              orgProps={this.state.orgUnits}
+                              btnCallback={this.homeCallback} />
+                )} exact/>
+
+                <Route path="/customReports" render={(props) => (
+                    <BoxComponent {...props} cropOptions={this.state.cropOptions}
+                              programs={this.state.programGroups}
+                              reports={this.state.reports}
+                              btnCallback={this.homeCallback}
+                              headerProps ={this.state.dashboards}
+                              errorMessage={this.state.errorMessage} />
+                )} exact/>
+
+                <Route path="/customReports/newReport" render={(props) => (
+                    <ReportForm {...props} arrayProps={this.state.cropOptions}
+                                 indicatorProps={this.state.programGroups}
+                                 buttonCallback={this.homeCallback} />
+                )} exact/>
+
+                <Route path="/customReports/editReport" render={(props) => (
+                    <EditForm {...props} reportProps={this.state.reports}
+                              arrayProps={this.state.cropOptions}
+                              indicatorProps={this.state.dashboards}
+                              buttonCallback={this.homeCallback} />
+                )} exact/>
+
+            </Switch>
+        </Fragment>
         )
 
     }

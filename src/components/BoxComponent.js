@@ -74,18 +74,10 @@ function BoxComponent(props) {
 
     }
 
-    const handleButton = () => {
-        props.btnCallback();
-    }
 
     return (
-        <div>
-            <MDBBtn color="cyan"
-                    onClick={handleButton}
-                    className="text-white float-lg-right mr-2" type="submit">
-                Back
-            </MDBBtn>
-            {!hideMenu ? <MDBContainer id="myDiv" className="d-flex justify-content-center">
+        <div className="mt-5">
+            {!hideMenu ? <MDBContainer id="myDiv" className="d-flex mt-5 justify-content-center">
                 <MDBRow>
                     <MDBCol md="6">
                         <MDBCard style={{ width: "23rem" }}>
@@ -94,7 +86,7 @@ function BoxComponent(props) {
                                 <MDBCardText>
                                     Create a new custom report template
                                 </MDBCardText>
-                                <MDBBtn className="text-white" onClick={createNewReport} color="primary">
+                                <MDBBtn className="text-white" href="/customReports/newReport" color="primary">
                                     Go
                                 </MDBBtn>
                             </MDBCardBody>

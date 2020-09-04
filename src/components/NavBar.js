@@ -35,7 +35,7 @@ class NavBar extends React.Component {
                             </Typography>
                         </div>
                         <MDBBtn style={{float: "right", marginLeft: "auto", marginRight: 30 }}
-                                onClick={this.handleClose} gradient="blue">HOME</MDBBtn>
+                                onClick={this.handleClose} color={"secondary"}>HOME</MDBBtn>
                     </Toolbar>
                 </AppBar>
 

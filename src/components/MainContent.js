@@ -10,6 +10,7 @@ import BoxComponent from "./BoxComponent";
 import App from "../App";
 import Analysis from "./Analysis";
 import TimePeriods from "./TimePeriods";
+import NavBar from "./NavBar";
 
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
@@ -151,6 +152,7 @@ const MainContent = (props) => {
     return (
 
         <div >
+            <NavBar/>
 
             { showHome ? <MDBContainer className="pl-5" id="myDiv">
                 <MDBRow className="my-5 p-2">
@@ -162,7 +164,7 @@ const MainContent = (props) => {
                                 <MDBCardText>
                                     Create and edit the portal display names of Indicators
                                 </MDBCardText>
-                                <MDBBtn onClick={gotoDisplayName} className="text-white" color="primary">GO</MDBBtn>
+                                <MDBBtn href="/displayName" className="text-white" color="primary">GO</MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -174,7 +176,7 @@ const MainContent = (props) => {
                                 <MDBCardText>
                                     Create and edit your own custom report templates for Namis Indicators
                                 </MDBCardText>
-                                <MDBBtn color="primary" onClick={gotoCustomReports}>Go</MDBBtn>
+                                <MDBBtn color="primary" href="/customReports">Go</MDBBtn>
                             </MDBCardBody>
                         </MDBCard>
                     </MDBCol>
@@ -191,7 +193,7 @@ const MainContent = (props) => {
                                     Using your own custom made report templates, get the analysis
                                     of the indicators in charts and tables.
                                 </MDBCardText>
-                                <MDBBtn color="primary" onClick={gotoAnalysis}>
+                                <MDBBtn color="primary" href="/analysis">
                                     Go {showAnLoading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
                                     <span className="sr-only">Loading...</span>
                                 </div> : null}
@@ -207,7 +209,7 @@ const MainContent = (props) => {
                                 <MDBCardText>
                                     Compare an indicator across two different time periods
                                 </MDBCardText>
-                                <MDBBtn onClick={gotoTimePeriods} color="primary">
+                                <MDBBtn href="/timePeriods" color="primary">
                                     Go{showPeLoading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
                                     <span className="sr-only">Loading...</span>
                                 </div> : null}
