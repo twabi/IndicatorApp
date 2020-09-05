@@ -77,8 +77,9 @@ function BoxComponent(props) {
 
     return (
         <div className="mt-5">
-            {!hideMenu ? <MDBContainer id="myDiv" className="d-flex mt-5 justify-content-center">
-                <MDBRow>
+            {!hideMenu ? <MDBContainer id="myDiv" className="d-flex flex-column mt-5 justify-content-center">
+                <h4 className="text-primary text-center my-3 mb-5 font-weight-bold">Custom Reports</h4>
+                <MDBRow className="mt-3">
                     <MDBCol md="6">
                         <MDBCard style={{ width: "23rem" }}>
                             <MDBCardBody>
@@ -98,7 +99,7 @@ function BoxComponent(props) {
                             <MDBCardText>
                                 Edit or delete an existing report template
                             </MDBCardText>
-                            <MDBBtn color="primary" onClick={editExistingReport}>Go</MDBBtn>
+                            <MDBBtn color="primary" href="/customReports/editReport">Go</MDBBtn>
                         </MDBCardBody>
                     </MDBCard></MDBCol>
 

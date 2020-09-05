@@ -1,5 +1,16 @@
 import React from "react";
-import {MDBBox, MDBBtn, MDBCard, MDBCardBody, MDBCardText, MDBCardTitle, MDBCol, MDBInput, MDBRow} from "mdbreact";
+import {
+    MDBBox,
+    MDBBtn,
+    MDBCard,
+    MDBCardBody,
+    MDBCardText,
+    MDBCardTitle,
+    MDBCol,
+    MDBContainer,
+    MDBInput,
+    MDBRow
+} from "mdbreact";
 import CustomTransferList from "./CustomTransferList";
 import ListTransfer from "./ListTransfer";
 import ShowForm from "./showForm";
@@ -86,8 +97,9 @@ const EditForm = (props) => {
 
             <hr className='hr-light' />
 
-        {showEditMenu ? <MDBBox className="ml-5" display="flex" justifyContent="center" >
-                <MDBRow>
+        {showEditMenu ? <MDBBox className="ml-5 d-flex flex-column" display="flex" justifyContent="center" >
+            <h4 className="text-primary text-center my-3 font-weight-bold">Edit Existing Reports</h4>
+            <MDBRow>
 
                     {reports.map((report, index) => (
 
