@@ -18,7 +18,7 @@ class NavBar extends React.Component {
     }
 
      handleClose = () => {
-        this.reloadPage();
+        window.location.href = "/";
 
     };
 
