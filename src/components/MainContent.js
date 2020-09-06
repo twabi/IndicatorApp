@@ -155,6 +155,12 @@ const MainContent = (props) => {
             <NavBar/>
 
             { showHome ? <MDBContainer className="pl-5" id="myDiv">
+                {!isLoaded ? <div className="text-center text-primary">
+                    <p>Loading essential data, please wait...</p>
+                    <div className="spinner-border fast" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                </div> : <p className="text-center text-danger">{errorMessage}</p>}
                 <MDBRow className="my-5 p-2">
                     <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
@@ -203,7 +209,7 @@ const MainContent = (props) => {
                     </MDBCol>
                     <MDBCol md="4" className="mx-5 my-2">
                         <MDBCard style={{ width: "22rem" }}>
-                            <MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20%28131%29.jpg" waves />
+                            <MDBCardImage  style={{ height: "13rem" }} className="img-fluid w-100" src="https://mdbootstrap.com/img/Photos/Horizontal/Nature/4-col/img%20%28131%29.jpg" waves />
                             <MDBCardBody>
                                 <MDBCardTitle>Time Periods</MDBCardTitle>
                                 <MDBCardText>

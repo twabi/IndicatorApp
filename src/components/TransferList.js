@@ -369,7 +369,7 @@ function TransferList(props) {
     };
 
     function reloadPage() {
-        window.location.reload(false);
+        window.location.href = "/";
     }
 
     var filterGroups= ["All", "Program", "Indicator Type",  " "]
@@ -472,9 +472,10 @@ function TransferList(props) {
 
     return (
         <div className={classes.root}>
+            <h4 className="text-center font-weight-bold text-uppercase text-primary m-2">Change Indicator's Portal displayname</h4>
 
-            <MDBCard style={{padding: 10}}>
-                <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+            <MDBCard style={{padding: 10}} className="mt-2">
+                <MDBCardHeader tag="h5" className="text-center   py-4">
                     Choose preferred Indicators
                 </MDBCardHeader>
 
@@ -575,13 +576,13 @@ function TransferList(props) {
 
 
 
-                    { showSelected ? <MDBCard>
+                    { showSelected ? <MDBCard className="mx-5 vw-100">
                         <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
                             Rename Indicators
                         </MDBCardHeader>
 
                         <MDBCardBody style={{padding: 10}}>
-                            <MDBTable striped bordered responsive>
+                            <MDBTable striped bordered responsive className="">
                                 <MDBTableHead columns={dataTables.columns} />
                                 <MDBTableBody>
                                     {rows.map((row, key) =>
