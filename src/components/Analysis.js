@@ -89,7 +89,7 @@ const ShowAnalysis = (props) => {
 
     const [reports, setReports] = React.useState(initReport);
     const [orgUnits, setOrgUnits] = React.useState(initState);
-    const [searchValue, setSearchValue] = React.useState("select ...");
+    const [searchValue, setSearchValue] = React.useState([]);
     const [reportValue, setReportValue] = React.useState("")
     const [periodTypes, setPeriodTypes] = React.useState([])
     const [key, setKey] = React.useState('home');
@@ -114,6 +114,7 @@ const ShowAnalysis = (props) => {
     const [showDayDiv, setShowDayDiv] = React.useState(false);
     const [showYearSelect, setShowYearSelect] = React.useState(true);
     const [dateString, setDateString] = React.useState("");
+    const [yearArray, setYearArray] = React.useState([]);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -155,6 +156,7 @@ const ShowAnalysis = (props) => {
                // console.log(result.rows)
                 //analysis = result.rows;
                 callBack(item, row, result);
+
 
         }).catch(error => {
             alert("oops an error occurred: " + error + " .Try reloading your page");
@@ -404,8 +406,11 @@ const ShowAnalysis = (props) => {
                 console.log(periods);
                 var columns = [];
                 periods.map((pe)=>{
-                    columns.push({"year" : pe})
+                    columns.push({"year" : pe});
+
                 })
+
+                setYearArray(columns);
 
                 if(result.rows == null || result.rows.length == 0){
                     console.log("this year has no data!" + columns);
@@ -452,25 +457,29 @@ const ShowAnalysis = (props) => {
         report.cellData.map((item)=>{
             item.rowData.map((row, index) =>{
 
-                getAnalytics(item, row, timePeriod, orgUnit.id, callback)
+                getAnalytics(item, row, timePeriod, orgUnit, callback)
                     .then((r) => {
                         setAnalytics([...analyzed]);
                     })
                     .then(()=>{
                         console.log(analyzed)
                         setAnalytics([...analyzed]);
-                        console.log(analytics)
                         setShowAnalysis(true)
                         setShowMenu(false);
+                        console.log(yearArray)
+                        //setYearArray(yearArray.splice(0, analyzed.length));
                         setShowLoading(false);
                         setShowButton(true);
 
                     })
             })
         });
+
+
     }
 
     const handleAnalyze = () => {
+        console.log(variable);
 
         setShowLoading(true);
         var fixedTime = [];
@@ -479,50 +488,61 @@ const ShowAnalysis = (props) => {
             fixedTime.push(item + selectedFixedtime + numberTitle)
         ))
 
+        var units = [];
+        variable.map((item) => {
+            console.log(item);
+            units.push(item.id);
+        })
+        console.log(units);
+
         if(relTimeClicked === true ){
             console.log(selectedReport);
             console.log(relTimeTitle);
-            console.log(variable);
+            console.log(units.join(";"));
             console.log("relative time")
 
-            Analysis(selectedReport, relTimeTitle, variable);
+            Analysis(selectedReport, relTimeTitle, units.join(";"));
 
         } else if(fixedTimeClicked === true){
 
             if(dateString !== ""){
                 console.log(dateString);
-                Analysis(selectedReport, dateString, variable);
+                Analysis(selectedReport, dateString, units.join(";"));
             }else{
                 console.log(selectedReport);
-                console.log(variable);
+                console.log(units.join(";"));
                 console.log(fixedTime);
                 console.log("fixed time");
 
-                Analysis(selectedReport, fixedTime.join(";"), variable);
+                Analysis(selectedReport, fixedTime.join(";"), units.join(";"));
             }
 
         }
     }
 
-    const [variable, setVariable] = React.useState({});
+    const [variable, setVariable] = React.useState([]);
 
-    const handle = (value) => {
+    const handle = (value, node) => {
         setSearchValue(value)
+        console.log(value);
+
+        //setVariable([...variable.filter(x => x.key===value)]);
     };
 
     const onSelect = (value, node) => {
 
-        console.log(node.id)
-        setVariable(node)
+        console.log(value);
+        console.log(node);
+        setVariable(variable => [...variable, node]);
 
     }
 
     const AnalysisTable = () => {
         return (
 
-            <MDBBox  display="flex" justifyContent="center" >
-                <MDBCol className="mb-5" md="9">
-                    <MDBCard >
+            <MDBBox  display="flex" justifyContent="center" className="mt-5" >
+                <MDBCol className="mb-5" md="11">
+                    <MDBCard  className="ml-4">
                         <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
                             {selectedReport.title}
                         </MDBCardHeader>
@@ -531,31 +551,54 @@ const ShowAnalysis = (props) => {
                             <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
                                 <MDBTableHead>
                                     <tr>
-                                        {selectedReport.columnHeaders.map((item, key) => (
-                                            <th key={key} >
-                                                {item.name}
-                                            </th>
-
+                                        <th rowSpan="2"> </th><th> </th>
+                                        {yearArray.map((year)=>(
+                                            <th colSpan={selectedReport.columnHeaders.length-1}>{year.year}</th>
                                         ))}
                                     </tr>
+                                    <tr>
+                                        <th>
+                                            {selectedReport.columnHeaders[0].name}
+                                        </th>
+                                        {yearArray.map((year, index) => (
+                                            selectedReport.columnHeaders.slice(1, selectedReport.columnHeaders.length)
+                                                .map((item, key) => (
+                                                    <th key={key} >
+                                                        {item.name}
+                                                    </th>
+
+                                                ))
+                                        ))}
+                                    </tr>
+
                                 </MDBTableHead>
                                 <MDBTableBody>
-                                    {selectedReport.cellData.map((item, key) => (
-                                        <tr key={key} >
-                                            <td key={key}>
-                                                {item.rowDetails.name}
-                                            </td>
-                                            {selectedReport.columnHeaders
-                                                .slice(0,selectedReport.columns-1).map((dat, index)=>(
-                                                    <td className="new-line" key={i}>
-                                                        {item.rowData[index].indicatorValue && item.rowData[index].indicatorValue.map((item)=>(
-                                                            <p>{item.year} : {item.value} <br /></p>
-                                                        ))}
-                                                    </td>
-                                                ))}
 
-                                        </tr>
+                                    {variable.map((unit)=>(
+
+                                        selectedReport.cellData.map((item, key) => (
+                                            <tr key={key}>
+                                                <td>{unit.name}</td>
+                                                <td key={key}>
+                                                    {item.rowDetails.name}
+                                                </td>
+
+                                                {yearArray.map((year, indexie)=>(
+                                                    selectedReport.columnHeaders
+                                                        .slice(0,selectedReport.columns-1).map((dat, index)=>(
+                                                        <td className="new-line" key={i}>
+                                                            {item.rowData[index].indicatorValue && item.rowData[index].indicatorValue[indexie].value}
+                                                        </td>
+                                                    ))
+
+                                                ))}
+                                            </tr>
+                                        ))
+
                                     ))}
+
+
+
 
                                 </MDBTableBody>
                             </MDBTable>
@@ -580,7 +623,7 @@ const ShowAnalysis = (props) => {
         <div>
             {showButton ? <MDBBtn color="cyan"
                                   onClick={handleButton}
-                                  className="text-white float-lg-right mr-2" type="submit">
+                                  className="text-white float-lg-right mr-2 mb-5" type="submit">
                 Back
             </MDBBtn> : null}
 
@@ -617,7 +660,7 @@ const ShowAnalysis = (props) => {
                                                 </MDBDropdownToggle>
                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
 
-                                                    {reports.slice(0, (reports.length/2)).map((report, index) => (
+                                                    {reports.map((report, index) => (
 
                                                         <MDBDropdownItem onClick={()=>{handleReportsClick(report)}} key={index}>
                                                             {report.title}
@@ -640,7 +683,11 @@ const ShowAnalysis = (props) => {
                                                 className="mt-4"
                                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                                 treeData={orgUnits}
-                                                placeholder="Please select org unit"
+                                                allowClear
+                                                multiple
+                                                treeCheckable="true"
+                                                showCheckedStrategy="SHOW_PARENT"
+                                                placeholder="Please select organizational unit"
                                                 onChange={handle}
                                                 onSelect={onSelect}
                                             />
