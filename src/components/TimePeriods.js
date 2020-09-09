@@ -34,6 +34,13 @@ const TimePeriods = (props) => {
     }
     var weekNumbers = array3;
 
+
+    var relativeTime = [{"these":"THIS_WEEK", "last":"LAST_WEEK"}, {"these":"THIS_MONTH", "last":"LAST_MONTH"},
+        {"these":"THIS_BIMONTH", "last":"LAST_BIMONTH"}, {"these":"THIS_QUARTER", "last":"LAST_QUARTER"}, {"these":"QUARTERS_THIS_YEAR", "last":"QUARTERS_LAST_YEAR"}
+        ,{"these":"MONTHS_THIS_YEAR", "last":"MONTHS_LAST_YEAR"}, {"these":"THIS_SIX_MONTH", "last":"LAST_SIX_MONTH"}
+        ,{"these":"THIS_YEAR", "last":"LAST_YEAR"}, {"these":"THIS_FINANCIAL_YEAR", "last":"LAST_FINANCIAL_YEAR"}]
+
+
     var initState = props.indicatorProps;
     var periods = props.periodTypeProps;
     var orgs = props.orgProps;
@@ -57,7 +64,9 @@ const TimePeriods = (props) => {
     const [showBtn, setShowBtn] = React.useState(false);
     const [showDayDiv, setShowDayDiv] = React.useState(false);
     const [showDropdown, setShowDropdown] = React.useState(true);
-    const [dateString, setDateString] = React.useState("")
+    const [dateString, setDateString] = React.useState("");
+    const [thisPeriod, setThisPeriod] = React.useState("select a period this year");
+    const [lastPeriod, setLastPeriod] = React.useState("");
 
     React.useEffect(()=>{
         setIndicators(props.indicatorProps);
@@ -112,116 +121,8 @@ const TimePeriods = (props) => {
     }
 
     const handlePeriodClick = (value) =>{
-        setFixPeriodType(value)
-
-        if(value === "Weekly"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers)
-            setSelectedFixedtime("W")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        } else if(value === "Daily"){
-            setShowDropdown(false);
-            setShowDayDiv(true);
-
-        }else if (value === "Monthly"){
-            setNumberTitle("Month Number");
-            setPeriodNumber(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"])
-            setSelectedFixedtime("")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if(value === "WeeklyWednesday"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers)
-            setSelectedFixedtime("WedW")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if(value === "WeeklyThursday"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers)
-            setSelectedFixedtime("ThuW")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if(value === "WeeklySunday"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers)
-            setSelectedFixedtime("SunW")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-        }
-        else if(value === "WeeklySaturday"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers)
-            setSelectedFixedtime("SatW")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if(value === "BiWeekly"){
-            setNumberTitle("Week Number");
-            setPeriodNumber(weekNumbers.splice(0, weekNumbers.length/2))
-            setSelectedFixedtime("BiW")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        } else if (value === "BiMonthly"){
-            setNumberTitle("Bi-Month Number");
-            setPeriodNumber(["01", "02", "03", "04", "05", "06"])
-            setSelectedFixedtime("B")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        } else if(value ===  "SixMonthly"){
-            setNumberTitle("Six-Month Number");
-            setPeriodNumber(["1", "2"])
-            setSelectedFixedtime("S")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        } else if(value ===  "SixMonthlyApril"){
-            setNumberTitle("Six-Month Number");
-            setPeriodNumber(["1", "2"])
-            setSelectedFixedtime("AprilS")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if (value === "Yearly") {
-            setNumberTitle("");
-            setPeriodNumber([])
-            setSelectedFixedtime("")
-            setShowDropdown(true);
-
-        } else if (value === "Quarterly") {
-            setNumberTitle("Quarter Number");
-            setPeriodNumber(["1", "2", "3", "4"])
-            setSelectedFixedtime("Q")
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        } else if (value === "FinancialApril"){
-            setSelectedFixedtime("April")
-            setNumberTitle("");
-            setPeriodNumber([])
-            setShowDropdown(true);
-            setShowDayDiv(false);
-
-        }else if (value === "FinancialJuly"){
-            setSelectedFixedtime("July")
-            setNumberTitle("");
-            setPeriodNumber([])
-            setShowDropdown(true);
-            setShowDayDiv(false);
-        }
-        else if (value === "FinancialOct"){
-            setSelectedFixedtime("Oct")
-            setNumberTitle("");
-            setPeriodNumber([])
-            setShowDropdown(true);
-            setShowDayDiv(false);
-        }
+        setThisPeriod(value.these);
+        setLastPeriod(value.last);
     }
 
     const handlePeriodNumber = (value) => {
@@ -230,36 +131,41 @@ const TimePeriods = (props) => {
 
     const handleCompare = () => {
 
-        setShowLoading(true);
-
-        var thisPeriod;
-        var lastPeriod;
-
-        if(selectedFixedtime === "B"){
-             thisPeriod = thisYear  + numberTitle + selectedFixedtime;
-             lastPeriod = lastYear+ numberTitle  + selectedFixedtime ;
-        } else if(dateString !== ""){
-            thisPeriod = dateString;
-            var year = dateString.slice(0, 4);
-            var other = dateString.substring(4)
-            var intYear = (parseInt(year)) - 1;
-            lastPeriod = intYear + other;
-            console.log(lastPeriod);
-            console.log(thisPeriod);
+        if(thisPeriod === "select a period this year"){
+            alert("please select a time period to proceeed");
         } else {
-             thisPeriod = thisYear + selectedFixedtime + numberTitle;
-             lastPeriod = lastYear + selectedFixedtime + numberTitle;
+            setShowLoading(true);
+
+            /*
+            if(selectedFixedtime === "B"){
+                 thisPeriod = thisYear  + numberTitle + selectedFixedtime;
+                 lastPeriod = lastYear+ numberTitle  + selectedFixedtime ;
+            } else if(dateString !== ""){
+                thisPeriod = dateString;
+                var year = dateString.slice(0, 4);
+                var other = dateString.substring(4)
+                var intYear = (parseInt(year)) - 1;
+                lastPeriod = intYear + other;
+                console.log(lastPeriod);
+                console.log(thisPeriod);
+            } else {
+                 thisPeriod = thisYear + selectedFixedtime + numberTitle;
+                 lastPeriod = lastYear + selectedFixedtime + numberTitle;
+            }
+
+
+             */
+
+
+
+            var pe = thisPeriod+";"+lastPeriod;
+
+            console.log(pe)
+            console.log(selectedOrgUnit);
+            console.log(selectedIndicator);
+
+            makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, selectedOrgUnit);
         }
-
-
-
-        var pe = thisPeriod+";"+lastPeriod;
-
-        console.log(pe)
-        console.log(selectedOrgUnit);
-        console.log(selectedIndicator);
-
-        makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, selectedOrgUnit);
 
     }
 
@@ -280,8 +186,10 @@ const TimePeriods = (props) => {
 
             }else {
                 var columns = [];
-                columns.push({"column" : result.metaData.items[thisPeriod].name})
-                columns.push({"column": result.metaData.items[lastPeriod].name})
+                var pe1 = result.metaData.dimensions.pe[0];
+                var pe2 = result.metaData.dimensions.pe[1];
+                columns.push({"column" : result.metaData.items[pe1].name})
+                columns.push({"column": result.metaData.items[pe2].name})
 
                 //var value = [];
 
@@ -511,55 +419,25 @@ const TimePeriods = (props) => {
                                     </MDBCol>
                                 </MDBRow>
                                 <MDBRow className="mt-1">
-                                    <MDBCol md="6">
+                                    <MDBCol md="10">
                                         <div className="text-left my-3">
                                             <label className="grey-text ml-2">
                                                 <strong>Select Time Period Type for This year</strong>
                                             </label>
                                             <MDBDropdown className=" myDropDown">
                                                 <MDBDropdownToggle caret color="primary">
-                                                    {fixPeriodType}
+                                                    {thisPeriod}
                                                 </MDBDropdownToggle>
                                                 <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                    {periodTypes.map((item, index) => (
-                                                        <MDBDropdownItem onClick={()=>{handlePeriodClick(item.name)}}
+                                                    {relativeTime.map((item, index) => (
+                                                        <MDBDropdownItem onClick={()=>{handlePeriodClick(item)}}
                                                                          key={index}>
-                                                            {item.name}
+                                                            {item.these}
                                                         </MDBDropdownItem>
                                                     ))}
                                                 </MDBDropdownMenu>
                                             </MDBDropdown>
                                         </div>
-                                    </MDBCol>
-
-                                    <MDBCol md="6">
-                                        {showDropdown ?
-                                            <div className="text-left my-3">
-                                                <label className="grey-text ml-2">
-                                                    <strong>Period Number</strong>
-                                                </label>
-                                                <MDBDropdown className=" myDropDown">
-                                                    <MDBDropdownToggle caret color="primary">
-                                                        {numberTitle}
-                                                    </MDBDropdownToggle>
-                                                    <MDBDropdownMenu className="dropdown-menu myDrop"  basic >
-                                                        {periodNumber.map((item, index) => (
-                                                            <MDBDropdownItem onClick={()=>{handlePeriodNumber(item)}}
-                                                                             key={index}>
-                                                                {item}
-                                                            </MDBDropdownItem>
-                                                        ))}
-                                                    </MDBDropdownMenu>
-                                                </MDBDropdown>
-                                            </div>: null}
-
-                                        {showDayDiv ?
-                                            <div className="text-left my-3 d-flex flex-column">
-                                                <label className="grey-text ml-2">
-                                                    <strong>Day Number</strong>
-                                                </label>
-                                                <DatePicker className="mt-3" onChange={onChange} />
-                                            </div> : null}
                                     </MDBCol>
 
                                 </MDBRow>

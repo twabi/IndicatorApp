@@ -522,11 +522,11 @@ const ShowAnalysis = (props) => {
 
     const [variable, setVariable] = React.useState([]);
 
-    const handle = (value, node) => {
+    const handle = (value, label, extra) => {
         setSearchValue(value)
-        console.log(value);
-
-        //setVariable([...variable.filter(x => x.key===value)]);
+        console.log(extra);
+        console.log(variable);
+        //setVariable(variable.filter(x => !value.includes(x.key)));
     };
 
     const onSelect = (value, node) => {
