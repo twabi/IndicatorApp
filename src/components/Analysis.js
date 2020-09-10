@@ -115,6 +115,8 @@ const ShowAnalysis = (props) => {
     const [showYearSelect, setShowYearSelect] = React.useState(true);
     const [dateString, setDateString] = React.useState("");
     const [yearArray, setYearArray] = React.useState([]);
+    const [yearArray2, setYearArray2] = React.useState([]);
+    const [variable, setVariable] = React.useState([]);
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
@@ -142,7 +144,7 @@ const ShowAnalysis = (props) => {
         var dxID = row.indicatorID;
         //var analysis = [];
 
-        return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
+        return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=pe:${pe}&dimension=ou:${ouID}&filter=dx:${dxID}&displayProperty=NAME&outputIdScheme=NAME`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -178,6 +180,7 @@ const ShowAnalysis = (props) => {
         if(showMenu == true){
             //props.buttonCallback();
         } else if(showMenu == false){
+            setVariable([]);
             setShowMenu(true);
             setShowAnalysis(false);
             setShowButton(false);
@@ -403,20 +406,28 @@ const ShowAnalysis = (props) => {
 
             }else {
                 var periods = result.metaData.dimensions.pe;
-                console.log(periods);
+                var ou = result.metaData.dimensions.ou;
+                console.log(ou);
                 var columns = [];
                 periods.map((pe)=>{
-                    columns.push({"year" : pe});
-
+                    ou.map((unit)=>{
+                        columns.push({"year" : pe, "unit": result.metaData.items[unit].name});
+                    })
                 })
 
-                setYearArray(columns);
+                var array = columns.slice().reverse().filter((v,i,a)=>a.findIndex(t=>(t.year === v.year))===i).reverse();
+                //console.log(array);
+                console.log(columns);
+                //columns = array;
+                setYearArray(array);
+                setYearArray2(columns);
 
                 if(result.rows == null || result.rows.length == 0){
                     console.log("this year has no data!" + columns);
                     //row.indicatorValue = "-";
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
+                    var year = result.rows[i][0];
                     columns.map((item)=>{
                         if(item.year.includes(year)){
                             //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
@@ -429,11 +440,12 @@ const ShowAnalysis = (props) => {
 
                     for(var i =0; i<result.rows.length; i++){
 
-                        var year = result.rows[i][1];
+                        var year = result.rows[i][0];
+                        var uno = result.rows[i][1]
                         columns.map((item)=>{
-                            if(item.year.includes(year)){
+                            if(item.year.includes(year) && item.unit.includes(uno)){
                                 //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
-                                item.value = result.rows[i][2]
+                                item.value = result.rows[i][2];
                             }
                         })
 
@@ -443,7 +455,8 @@ const ShowAnalysis = (props) => {
                             item.value = "-";
                         }
                     });
-                    console.log(columns);
+
+
                     row.indicatorValue = columns;
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
@@ -466,7 +479,7 @@ const ShowAnalysis = (props) => {
                         setAnalytics([...analyzed]);
                         setShowAnalysis(true)
                         setShowMenu(false);
-                        console.log(yearArray)
+                        console.log(report);
                         //setYearArray(yearArray.splice(0, analyzed.length));
                         setShowLoading(false);
                         setShowButton(true);
@@ -520,8 +533,6 @@ const ShowAnalysis = (props) => {
         }
     }
 
-    const [variable, setVariable] = React.useState([]);
-
     const handle = (value, label, extra) => {
         setSearchValue(value)
         console.log(extra);
@@ -537,85 +548,91 @@ const ShowAnalysis = (props) => {
 
     }
 
-    const AnalysisTable = () => {
-        return (
+    const AnalysisTable = (analytics) => {
+        var analyzed = analytics.slice().reverse().filter((v,i,a)=>a.findIndex(t=>(t.rowDetails.id === v.rowDetails.id))===i).reverse();
+        console.log(yearArray2);
+        if(analyzed !== null && analyzed.length !== 0){
+            return (
 
-            <MDBBox  display="flex" justifyContent="center" className="mt-5" >
-                <MDBCol className="mb-5" md="11">
-                    <MDBCard  className="ml-4">
-                        <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
-                            {selectedReport.title}
-                        </MDBCardHeader>
+                <MDBBox  display="flex" justifyContent="center" className="mt-5" >
+                    <MDBCol className="mb-5" md="11">
+                        <MDBCard  className="ml-4">
+                            <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                                {selectedReport.title}
+                            </MDBCardHeader>
 
-                        <MDBCardBody  >
-                            <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
-                                <MDBTableHead>
-                                    <tr>
-                                        <th rowSpan="2"> </th><th> </th>
-                                        {yearArray.map((year)=>(
-                                            <th colSpan={selectedReport.columnHeaders.length-1}>{year.year}</th>
-                                        ))}
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {selectedReport.columnHeaders[0].name}
-                                        </th>
-                                        {yearArray.map((year, index) => (
-                                            selectedReport.columnHeaders.slice(1, selectedReport.columnHeaders.length)
-                                                .map((item, key) => (
-                                                    <th key={key} >
-                                                        {item.name}
-                                                    </th>
+                            <MDBCardBody  >
+                                <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
+                                    <MDBTableHead>
+                                        <tr>
+                                            <th rowSpan="2"> </th><th> </th>
+                                            {yearArray.map((year)=>(
+                                                <th className="text-center" colSpan={selectedReport.columnHeaders.length-1}>{year.year}</th>
+                                            ))}
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                {selectedReport.columnHeaders[0].name}
+                                            </th>
+                                            {yearArray.map((year, index) => (
+                                                selectedReport.columnHeaders.slice(1, selectedReport.columnHeaders.length)
+                                                    .map((item, key) => (
+                                                        <th key={key} >
+                                                            {item.name}
+                                                        </th>
 
-                                                ))
-                                        ))}
-                                    </tr>
-
-                                </MDBTableHead>
-                                <MDBTableBody>
-
-                                    {variable.map((unit)=>(
-
-                                        selectedReport.cellData.map((item, key) => (
-                                            <tr key={key}>
-                                                <td>{unit.name}</td>
-                                                <td key={key}>
-                                                    {item.rowDetails.name}
-                                                </td>
-
-                                                {yearArray.map((year, indexie)=>(
-                                                    selectedReport.columnHeaders
-                                                        .slice(0,selectedReport.columns-1).map((dat, index)=>(
-                                                        <td className="new-line" key={i}>
-                                                            {item.rowData[index].indicatorValue && item.rowData[index].indicatorValue[indexie].value}
-                                                        </td>
                                                     ))
+                                            ))}
+                                        </tr>
 
-                                                ))}
-                                            </tr>
-                                        ))
+                                    </MDBTableHead>
+                                    <MDBTableBody>
 
-                                    ))}
+                                        {variable.map((unit, ind)=>(
+
+                                            selectedReport.cellData.map((item, key) => (
+                                                <tr key={key}>
+                                                    <td>{unit.name}</td>
+                                                    <td key={key}>
+                                                        {item.rowDetails.name}
+                                                    </td>
 
 
+                                                    {yearArray.map((year, indexie)=>(
+                                                        item.rowData.map((data, number) =>(
+                                                            <td className="new-line" key={i}>
+
+                                                                {data.indicatorValue && data.indicatorValue.map((val, num)=>(
+                                                                    <strong>{val.year === year.year && val.unit === unit.name ? val.value : null}</strong>
+                                                                ))}
+                                                            </td>
+                                                        ))
 
 
-                                </MDBTableBody>
-                            </MDBTable>
-                        </MDBCardBody>
+                                                    ))}
+                                                </tr>
+                                            ))
 
-                    </MDBCard>
-                    <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+                                        ))}
 
-                        <MDBBtn color="primary" onClick={()=>{exportPDF(selectedReport.title)}}>
-                            Print PDF {showDownloading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
-                            <span className="sr-only">Loading...</span>
-                        </div> : null}
-                        </MDBBtn>
+                                    </MDBTableBody>
+                                </MDBTable>
+                            </MDBCardBody>
 
-                    </Grid>
-                </MDBCol></MDBBox>
-        )
+                        </MDBCard>
+                        <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+
+                            <MDBBtn color="primary" onClick={()=>{exportPDF(selectedReport.title)}}>
+                                Print PDF {showDownloading ? <div className="spinner-border mx-2 text-white spinner-border-sm" role="status">
+                                <span className="sr-only">Loading...</span>
+                            </div> : null}
+                            </MDBBtn>
+
+                        </Grid>
+                    </MDBCol></MDBBox>
+            );
+        }
+
     }
 
     return (
