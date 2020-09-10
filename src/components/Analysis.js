@@ -181,6 +181,7 @@ const ShowAnalysis = (props) => {
             //props.buttonCallback();
         } else if(showMenu == false){
             setVariable([]);
+            setSearchValue([]);
             setShowMenu(true);
             setShowAnalysis(false);
             setShowButton(false);
@@ -562,7 +563,7 @@ const ShowAnalysis = (props) => {
                             </MDBCardHeader>
 
                             <MDBCardBody  >
-                                <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
+                                <MDBTable id="tableDiv" striped bordered responsive className="border-dark border">
                                     <MDBTableHead>
                                         <tr>
                                             <th rowSpan="2"> </th><th> </th>
@@ -592,7 +593,7 @@ const ShowAnalysis = (props) => {
 
                                             selectedReport.cellData.map((item, key) => (
                                                 <tr key={key}>
-                                                    <td>{unit.name}</td>
+                                                    { key==0 && <td rowSpan={selectedReport.cellData.length}>{unit.name}</td> }
                                                     <td key={key}>
                                                         {item.rowDetails.name}
                                                     </td>
