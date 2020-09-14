@@ -604,7 +604,7 @@ const ShowAnalysis = (props) => {
                                                             <td className="new-line" key={i}>
 
                                                                 {data.indicatorValue && data.indicatorValue.map((val, num)=>(
-                                                                    <strong>{val.year === year.year && val.unit === unit.name ? val.value : null}</strong>
+                                                                    <>{val.year === year.year && val.unit === unit.name ? val.value : null}</>
                                                                 ))}
                                                             </td>
                                                         ))
@@ -703,8 +703,6 @@ const ShowAnalysis = (props) => {
                                                 treeData={orgUnits}
                                                 allowClear
                                                 multiple
-                                                treeCheckable="true"
-                                                showCheckedStrategy="SHOW_PARENT"
                                                 placeholder="Please select organizational unit"
                                                 onChange={handle}
                                                 onSelect={onSelect}

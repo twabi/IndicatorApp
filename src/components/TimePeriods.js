@@ -54,9 +54,9 @@ const TimePeriods = (props) => {
     const [numberTitle, setNumberTitle] = React.useState("NaN")
     const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
     const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
-    const [orgValue, setOrgValue] = React.useState("select ...");
+    const [orgValue, setOrgValue] = React.useState([]);
     const [orgUnits, setOrgUnits] = React.useState(orgs)
-    const [selectedOrgUnit, setSelectedOrgUnit] = React.useState({});
+    const [selectedOrgUnit, setSelectedOrgUnit] = React.useState([]);
     const [cols, setCols] = React.useState([])
     const [showTable, setShowTable] = React.useState(false);
     const [showLoading, setShowLoading] = React.useState(false)
@@ -67,6 +67,7 @@ const TimePeriods = (props) => {
     const [dateString, setDateString] = React.useState("");
     const [thisPeriod, setThisPeriod] = React.useState("select a period this year");
     const [lastPeriod, setLastPeriod] = React.useState("");
+    const [years, setYears] = React.useState([]);
 
     React.useEffect(()=>{
         setIndicators(props.indicatorProps);
@@ -94,7 +95,7 @@ const TimePeriods = (props) => {
 
     const getComparison = (dxID, pe, ouID,  callBack) => {
 
-        return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=dx:${dxID}&dimension=pe:${pe}&filter=ou:${ouID}&displayProperty=NAME&outputIdScheme=NAME`, {
+        return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=pe:${pe}&dimension=ou:${ouID}&filter=dx:${dxID}&displayProperty=NAME&outputIdScheme=NAME`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -160,11 +161,18 @@ const TimePeriods = (props) => {
 
             var pe = thisPeriod+";"+lastPeriod;
 
+            var units = [];
+            selectedOrgUnit.map((item) => {
+                console.log(item);
+                units.push(item.id);
+            })
+            console.log(units);
+
             console.log(pe)
-            console.log(selectedOrgUnit);
+            console.log(units.join(";"));
             console.log(selectedIndicator);
 
-            makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, selectedOrgUnit);
+            makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, units.join(";"));
         }
 
     }
@@ -174,7 +182,8 @@ const TimePeriods = (props) => {
     };
 
     const onSelect = (value, node) => {
-        setSelectedOrgUnit(node)
+        //setSelectedOrgUnit(node);
+        setSelectedOrgUnit(selectedOrgUnit => [...selectedOrgUnit, node]);
 
     }
 
@@ -188,8 +197,29 @@ const TimePeriods = (props) => {
                 var columns = [];
                 var pe1 = result.metaData.dimensions.pe[0];
                 var pe2 = result.metaData.dimensions.pe[1];
-                columns.push({"column" : result.metaData.items[pe1].name})
-                columns.push({"column": result.metaData.items[pe2].name})
+                var pes = [result.metaData.items[pe1].name, result.metaData.items[pe2].name];
+                setYears(pes);
+
+                pes.map((pe)=>{
+                    selectedOrgUnit.map((unit)=>{
+                        columns.push({"year" : pe, "unit": unit.name});
+                    })
+                })
+
+                /*
+                console.log(selectedOrgUnit);
+                selectedOrgUnit.map((unit)=>{
+                    console.log(unit.name);
+                })
+                columns.map((item)=>{
+                    selectedOrgUnit.map((unit)=>{
+                        item.unit = unit.name;
+                    })
+                })
+
+                 */
+
+                console.log(columns);
 
                 //var value = [];
 
@@ -204,12 +234,13 @@ const TimePeriods = (props) => {
 
                     for(var i = 0; i<result.rows.length; i++){
                         //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
-                        var year = result.rows[i][1]
+                        var year = result.rows[i][0]
+                        var uno = result.rows[i][1]
                         //value.push({"year": result.rows[i][1], "value" : result.rows[i][2]});
                         columns.map((item) => {
-                            console.log(item.column)
-                            if(item.column.includes(year)){
-                                item.value = result.rows[i][2]
+                            console.log(item.year)
+                            if(item.year.includes(year)  && item.unit.includes(uno)){
+                                item.value = result.rows[i][2];
                             }
                         })
                     }
@@ -224,7 +255,7 @@ const TimePeriods = (props) => {
             }
         }
 
-        getComparison(indicator.id, timePeriod, orgUnit.id, callback)
+        getComparison(indicator.id, timePeriod, orgUnit, callback)
             .then((r) => {
             })
             .then(()=>{
@@ -307,23 +338,32 @@ const TimePeriods = (props) => {
                         <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
                             <MDBTableHead color="primary-color" textWhite>
                                 <tr>
-                                    {columns.map((item, key) => (
+                                    <th></th>
+                                    {years.map((item, key) => (
                                         <th key={key} >
-                                            {item.column}
+                                            {item}
                                         </th>
 
                                     ))}
                                 </tr>
                             </MDBTableHead>
                             <MDBTableBody>
-                                <tr>
-                                    {columns.map((data, index)=>(
+                                {selectedOrgUnit.map((unit, key)=>(
+
+                                    <tr key={key}>
+                                        <td>{unit.name}</td>
+                                        {years.map((year, index)=>(
                                             <td key={index}>
-                                                {data.value}
+                                                {columns.map((data, keyIndex)=>(
+                                                    <>{data.year === year && data.unit === unit.name ? data.value : null}</>
+                                            ))}
                                             </td>
+
                                         ))}
 
-                                </tr>
+                                    </tr>
+                                ))}
+
 
                             </MDBTableBody>
                         </MDBTable>
@@ -409,7 +449,8 @@ const TimePeriods = (props) => {
                                                 className="mt-2"
                                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                                 treeData={orgUnits}
-                                                placeholder="Please select org unit"
+                                                multiple
+                                                placeholder="Please select org units"
                                                 onChange={handle}
                                                 onSelect={onSelect}
                                             />
