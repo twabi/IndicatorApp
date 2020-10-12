@@ -1,0 +1,73 @@
+[build]
+  command = "CI= npm run build"
+  publish="build/"
+
+[[redirects]]
+  from = "/"
+  to = "/displayName"
+  status = 200
+
+[[redirects]]
+from = "/displayName"
+to = "/"
+status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/analysis"
+  status = 200
+
+[[redirects]]
+from = "/analysis"
+to = "/"
+status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/timePeriods"
+  status = 200
+
+[[redirects]]
+from = "/timePeriods"
+to = "/"
+status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/customReports"
+  status = 200
+
+[[redirects]]
+from = "/customReports"
+to = "/"
+status = 200
+
+[[redirects]]
+from = "/customReports"
+to = "/newReport"
+status = 200
+
+[[redirects]]
+from = "/customReports"
+to = "/editReport"
+status = 200
+
+[[redirects]]
+from = "/newReport"
+to = "/customReports"
+status = 200
+
+[[redirects]]
+from = "/editReport"
+to = "/customReports"
+status = 200
+
+[[redirects]]
+from = "/newReport"
+to = "/"
+status = 200
+
+[[redirects]]
+from = "/editReport"
+to = "/"
+status = 200
