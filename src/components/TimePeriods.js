@@ -15,6 +15,7 @@ import {TreeSelect} from "antd";
 import Grid from "@material-ui/core/Grid";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import NavBar from "./NavBar";
 
 const moment = require('moment')
 let now = moment();
@@ -385,6 +386,7 @@ const TimePeriods = (props) => {
 
     return (
         <div>
+            <NavBar/>
             {showBtn ? <MDBBtn color="cyan"
                                onClick={handleButton}
                                className="text-white float-lg-right mr-2" type="submit">

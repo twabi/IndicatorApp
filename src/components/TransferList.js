@@ -8,6 +8,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import DropdownPage from "./DropdownPage";
 import DropdownGroup from "./DropdownGroup";
 import {MDBTable, MDBTableBody, MDBBtn, MDBTableHead, MDBCard, MDBCardHeader, MDBCardBody, MDBCardFooter} from 'mdbreact';
+import NavBar from "./NavBar";
 
 
 
@@ -471,149 +472,154 @@ function TransferList(props) {
     );
 
     return (
-        <div className={classes.root}>
-            <h4 className="text-center font-weight-bold text-uppercase text-primary m-2">Change Indicator's Portal displayname</h4>
+        <div>
+            <NavBar/>
+            <div className={classes.root}>
 
-            <MDBCard style={{padding: 10}} className="mt-2">
-                <MDBCardHeader tag="h5" className="text-center   py-4">
-                    Choose preferred Indicators
-                </MDBCardHeader>
+                <h4 className="text-center font-weight-bold text-uppercase text-primary m-2">Change Indicator's Portal displayname</h4>
 
-                <MDBCardBody style={{padding: 10}}>
-                    <Grid container direction="row" justify="center" alignItems="center" className={classes.another}>
-                        <Grid item style={{marginRight: 20, marginTop:10}}>
-                            <input className="form-control" value={searchValue}
-                                   onChange={e => handleSearch(e)} type="text" placeholder="Search" aria-label="Search" />
+                <MDBCard style={{padding: 10}} className="mt-2">
+                    <MDBCardHeader tag="h5" className="text-center   py-4">
+                        Choose preferred Indicators
+                    </MDBCardHeader>
+
+                    <MDBCardBody style={{padding: 10}}>
+                        <Grid container direction="row" justify="center" alignItems="center" className={classes.another}>
+                            <Grid item style={{marginRight: 20, marginTop:10}}>
+                                <input className="form-control" value={searchValue}
+                                       onChange={e => handleSearch(e)} type="text" placeholder="Search" aria-label="Search" />
+                            </Grid>
+
+                            <Grid item style={{marginRight: 20, marginTop:10}}>
+                                <DropdownGroup groupCaller={groupCallback} dropdownGroups={filterGroups}/>
+                            </Grid>
+
+                            <Grid item style={{marginRight: 10, marginTop:10}}>
+                                <DropdownPage groupItemCaller={groupItemCallback} dropdownItems={filterList}/>
+                            </Grid>
+
+
+
+                        </Grid>
+                        <Grid container direction={"row"} justify="center" alignItems="center">
+                            {!isLoaded ? <Grid item style={{marginRight: 10}}>
+                                <div id="loadingProgress" style={{textAlign: "center"}}
+                                     className="d-flex justify-content-center align-items-center spinner-border text-info" role="status">
+                                    <span style={{textAlign: "center"}} className="sr-only">Loading...</span>
+                                </div>
+                            </Grid> : <p className="text-danger">{errorMessage}</p>}
                         </Grid>
 
-                        <Grid item style={{marginRight: 20, marginTop:10}}>
-                            <DropdownGroup groupCaller={groupCallback} dropdownGroups={filterGroups}/>
-                        </Grid>
 
-                        <Grid item style={{marginRight: 10, marginTop:10}}>
-                            <DropdownPage groupItemCaller={groupItemCallback} dropdownItems={filterList}/>
-                        </Grid>
+                        <Grid container spacing={2} justify="center" alignItems="center" >
 
-
-
-                    </Grid>
-                    <Grid container direction={"row"} justify="center" alignItems="center">
-                        {!isLoaded ? <Grid item style={{marginRight: 10}}>
-                            <div id="loadingProgress" style={{textAlign: "center"}}
-                                 className="d-flex justify-content-center align-items-center spinner-border text-info" role="status">
-                                <span style={{textAlign: "center"}} className="sr-only">Loading...</span>
-                            </div>
-                        </Grid> : <p className="text-danger">{errorMessage}</p>}
-                    </Grid>
-
-
-                    <Grid container spacing={2} justify="center" alignItems="center" >
-
-                        <MDBCard>
+                            <MDBCard>
                                 <Grid item>
                                     {customList(left)}
                                 </Grid>
-                        </MDBCard>
+                            </MDBCard>
 
-                        <Grid item>
-                            <Grid container direction="column">
+                            <Grid item>
+                                <Grid container direction="column">
 
-                                <MDBBtn outline
-                                        size="sm"
-                                        onClick={handleAllRight}
-                                        disabled={left.length === 0}
-                                        color="primary">
-                                    ≫
-                                </MDBBtn>
+                                    <MDBBtn outline
+                                            size="sm"
+                                            onClick={handleAllRight}
+                                            disabled={left.length === 0}
+                                            color="primary">
+                                        ≫
+                                    </MDBBtn>
 
-                                <MDBBtn outline
-                                        size="sm"
-                                        onClick={handleCheckedRight}
-                                        disabled={leftChecked.length === 0}
-                                        color="primary">
-                                    &gt;
-                                </MDBBtn>
+                                    <MDBBtn outline
+                                            size="sm"
+                                            onClick={handleCheckedRight}
+                                            disabled={leftChecked.length === 0}
+                                            color="primary">
+                                        &gt;
+                                    </MDBBtn>
 
-                                <MDBBtn outline
-                                        onClick={handleCheckedLeft}
-                                        size="sm"
-                                        disabled={rightChecked.length === 0}
-                                        color="primary">
-                                    &lt;
-                                </MDBBtn>
+                                    <MDBBtn outline
+                                            onClick={handleCheckedLeft}
+                                            size="sm"
+                                            disabled={rightChecked.length === 0}
+                                            color="primary">
+                                        &lt;
+                                    </MDBBtn>
 
-                                <MDBBtn outline
-                                        size="sm"
-                                        onClick={handleAllLeft}
-                                        disabled={right.length === 0}
-                                        color="primary">
-                                    ≪
-                                </MDBBtn>
+                                    <MDBBtn outline
+                                            size="sm"
+                                            onClick={handleAllLeft}
+                                            disabled={right.length === 0}
+                                            color="primary">
+                                        ≪
+                                    </MDBBtn>
 
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <MDBCard>
-                            <Grid item>{customList(right)}</Grid>
-                        </MDBCard>
+                            <MDBCard>
+                                <Grid item>{customList(right)}</Grid>
+                            </MDBCard>
 
+
+                        </Grid>
+
+                    </MDBCardBody>
+                </MDBCard>
+
+                <Grid
+                    container
+                    direction="column"
+                    justify="center"
+                    alignItems="center">
+
+                    <Grid container justify="center" alignItems="center" className={classes.another}>
+                        <MDBBtn onClick={getAllRight} color="primary">Next</MDBBtn>
+                    </Grid>
+
+                    <Grid container justify="center" border={1} className={classes.selContainer}>
+
+
+
+                        { showSelected ? <MDBCard className="mx-5 vw-100">
+                            <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
+                                Rename Indicators
+                            </MDBCardHeader>
+
+                            <MDBCardBody style={{padding: 10}}>
+                                <MDBTable striped bordered responsive className="">
+                                    <MDBTableHead columns={dataTables.columns} />
+                                    <MDBTableBody>
+                                        {rows.map((row, key) =>
+                                            <tr id={key}>
+                                                <td>{row.indicatorName}</td>
+                                                <td id={row.indicatorId}>{row.existingName}</td>
+                                                <td>
+                                                    <MDBBtn onClick={() => editName(row.indicator)}
+                                                            color="primary">Edit</MDBBtn>
+                                                </td>
+                                            </tr>)
+                                        }
+                                    </MDBTableBody>
+                                </MDBTable>
+                            </MDBCardBody>
+                            <MDBCardFooter>
+                                <Grid container justify="center" alignItems="center" style={{margin: 10}}>
+                                    <MDBBtn onClick={reloadPage}
+                                            color="primary">Done</MDBBtn>
+
+                                </Grid>
+                            </MDBCardFooter>
+
+                        </MDBCard> : null }
 
                     </Grid>
 
-                </MDBCardBody>
-            </MDBCard>
-
-            <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="center">
-
-                <Grid container justify="center" alignItems="center" className={classes.another}>
-                    <MDBBtn onClick={getAllRight} color="primary">Next</MDBBtn>
                 </Grid>
 
-                <Grid container justify="center" border={1} className={classes.selContainer}>
 
-
-
-                    { showSelected ? <MDBCard className="mx-5 vw-100">
-                        <MDBCardHeader tag="h5" className="text-center font-weight-bold text-uppercase py-4">
-                            Rename Indicators
-                        </MDBCardHeader>
-
-                        <MDBCardBody style={{padding: 10}}>
-                            <MDBTable striped bordered responsive className="">
-                                <MDBTableHead columns={dataTables.columns} />
-                                <MDBTableBody>
-                                    {rows.map((row, key) =>
-                                        <tr id={key}>
-                                            <td>{row.indicatorName}</td>
-                                            <td id={row.indicatorId}>{row.existingName}</td>
-                                            <td>
-                                                <MDBBtn onClick={() => editName(row.indicator)}
-                                                        color="primary">Edit</MDBBtn>
-                                            </td>
-                                        </tr>)
-                                    }
-                                </MDBTableBody>
-                            </MDBTable>
-                        </MDBCardBody>
-                        <MDBCardFooter>
-                            <Grid container justify="center" alignItems="center" style={{margin: 10}}>
-                                <MDBBtn onClick={reloadPage}
-                                        color="primary">Done</MDBBtn>
-
-                            </Grid>
-                        </MDBCardFooter>
-
-                    </MDBCard> : null }
-
-                </Grid>
-
-            </Grid>
-
-
+            </div>
         </div>
+
 
 
     );

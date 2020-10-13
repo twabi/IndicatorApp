@@ -15,6 +15,7 @@ import 'mdbreact/dist/css/mdb.css'
 import ReportForm from "./ReportForm";
 import {CreateCSSProperties} from "@material-ui/core/styles/withStyles";
 import EditForm from "./EditForm";
+import NavBar from "./NavBar";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,7 +77,8 @@ function BoxComponent(props) {
 
 
     return (
-        <div className="mt-5">
+        <div>
+            <NavBar/>
             {!hideMenu ? <MDBContainer id="myDiv" className="d-flex flex-column mt-5 justify-content-center">
                 <h4 className="text-primary text-center my-3 mb-5 font-weight-bold">Custom Reports</h4>
                 <MDBRow className="mt-3">

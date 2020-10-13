@@ -25,6 +25,7 @@ class App extends PureComponent {
     constructor(props) {
         super(props);
 
+        //basically all of the variables to be used throughout the app
         this.state = {
             dashboards: [],
             isLoaded: false,
@@ -41,8 +42,10 @@ class App extends PureComponent {
 
     componentDidMount(){
 
+        //authentication for the namis api
         const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
+        //its been badly named but dashboards are the indicators, and this fetch just queried them
         Api.getDashboards()
             .then(response => response.json())
             .then((result) => {
@@ -63,6 +66,7 @@ class App extends PureComponent {
                 });
             });
 
+        //this is a fetch request to get the crop names from the datastore, these crops are displayed in a dropdown in later components
         fetch(`https://www.namis.org/namis1/api/29/dataStore/crops/crops`, {
             method: 'GET',
             headers: {
@@ -86,8 +90,10 @@ class App extends PureComponent {
         });
 
 
+        //initializing an array-to-tree library that will turn an array of org units into a tree form
         var arrayToTree = require('array-to-tree');
 
+        //fetch org units with three fields, name, id and parent(for the array-to-tree to work)
         fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=parent`, {
             method: 'GET',
             headers: {
@@ -104,6 +110,7 @@ class App extends PureComponent {
                 result.organisationUnits.map((item, index) => {
                     //
 
+                    //making sure every org unit has a parent node, if not set it to undefined
                     item.title = item.name;
                     item.value = item.name.replace(/ /g, "") + "-" + index;
                     if(item.parent != null){
@@ -114,12 +121,13 @@ class App extends PureComponent {
                     }
                 });
 
+                //do the array-to-tree thing using the parent and id fields in each org unit
                 var tree = arrayToTree(result.organisationUnits, {
                     parentProperty: 'parent',
                     customID: 'id'
                 });
 
-                console.log( tree );
+                //console.log( tree );
 
                 this.setState({
                     orgUnits : tree
@@ -130,6 +138,8 @@ class App extends PureComponent {
 
         });
 
+
+        //fetch custom-reports, now these are the reports that the app itself is creating each time a report is created, and is saved in the datastore
         fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
             method: 'GET',
             headers: {
@@ -146,6 +156,7 @@ class App extends PureComponent {
                 result.map((item) => {
                     array.push(item);
 
+                    // i dont remember what this second fetch inside here does, but it is essential---- do not touch!
                     fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${item}`, {
                         method: 'GET',
                         headers: {
@@ -179,7 +190,7 @@ class App extends PureComponent {
             });
 
 
-
+        //query the indicator groups, will be used in the customReports section
         fetch(`https://www.namis.org/namis1/api/indicatorGroups.json?paging=false&fields=*`, {
             method: 'GET',
             headers: {
@@ -200,6 +211,7 @@ class App extends PureComponent {
 
         });
 
+        //get the period types for the period dropdowns in analysis and timeperiods
         fetch(`https://www.namis.org/namis1/api/periodTypes.json?paging=false&fields=*`, {
             method: 'GET',
             headers: {
@@ -222,13 +234,7 @@ class App extends PureComponent {
 
     }
 
-    mainCallBack = (dataFromChild) => {
-        console.log(dataFromChild);
-        this.setState({
-            navBarValue : dataFromChild,
-        });
-    }
-
+    //when the home button is pressed in the components, not a functional button, can be removed later
      homeCallback = () => {
         console.log("anything");
     }
@@ -237,24 +243,9 @@ class App extends PureComponent {
     render() {
 
 
+        //the return basically defines the routes to be used in the whole app, each route is carrying props to the components,
+        // the props are basically just the variables and arrays we fetched from NAMIS above.
         return (
-            /*
-            <Fragment>
-                <div >
-                    <NavBar callerBack={this.mainCallBack}/>
-
-                    <MainContent cropOptions={this.state.cropOptions}
-                                 errorMessage={this.state.errorMessage}
-                                 isLoaded={this.state.isLoaded}
-                                 organizationalUnits={this.state.orgUnits}
-                                 periods={this.state.periodTypes}
-                                 navBarValue={this.state.navBarValue}
-                                 programs={this.state.programGroups}
-                                 headerProps ={this.state.dashboards} className="mt-5"/>
-                </div>
-            </Fragment>
-
-             */
         <Fragment>
             <Switch>
                 <Route path="/"  render={(props) => (

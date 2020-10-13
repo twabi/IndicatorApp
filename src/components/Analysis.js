@@ -27,6 +27,7 @@ import 'react-dropdown-tree-select/dist/styles.css'
 import {DatePicker, TreeSelect} from 'antd';
 import "jspdf-autotable";
 import html2canvas from "html2canvas";
+import NavBar from "./NavBar";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -639,6 +640,7 @@ const ShowAnalysis = (props) => {
     return (
 
         <div>
+            <NavBar/>
             {showButton ? <MDBBtn color="cyan"
                                   onClick={handleButton}
                                   className="text-white float-lg-right mr-2 mb-5" type="submit">

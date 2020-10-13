@@ -15,6 +15,7 @@ import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } 
 import { MDBCardImage, MDBCardTitle, MDBCardText, MDBIcon } from 'mdbreact';
 import ListTransfer from "./ListTransfer";
 import Grid from "@material-ui/core/Grid";
+import NavBar from "./NavBar";
 
 const moment = require('moment')
 
@@ -286,6 +287,7 @@ const ShowForm = (props) => {
 
     return (
         <div>
+            <NavBar/>
             <MDBBtn color="cyan"
                     onClick={handleButton}
                     className="text-white float-lg-right mr-2" type="submit">

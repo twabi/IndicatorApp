@@ -15,6 +15,7 @@ import CustomTransferList from "./CustomTransferList";
 import ListTransfer from "./ListTransfer";
 import ShowForm from "./showForm";
 import ReportForm from "./ReportForm";
+import NavBar from "./NavBar";
 
 
 
@@ -93,42 +94,46 @@ const EditForm = (props) => {
 
 
     return (
-        <div className="ml-5">
+        <div>
+            <NavBar/>
+            <div className="ml-5">
 
-            <hr className='hr-light' />
+                <hr className='hr-light' />
 
-        {showEditMenu ? <MDBBox className="ml-5 d-flex flex-column" display="flex" justifyContent="center" >
-            <h4 className="text-primary text-center my-3 font-weight-bold">Edit Existing Reports</h4>
-            <MDBRow>
+                {showEditMenu ? <MDBBox className="ml-5 d-flex flex-column" display="flex" justifyContent="center" >
+                    <h4 className="text-primary text-center my-3 font-weight-bold">Edit Existing Reports</h4>
+                    <MDBRow>
 
-                    {reports.map((report, index) => (
+                        {reports.map((report, index) => (
 
 
-                                <MDBCard key={index} className="m-4" style={{ width: "19rem" }}>
-                                    <MDBCardBody>
-                                        <MDBCardTitle>{report.title}</MDBCardTitle>
-                                        <MDBCardText>
-                                            {report.description}
-                                        </MDBCardText>
-                                        <MDBBtn className="text-white" onClick={()=>{handleEdit(report)}} color="primary">
-                                            edit
-                                        </MDBBtn>
-                                        <MDBBtn className="text-white" onClick={()=>{handleDelete(report)}} color="primary">
-                                            delete
-                                        </MDBBtn>
-                                    </MDBCardBody>
-                                </MDBCard>
+                            <MDBCard key={index} className="m-4" style={{ width: "19rem" }}>
+                                <MDBCardBody>
+                                    <MDBCardTitle>{report.title}</MDBCardTitle>
+                                    <MDBCardText>
+                                        {report.description}
+                                    </MDBCardText>
+                                    <MDBBtn className="text-white" onClick={()=>{handleEdit(report)}} color="primary">
+                                        edit
+                                    </MDBBtn>
+                                    <MDBBtn className="text-white" onClick={()=>{handleDelete(report)}} color="primary">
+                                        delete
+                                    </MDBBtn>
+                                </MDBCardBody>
+                            </MDBCard>
 
-                    ))}
+                        ))}
 
-                </MDBRow>
-            </MDBBox> : null}
+                    </MDBRow>
+                </MDBBox> : null}
 
-            { showEditForm ? <ShowForm arrayProps={crops}
-                                       reportValue={reportValue}
-                                       buttonCallback={handleCallback}
-                                       indicatorProps={programs}/> : null}
+                { showEditForm ? <ShowForm arrayProps={crops}
+                                           reportValue={reportValue}
+                                           buttonCallback={handleCallback}
+                                           indicatorProps={programs}/> : null}
+            </div>
         </div>
+
     )
 
 }

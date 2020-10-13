@@ -16,6 +16,7 @@ import ListTransfer from "./ListTransfer";
 import CustomTransferList from "./CustomTransferList";
 import {resolveToLocation} from "react-router-dom/modules/utils/locationUtils";
 import Grid from "@material-ui/core/Grid";
+import NavBar from "./NavBar";
 
 const moment = require('moment')
 
@@ -458,6 +459,7 @@ const FormPage = (props) => {
 
     return (
         <div>
+            <NavBar/>
                     <hr className='hr-light' />
 
                     <MDBBox display="flex" justifyContent="center" >
