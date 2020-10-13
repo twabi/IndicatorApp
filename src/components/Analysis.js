@@ -1,9 +1,9 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {
     MDBBox,
     MDBBtn,
     MDBCard,
-    MDBCardBody, MDBCardFooter,
+    MDBCardBody,
     MDBCardHeader,
     MDBCardText,
     MDBCardTitle,
@@ -59,7 +59,6 @@ const ShowAnalysis = (props) => {
     const classes = useStyles();
     var initState = props.organization;
     var initReport = props.reportProps;
-    var initCrops = props.cropOptions;
     var financial = [
           "THIS_FINANCIAL_YEAR",
         "LAST_FINANCIAL_YEAR", "LAST_5_FINANCIAL_YEARS"]
@@ -125,21 +124,9 @@ const ShowAnalysis = (props) => {
     };
 
     function onChange(date, dateString) {
-        //console.log(date, dateString);
         console.log(dateString.replace(/-/g,""));
         setDateString(dateString.replace(/-/g,""));
     }
-
-    const handleChangeMultiple = (event) => {
-        const { options } = event.target;
-        const value = [];
-        for (let i = 0, l = options.length; i < l; i += 1) {
-            if (options[i].selected) {
-                value.push(options[i].value);
-            }
-        }
-        setfixedYears(value);
-    };
 
     const getAnalytics = (item, row, pe, ouID,  callBack) => {
         var dxID = row.indicatorID;
@@ -156,8 +143,6 @@ const ShowAnalysis = (props) => {
 
         }).then(response => response.json())
             .then((result) =>{
-               // console.log(result.rows)
-                //analysis = result.rows;
                 callBack(item, row, result);
 
 
@@ -264,14 +249,14 @@ const ShowAnalysis = (props) => {
         const input = document.getElementById('tableDiv');
         html2canvas(input)
             .then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
+                //const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF();
                 //pdf.addImage(imgData, 'PNG', 10, 10);
                 pdf.setFontSize(25);
                 pdf.autoTable({startY: 20, html: '#tableDiv'});
                 pdf.text(title, 50, 15);
                 pdf.save(title + ".pdf");
-            }).then(()=>{
+            }).then(() => {
                 setShowDownloading(false);
             });
     }
@@ -424,7 +409,7 @@ const ShowAnalysis = (props) => {
                 setYearArray(array);
                 setYearArray2(columns);
 
-                if(result.rows == null || result.rows.length == 0){
+                if(result.rows == null || result.rows.length === 0){
                     console.log("this year has no data!" + columns);
                     //row.indicatorValue = "-";
                     analyzed.push(item);
@@ -458,7 +443,6 @@ const ShowAnalysis = (props) => {
                         }
                     });
 
-
                     row.indicatorValue = columns;
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
@@ -489,8 +473,6 @@ const ShowAnalysis = (props) => {
                     })
             })
         });
-
-
     }
 
     const handleAnalyze = () => {
@@ -537,9 +519,6 @@ const ShowAnalysis = (props) => {
 
     const handle = (value, label, extra) => {
         setSearchValue(value)
-        console.log(extra);
-        console.log(variable);
-        //setVariable(variable.filter(x => !value.includes(x.key)));
     };
 
     const onSelect = (value, node) => {

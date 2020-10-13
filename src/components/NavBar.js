@@ -9,7 +9,6 @@ class NavBar extends React.Component {
 
 
     myCallback = (dataFromChild) => {
-        //console.log(dataFromChild);
         this.props.callerBack(dataFromChild);
     }
     reloadPage() {
