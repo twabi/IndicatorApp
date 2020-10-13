@@ -1,68 +1,29 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## NAMIS INDICATOR APP
 
-## Available Scripts
+###Intro
+This is an app that was made to manipulate the indicators for the NAMIS dhis2 platform. <br >
+The main components include : DisplayName, CustomReports, Analysis and Time Periods.
 
-In the project directory, you can run:
+### Components
+#### DisplayName
+Basically, what this component does is give the user the ability to change the long displayNames the NAMIS indicators usually have.<br >
+In a table, the can edit the displayName to what ever they see fit
 
-### `npm start`
+#### Custom Reports
+This component gives the user the ability to create a custom report based on the indicators of their choosing, to suit their daily reporting needs<br >
+The user can both create a report and edit an existing report. When creating a report the user chooses the number of rows and columns for the table.
+The user also chooses the indicators to be placed on each cell at the same time having the ability of changing the column headers and rows as well as the report title and description.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+#### Analysis
+In this component, the user triggers an analysis operation on the custom report they created in the CustomReports section by choosing the time period(s) and organizational unit(s) of their choice.
+The data is placed on the cell each respective indicator that was placed in the custom reports.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
 
-### `npm test`
+#### Time Periods
+This component is an altered version of the Analysis component. The user, with one indicator of their choice, can choose multiple organizational units, but the time period they can choose is a dynamic current period e.g. this_year.
+And when they trigger analysis, the analysis that is given in this component is a comparison with a similar time period of the previous year e.g. last_year. <br >
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This component, in the future can be expanded to include analysing two time periods of both the user's choosing.
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+###Project By
+This project was done by the computer science department (University of Malawi, Chancellor College) sanctioned by the ministry of Agriculture.
