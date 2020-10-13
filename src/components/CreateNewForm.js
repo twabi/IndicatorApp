@@ -11,8 +11,6 @@ import {
     MDBTable,
     MDBTableHead, MDBTableBody, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBCardFooter
 } from 'mdbreact';
-import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
-import { MDBCardImage, MDBCardTitle, MDBCardText, MDBIcon } from 'mdbreact';
 import ListTransfer from "./ListTransfer";
 import Grid from "@material-ui/core/Grid";
 import NavBar from "./NavBar";

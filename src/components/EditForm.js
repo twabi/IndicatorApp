@@ -6,15 +6,9 @@ import {
     MDBCardBody,
     MDBCardText,
     MDBCardTitle,
-    MDBCol,
-    MDBContainer,
-    MDBInput,
     MDBRow
 } from "mdbreact";
-import CustomTransferList from "./CustomTransferList";
-import ListTransfer from "./ListTransfer";
-import ShowForm from "./showForm";
-import ReportForm from "./ReportForm";
+import ShowForm from "./CreateNewForm";
 import NavBar from "./NavBar";
 
 
@@ -23,8 +17,6 @@ const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
 
 const EditForm = (props) => {
 
-    console.log(props.reportProps);
-
     const [reports, setReports] = React.useState([]);
     const [showEditMenu, setShowEditMenu] = React.useState(true);
     const [showEditForm, setShowEditForm] =React.useState(false);
@@ -32,8 +24,7 @@ const EditForm = (props) => {
     const [programs, setPrograms] = React.useState([])
     const [reportValue, setReportValue] = React.useState({})
 
-    //setReports([...initArray]);
-    React.useEffect(()=>{
+    React.useEffect(() => {
 
         setReports(props.reportProps)
         setPrograms(props.indicatorProps)
@@ -42,10 +33,6 @@ const EditForm = (props) => {
 
     }, [props.arrayProps, props.indicatorProps, props.reportProps])
 
-
-    const handleButton = () => {
-        props.buttonCallback();
-    }
 
     const deleteReport = (key) => {
 
@@ -63,9 +50,9 @@ const EditForm = (props) => {
                 console.log(result);
                 alert("Report was deleted successfully");
             })
-            .then(result =>{
+            .then((result) =>{
             window.location.reload(false);
-        }).catch(error => {
+        }).catch((error) => {
             alert("oops an error occurred: " + error)
         })
     }

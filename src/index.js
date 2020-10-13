@@ -6,8 +6,8 @@ import Api from './api';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
 import * as serviceWorker from './serviceWorker';
-import BoxComponent from "./components/BoxComponent";
-import TransferList from "./components/TransferList";
+import BoxComponent from "./components/CustomReports";
+import TransferList from "./components/DisplayName";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'antd/dist/antd.css'
 import { BrowserRouter } from "react-router-dom";

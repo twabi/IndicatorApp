@@ -1,20 +1,13 @@
 import React, {Fragment, PureComponent} from 'react';
 import Api from './api'
 import './App.css';
-import NavBar from './components/NavBar'
-import TransferList from "./components/TransferList";
-import BoxComponent from "./components/BoxComponent";
+import TransferList from "./components/DisplayName";
+import BoxComponent from "./components/CustomReports";
 import {
-    BrowserRouter as Router,
     Switch,
-    Route,
-    Link
+    Route
 } from "react-router-dom";
 import MainContent from "./components/MainContent";
-import Sidebar from "./components/SideBar";
-import CenterContent from "./components/CenterContent";
-import until from "@material-ui/core/test-utils/until";
-import JsTreeList from "js-tree-list"
 import Analysis from "./components/Analysis";
 import TimePeriods from "./components/TimePeriods";
 import ReportForm from "./components/ReportForm";

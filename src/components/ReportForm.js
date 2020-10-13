@@ -11,10 +11,7 @@ import {
     MDBTable,
     MDBTableHead, MDBTableBody, MDBCardFooter, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem
 } from 'mdbreact';
-import { MDBCardImage, MDBCardTitle, MDBCardText, MDBIcon } from 'mdbreact';
 import ListTransfer from "./ListTransfer";
-import CustomTransferList from "./CustomTransferList";
-import {resolveToLocation} from "react-router-dom/modules/utils/locationUtils";
 import Grid from "@material-ui/core/Grid";
 import NavBar from "./NavBar";
 

@@ -10,32 +10,18 @@ import {
     MDBContainer, MDBDropdown, MDBDropdownItem, MDBDropdownMenu, MDBDropdownToggle,
     MDBRow, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
-import { DatePicker } from 'antd';
 import {TreeSelect} from "antd";
 import Grid from "@material-ui/core/Grid";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import NavBar from "./NavBar";
 
-const moment = require('moment')
-let now = moment();
-
-
-var thisYear = now.format("YYYY");
-let lastYear = moment().subtract(1, 'years').format("YYYY");
-
+//authentication for the namis api
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
-
 
 const TimePeriods = (props) => {
 
-    var array3 = [];
-    for(var i=0; i<54; i++){
-        array3.push(i.toString())
-    }
-    var weekNumbers = array3;
-
-
+    //define a non-changing array of relative time periods, this time and last time
     var relativeTime = [{"these":"THIS_WEEK", "last":"LAST_WEEK"}, {"these":"THIS_MONTH", "last":"LAST_MONTH"},
         {"these":"THIS_BIMONTH", "last":"LAST_BIMONTH"}, {"these":"THIS_QUARTER", "last":"LAST_QUARTER"}, {"these":"QUARTERS_THIS_YEAR", "last":"QUARTERS_LAST_YEAR"}
         ,{"these":"MONTHS_THIS_YEAR", "last":"MONTHS_LAST_YEAR"}, {"these":"THIS_SIX_MONTH", "last":"LAST_SIX_MONTH"}
@@ -43,18 +29,14 @@ const TimePeriods = (props) => {
 
 
     var initState = props.indicatorProps;
-    var periods = props.periodTypeProps;
     var orgs = props.orgProps;
 
+
+    //define some variables to be used throughout the lifetime of the component
     const [showMenu, setShowMenu] = React.useState(true);
     const [searchValue, setSearchValue] = React.useState("");
     const [indicators, setIndicators] = React.useState(initState);
     const [selectedIndicator, setSelectedIndicator] = React.useState({});
-    const [periodTypes, setPeriodTypes] = React.useState(periods);
-    const [periodNumber, setPeriodNumber] = React.useState([])
-    const [numberTitle, setNumberTitle] = React.useState("NaN")
-    const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
-    const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
     const [orgValue, setOrgValue] = React.useState([]);
     const [orgUnits, setOrgUnits] = React.useState(orgs)
     const [selectedOrgUnit, setSelectedOrgUnit] = React.useState([]);
@@ -63,37 +45,32 @@ const TimePeriods = (props) => {
     const [showLoading, setShowLoading] = React.useState(false)
     const [showDownloading, setShowDownloading] = React.useState(false);
     const [showBtn, setShowBtn] = React.useState(false);
-    const [showDayDiv, setShowDayDiv] = React.useState(false);
-    const [showDropdown, setShowDropdown] = React.useState(true);
-    const [dateString, setDateString] = React.useState("");
     const [thisPeriod, setThisPeriod] = React.useState("select a period this year");
     const [lastPeriod, setLastPeriod] = React.useState("");
     const [years, setYears] = React.useState([]);
 
-    React.useEffect(()=>{
+    //useEffect has been used to get the data passed from the parent props after it has loaded
+    React.useEffect(() => {
         setIndicators(props.indicatorProps);
-        setPeriodTypes(props.periodTypeProps);
         setOrgUnits(props.orgProps);
     }, [props.indicatorProps, props.orgProps, props.periodTypeProps])
 
 
+    //the back button on the right side of the component
     const handleButton = () => {
 
-        if(showMenu == true){
-            //props.btnCallback();
-        } else if(showMenu == false){
+        //check if the page is in table view mode or not
+        if(showMenu === true){
+            //the table is in menu mode
+        } else if(showMenu === false){
+            //the table is in table view mode, so when the button is pressed, take them back to the timePeriods menu
             setShowMenu(true);
             setShowTable(false);
             setShowBtn(false);
         }
     }
 
-    function onChange(date, dateString) {
-        //console.log(date, dateString);
-        console.log(dateString.replace(/-/g,""));
-        setDateString(dateString.replace(/-/g,""));
-    }
-
+    //the function that gets the analysis variables and makes an analytics api request for data
     const getComparison = (dxID, pe, ouID,  callBack) => {
 
         return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=pe:${pe}&dimension=ou:${ouID}&filter=dx:${dxID}&displayProperty=NAME&outputIdScheme=NAME`, {
@@ -117,51 +94,32 @@ const TimePeriods = (props) => {
             })
     };
 
+    //when an indicator is clicked
     const handleIndicatorClick = (indicator) => {
         setSearchValue(indicator.displayName);
         setSelectedIndicator(indicator);
     }
 
+    //when the periods dropdown is clicked
     const handlePeriodClick = (value) =>{
         setThisPeriod(value.these);
         setLastPeriod(value.last);
     }
 
-    const handlePeriodNumber = (value) => {
-        setNumberTitle(value)
-    }
-
+    //when the compare button is clicked in the component, start the analysis process
     const handleCompare = () => {
 
+        //check if the period dropdowns haven't been toggles i.e. the user has forgot to chose a time period
         if(thisPeriod === "select a period this year"){
-            alert("please select a time period to proceeed");
+            alert("please select a time period to proceed");
         } else {
+            //show the compare button to be loading
             setShowLoading(true);
 
-            /*
-            if(selectedFixedtime === "B"){
-                 thisPeriod = thisYear  + numberTitle + selectedFixedtime;
-                 lastPeriod = lastYear+ numberTitle  + selectedFixedtime ;
-            } else if(dateString !== ""){
-                thisPeriod = dateString;
-                var year = dateString.slice(0, 4);
-                var other = dateString.substring(4)
-                var intYear = (parseInt(year)) - 1;
-                lastPeriod = intYear + other;
-                console.log(lastPeriod);
-                console.log(thisPeriod);
-            } else {
-                 thisPeriod = thisYear + selectedFixedtime + numberTitle;
-                 lastPeriod = lastYear + selectedFixedtime + numberTitle;
-            }
-
-
-             */
-
-
-
+            //add the periods as one string to be passed into analytics, well that's how the api access multiple periods
             var pe = thisPeriod+";"+lastPeriod;
 
+            //do the same thing with the array of org units
             var units = [];
             selectedOrgUnit.map((item) => {
                 console.log(item);
@@ -173,21 +131,25 @@ const TimePeriods = (props) => {
             console.log(units.join(";"));
             console.log(selectedIndicator);
 
+            //trigger the comparison functions - to the analytics api function below
             makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, units.join(";"));
         }
 
     }
 
+    //when an org unit has been clicked
     const handle = (value) => {
         setOrgValue(value)
     };
 
+    //when an orgUnit has been selected
     const onSelect = (value, node) => {
         //setSelectedOrgUnit(node);
         setSelectedOrgUnit(selectedOrgUnit => [...selectedOrgUnit, node]);
 
     }
 
+    //the function that starts the analysis process
     const makeComparison = (thisPeriod, lastPeriod, indicator, timePeriod, orgUnit ) => {
 
         const callback = (result) => {
@@ -201,37 +163,21 @@ const TimePeriods = (props) => {
                 var pes = [result.metaData.items[pe1].name, result.metaData.items[pe2].name];
                 setYears(pes);
 
-                pes.map((pe)=>{
+                pes.map((pe) => {
                     selectedOrgUnit.map((unit)=>{
                         columns.push({"year" : pe, "unit": unit.name});
                     })
                 })
 
-                /*
-                console.log(selectedOrgUnit);
-                selectedOrgUnit.map((unit)=>{
-                    console.log(unit.name);
-                })
-                columns.map((item)=>{
-                    selectedOrgUnit.map((unit)=>{
-                        item.unit = unit.name;
-                    })
-                })
-
-                 */
-
-                console.log(columns);
-
                 //var value = [];
 
-                if(result.rows == null || result.rows.length == 0){
+                if(result.rows == null || result.rows.length === 0){
                     console.log("this year has no data!");
                     //row.indicatorValue = "-";
                     //value.push({"value" : "-"})
 
                 } else {
                     console.log(result)
-
 
                     for(var i = 0; i<result.rows.length; i++){
                         //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
@@ -256,6 +202,7 @@ const TimePeriods = (props) => {
             }
         }
 
+        //get the comparison from the async fetch function, then switch the screen into table view mode.
         getComparison(indicator.id, timePeriod, orgUnit, callback)
             .then((r) => {
             })
@@ -264,20 +211,16 @@ const TimePeriods = (props) => {
                 setShowLoading(false);
                 setShowMenu(false);
                 setShowBtn(true);
-
             })
-
-
     }
 
+    //a function to download the analysis table as pdf
     const downloadPDF = (title) => {
         setShowDownloading(true);
         const input = document.getElementById('tableDiv');
         html2canvas(input)
             .then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF();
-                //pdf.addImage(imgData, 'PNG', 10, 10);
                 pdf.setFontSize(25);
                 pdf.autoTable({startY: 20, html: '#tableDiv'});
                 pdf.text(title, 50, 15);
@@ -287,6 +230,7 @@ const TimePeriods = (props) => {
         });
     }
 
+    //handle the search of reports...custom functions changed a bit from stack overflow
     function handleSearch({ target: { value } }) {
 
         // Set captured value to input
@@ -339,7 +283,9 @@ const TimePeriods = (props) => {
                         <MDBTable id="tableDiv" striped bordered responsive className="border-light border">
                             <MDBTableHead color="primary-color" textWhite>
                                 <tr>
-                                    <th></th>
+                                    <th>
+
+                                    </th>
                                     {years.map((item, key) => (
                                         <th key={key} >
                                             {item}
