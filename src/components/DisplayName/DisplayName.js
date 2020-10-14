@@ -8,7 +8,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import DropdownPage from "./DropdownPage";
 import DropdownGroup from "./DropdownGroup";
 import {MDBTable, MDBTableBody, MDBBtn, MDBTableHead, MDBCard, MDBCardHeader, MDBCardBody, MDBCardFooter} from 'mdbreact';
-import NavBar from "./NavBar";
+import NavBar from "../NavBar";
 
 
 

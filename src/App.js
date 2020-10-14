@@ -1,17 +1,17 @@
 import React, {Fragment, PureComponent} from 'react';
 import Api from './api'
 import './App.css';
-import TransferList from "./components/DisplayName";
-import BoxComponent from "./components/CustomReports";
+import TransferList from "./components/DisplayName/DisplayName";
+import BoxComponent from "./components/customReports/CustomReports";
 import {
     Switch,
     Route
 } from "react-router-dom";
 import MainContent from "./components/MainContent";
-import Analysis from "./components/Analysis";
-import TimePeriods from "./components/TimePeriods";
-import ReportForm from "./components/ReportForm";
-import EditForm from "./components/EditForm";
+import Analysis from "./components/Analysis/Analysis";
+import TimePeriods from "./components/timePeriods/TimePeriods";
+import ReportForm from "./components/customReports/NewReport/ReportForm";
+import EditForm from "./components/customReports/EditReport/EditForm";
 
 
 class App extends PureComponent {

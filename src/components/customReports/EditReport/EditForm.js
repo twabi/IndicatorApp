@@ -8,8 +8,8 @@ import {
     MDBCardTitle,
     MDBRow
 } from "mdbreact";
-import ShowForm from "./CreateNewForm";
-import NavBar from "./NavBar";
+import ShowForm from "./ShowEditForm";
+import NavBar from "../../NavBar";
 
 
 

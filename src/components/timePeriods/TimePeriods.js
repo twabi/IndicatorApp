@@ -14,7 +14,7 @@ import {TreeSelect} from "antd";
 import Grid from "@material-ui/core/Grid";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import NavBar from "./NavBar";
+import NavBar from "../NavBar";
 
 //authentication for the namis api
 const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');

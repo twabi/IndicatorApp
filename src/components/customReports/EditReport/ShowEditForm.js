@@ -1,7 +1,6 @@
 import React from "react";
 import {
     MDBBox,
-    MDBRow,
     MDBCol,
     MDBInput,
     MDBBtn,
@@ -11,9 +10,9 @@ import {
     MDBTable,
     MDBTableHead, MDBTableBody, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBCardFooter
 } from 'mdbreact';
-import ListTransfer from "./ListTransfer";
+import ListTransfer from "../ListTransfer";
 import Grid from "@material-ui/core/Grid";
-import NavBar from "./NavBar";
+import NavBar from "../../NavBar";
 
 const moment = require('moment')
 

@@ -11,9 +11,9 @@ import {
     MDBTable,
     MDBTableHead, MDBTableBody, MDBCardFooter, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem
 } from 'mdbreact';
-import ListTransfer from "./ListTransfer";
+import ListTransfer from "../ListTransfer";
 import Grid from "@material-ui/core/Grid";
-import NavBar from "./NavBar";
+import NavBar from "../../NavBar";
 
 const moment = require('moment')
 
@@ -35,9 +35,7 @@ const FormPage = (props) => {
     const [indicatorNumber, setIndicatorNumber] = React.useState(0);
     const [title, setTitle] =  React.useState("");
     const [showTextFields, setShowTextFields] = React.useState(false);
-    const [textfields, settextfields] = React.useState([]);
     const [groups, setGroups] = React.useState([]);
-    const [selectedCrops, setSelectedCrops] = React.useState([])
     const [description, setDescription] = React.useState("");
     const [showPreview, setShowPreview] = React.useState(false);
     const [rowHeaders, setRowHeaders] = React.useState([]);
@@ -80,12 +78,12 @@ const FormPage = (props) => {
 
             credentials: "include"
 
-        }).then(response => {
+        }).then((response) => {
             console.log(response);
             alert("Report created successfully");
-        }).then(result =>{
+        }).then((result) =>{
             handleButton()
-        }).catch(error => {
+        }).catch((error) => {
             alert("oops an error occurred: " + error)
         })
 
@@ -106,13 +104,13 @@ const FormPage = (props) => {
 
             credentials: "include"
 
-        }).then(response => response.json())
-            .then(result =>{
+        }).then((response) => response.json())
+            .then((result) =>{
                 //array.push(result);
                 array.name = result.name
                 array.id = result.id
 
-        }).catch(error => {
+        }).catch((error) => {
             //alert("oops an error occurred: " + error)
         })
 
@@ -162,22 +160,10 @@ const FormPage = (props) => {
 
     }
 
-
-    const getRightCropArray = (data) => {
-        setSelectedCrops(data);
-    }
-
     const getRightArray = (data) => {
         setGroups(data);
         //console.log(data);
 
-    }
-    function createTaData(indicator, indicatorName, existingName, indicatorId) {
-        return { indicator, indicatorName, existingName, indicatorId};
-    }
-
-    function reloadPage() {
-        window.location.reload(false);
     }
 
     const editProgramNames = (program) => {
