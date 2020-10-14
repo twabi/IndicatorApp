@@ -17,7 +17,7 @@ import jsPDF from "jspdf";
 import NavBar from "../NavBar";
 
 //authentication for the namis api
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const basicAuth = "Basic " + btoa("ahmed:@Ahmed20");
 
 const TimePeriods = (props) => {
 
@@ -25,7 +25,7 @@ const TimePeriods = (props) => {
     var relativeTime = [{"these":"THIS_WEEK", "last":"LAST_WEEK"}, {"these":"THIS_MONTH", "last":"LAST_MONTH"},
         {"these":"THIS_BIMONTH", "last":"LAST_BIMONTH"}, {"these":"THIS_QUARTER", "last":"LAST_QUARTER"}, {"these":"QUARTERS_THIS_YEAR", "last":"QUARTERS_LAST_YEAR"}
         ,{"these":"MONTHS_THIS_YEAR", "last":"MONTHS_LAST_YEAR"}, {"these":"THIS_SIX_MONTH", "last":"LAST_SIX_MONTH"}
-        ,{"these":"THIS_YEAR", "last":"LAST_YEAR"}, {"these":"THIS_FINANCIAL_YEAR", "last":"LAST_FINANCIAL_YEAR"}]
+        ,{"these":"THIS_YEAR", "last":"LAST_YEAR"}, {"these":"THIS_FINANCIAL_YEAR", "last":"LAST_FINANCIAL_YEAR"}];
 
 
     var initState = props.indicatorProps;
@@ -38,11 +38,11 @@ const TimePeriods = (props) => {
     const [indicators, setIndicators] = React.useState(initState);
     const [selectedIndicator, setSelectedIndicator] = React.useState({});
     const [orgValue, setOrgValue] = React.useState([]);
-    const [orgUnits, setOrgUnits] = React.useState(orgs)
+    const [orgUnits, setOrgUnits] = React.useState(orgs);
     const [selectedOrgUnit, setSelectedOrgUnit] = React.useState([]);
-    const [cols, setCols] = React.useState([])
+    const [cols, setCols] = React.useState([]);
     const [showTable, setShowTable] = React.useState(false);
-    const [showLoading, setShowLoading] = React.useState(false)
+    const [showLoading, setShowLoading] = React.useState(false);
     const [showDownloading, setShowDownloading] = React.useState(false);
     const [showBtn, setShowBtn] = React.useState(false);
     const [thisPeriod, setThisPeriod] = React.useState("select a period this year");
@@ -53,7 +53,7 @@ const TimePeriods = (props) => {
     React.useEffect(() => {
         setIndicators(props.indicatorProps);
         setOrgUnits(props.orgProps);
-    }, [props.indicatorProps, props.orgProps, props.periodTypeProps])
+    }, [props.indicatorProps, props.orgProps, props.periodTypeProps]);
 
 
     //the back button on the right side of the component
@@ -68,43 +68,42 @@ const TimePeriods = (props) => {
             setShowTable(false);
             setShowBtn(false);
         }
-    }
+    };
 
     //the function that gets the analysis variables and makes an analytics api request for data
     const getComparison = (dxID, pe, ouID,  callBack) => {
 
         return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=pe:${pe}&dimension=ou:${ouID}&filter=dx:${dxID}&displayProperty=NAME&outputIdScheme=NAME`, {
-            method: 'GET',
-            mode: 'cors',
+            method: "GET",
+            mode: "cors",
             headers: {
-                'Authorization' : basicAuth,
-                'Content-type': 'application/json',
+                "Authorization" : basicAuth,
+                "Content-type": "application/json",
 
             }
 
-        }).then(response => response.json())
-            .then((result) =>{
-                 console.log(result.rows)
+        }).then((response) => response.json())
+            .then((result) => {
                 //analysis = result.rows;
                 callBack(result);
 
-            }).catch(error => {
+            }).catch((error) => {
                 alert("oops an error occurred: " + error + " .Try reloading your page");
 
-            })
+            });
     };
 
     //when an indicator is clicked
     const handleIndicatorClick = (indicator) => {
         setSearchValue(indicator.displayName);
         setSelectedIndicator(indicator);
-    }
+    };
 
     //when the periods dropdown is clicked
-    const handlePeriodClick = (value) =>{
+    const handlePeriodClick = (value) => {
         setThisPeriod(value.these);
         setLastPeriod(value.last);
-    }
+    };
 
     //when the compare button is clicked in the component, start the analysis process
     const handleCompare = () => {
@@ -122,20 +121,13 @@ const TimePeriods = (props) => {
             //do the same thing with the array of org units
             var units = [];
             selectedOrgUnit.map((item) => {
-                console.log(item);
                 units.push(item.id);
-            })
-            console.log(units);
-
-            console.log(pe)
-            console.log(units.join(";"));
-            console.log(selectedIndicator);
-
+            });
             //trigger the comparison functions - to the analytics api function below
             makeComparison(thisPeriod, lastPeriod, selectedIndicator, pe, units.join(";"));
         }
 
-    }
+    };
 
     //when an org unit has been clicked
     const handle = (value) => {
@@ -147,7 +139,7 @@ const TimePeriods = (props) => {
         //setSelectedOrgUnit(node);
         setSelectedOrgUnit(selectedOrgUnit => [...selectedOrgUnit, node]);
 
-    }
+    };
 
     //the function that starts the analysis process
     const makeComparison = (thisPeriod, lastPeriod, indicator, timePeriod, orgUnit ) => {
@@ -167,74 +159,72 @@ const TimePeriods = (props) => {
                     selectedOrgUnit.map((unit)=>{
                         columns.push({"year" : pe, "unit": unit.name});
                     })
-                })
+                });
 
                 //var value = [];
 
                 if(result.rows == null || result.rows.length === 0){
-                    console.log("this year has no data!");
+                    //console.log("this year has no data!");
                     //row.indicatorValue = "-";
                     //value.push({"value" : "-"})
 
                 } else {
-                    console.log(result)
 
-                    for(var i = 0; i<result.rows.length; i++){
+                    var i;
+                    for(i = 0; i<result.rows.length; i++){
                         //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
-                        var year = result.rows[i][0]
-                        var uno = result.rows[i][1]
+                        var year = result.rows[i][0];
+                        var uno = result.rows[i][1];
                         //value.push({"year": result.rows[i][1], "value" : result.rows[i][2]});
                         columns.map((item) => {
-                            console.log(item.year)
                             if(item.year.includes(year)  && item.unit.includes(uno)){
                                 item.value = result.rows[i][2];
                             }
-                        })
+                        });
                     }
                 }
-                console.log(columns);
-                columns.map((item)=>{
+                columns.map((item) => {
                     if(item.value == null || item.value === ""){
                         item.value = "-";
                     }
                 });
                 setCols(columns);
             }
-        }
+        };
 
         //get the comparison from the async fetch function, then switch the screen into table view mode.
         getComparison(indicator.id, timePeriod, orgUnit, callback)
             .then((r) => {
             })
-            .then(()=>{
+            .then(() => {
                 setShowTable(true);
                 setShowLoading(false);
                 setShowMenu(false);
                 setShowBtn(true);
-            })
-    }
+            });
+    };
 
     //a function to download the analysis table as pdf
     const downloadPDF = (title) => {
         setShowDownloading(true);
-        const input = document.getElementById('tableDiv');
+        const input = document.getElementById("tableDiv");
         html2canvas(input)
             .then((canvas) => {
                 const pdf = new jsPDF();
                 pdf.setFontSize(25);
-                pdf.autoTable({startY: 20, html: '#tableDiv'});
+                pdf.autoTable({startY: 20, html: "#tableDiv"});
                 pdf.text(title, 50, 15);
                 pdf.save(title + ".pdf");
-            }).then(()=>{
+            }).then(() => {
             setShowDownloading(false);
         });
-    }
+    };
 
     //handle the search of reports...custom functions changed a bit from stack overflow
     function handleSearch({ target: { value } }) {
 
         // Set captured value to input
-        setSearchValue(value)
+        setSearchValue(value);
 
         // Variable to hold the original version of the list
         let currentList = [];
@@ -267,7 +257,7 @@ const TimePeriods = (props) => {
 
         // Set the filtered state based on what our rules added to newList
         setIndicators(newList);
-    }
+    };
 
 
     const ComparisonTable = (columns) => (
@@ -327,7 +317,7 @@ const TimePeriods = (props) => {
 
                 </Grid>
             </MDBCol></MDBBox>
-    )
+    );
 
 
     return (
@@ -454,7 +444,7 @@ const TimePeriods = (props) => {
                 </Grid> : null }
 
         </div>
-    )
+    );
 }
 
 export default React.memo(TimePeriods);

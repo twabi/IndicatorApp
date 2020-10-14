@@ -9,14 +9,14 @@ import {
     MDBCardHeader,
     MDBTable,
     MDBTableHead, MDBTableBody, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem, MDBCardFooter
-} from 'mdbreact';
+} from "mdbreact";
 import ListTransfer from "../ListTransfer";
 import Grid from "@material-ui/core/Grid";
 import NavBar from "../../NavBar";
 
-const moment = require('moment')
+const moment = require("moment");
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const basicAuth = "Basic " + btoa("ahmed:@Ahmed20");
 
 let now = moment();
 
@@ -28,7 +28,7 @@ var currentTime = date + "T" + time;
 
 const ShowForm = (props) => {
 
-    const [programs, setPrograms] = React.useState([])
+    const [programs, setPrograms] = React.useState([]);
     const [cropNumber, setCropNumber] = React.useState(0);
     const [indicatorNumber, setIndicatorNumber] = React.useState(0);
     const [title, setTitle] =  React.useState("");
@@ -36,45 +36,45 @@ const ShowForm = (props) => {
     const [report, setReport] = React.useState({});
     const [description, setDescription] = React.useState("");
     const [showPreview, setShowPreview] = React.useState(false);
-    const [selectedIndicators, setSelectedIndicators] = React.useState([])
-    const [colHeaders, setColHeaders] = React.useState([])
-    const [cellData, setCellData] = React.useState([])
-    const [dummy, setDummy] = React.useState("");
+    const [selectedIndicators, setSelectedIndicators] = React.useState([]);
+    const [colHeaders, setColHeaders] = React.useState([]);
+    const [cellData, setCellData] = React.useState([]);
 
     React.useEffect(() => {
 
-        setPrograms(props.indicatorProps)
+        setPrograms(props.indicatorProps);
         setReport(props.reportValue);
-        //setGroups(props.reportValue.programGroups);
         setColHeaders(props.reportValue.columnHeaders);
         setCellData(props.reportValue.cellData);
         setTitle(props.reportValue.title);
-        setIndicatorNumber(props.reportValue.columns)
+        setIndicatorNumber(props.reportValue.columns);
         setCropNumber(props.reportValue.rows);
         setDescription(props.reportValue.description);
 
-    }, [props.indicatorProps, props.reportValue])
+    }, [props.indicatorProps, props.reportValue]);
 
+    const handleButton = () => {
+        props.buttonCallback();
+    }
 
     const editExistingReport = (jsonString, id) => {
 
         fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${id}`, {
-            method: 'PUT',
+            method: "PUT",
             body: JSON.stringify(jsonString),
             headers: {
-                'Authorization' : basicAuth,
-                'Content-type': 'application/json',
+                "Authorization" : basicAuth,
+                "Content-type": "application/json",
             },
 
             credentials: "include"
 
-        }).then(response => {
-            console.log(response);
+        }).then((response) => {
             alert("Report edited successfully");
-        }).then(result =>{
+        }).then((result) => {
             handleButton()
-        }).catch(error => {
-            alert("oops an error occurred: " + error)
+        }).catch((error) => {
+            alert("oops an error occurred: " + error);
         })
 
     };
@@ -84,73 +84,65 @@ const ShowForm = (props) => {
         var array = {"name" : "", "id" : ""};
 
         fetch(`https://www.namis.org/namis1/api/indicators/${id}.json?paging=false&fields=id&fields=name`, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                'Authorization' : basicAuth,
-                'Content-type': 'application/json',
+                "Authorization" : basicAuth,
+                "Content-type": "application/json",
             },
-
             credentials: "include"
 
-        }).then(response => response.json())
-            .then(result =>{
+        }).then((response) => response.json())
+            .then((result) => {
                 //array.push(result);
-                array.name = result.name
-                array.id = result.id
+                array.name = result.name;
+                array.id = result.id;
 
-            }).catch(error => {
+            }).catch((error) => {
             //alert("oops an error occurred: " + error)
-        })
+        });
 
         return array;
 
     };
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         var indicators = [];
         groups.map((group) => (
             group.indicators.map((item) => (
                 indicators.push(fetchIndicator(item.id))
             )))
-        )
+        );
 
-        if(!indicators.length == 0){
-            setSelectedIndicators(indicators)
+        if(indicators.length !== 0){
+            setSelectedIndicators(indicators);
         }
     }, [groups])
 
-    const handleButton = () => {
-        props.buttonCallback();
-    }
 
     const handleCropNumber = ({ target: { value } }) => {
         setCropNumber(value);
-        console.log(value);
-
-    }
+    };
 
     const handleReportName = ({target : {value}}) => {
         setTitle(value);
-    }
+    };
 
     const handleIndicatorNumber = ({target : {value}}) => {
         setIndicatorNumber(value);
-    }
+    };
 
     const handleReportDesc = ({target : {value}}) => {
-        setDescription(value)
-    }
+        setDescription(value);
+    };
 
     const getRightArray = (data) => {
-        console.log(data);
         setGroups(data);
-    }
-
+    };
 
     const handleSubmit = () => {
 
         if((groups.length === 0) || (title === "") || indicatorNumber === 0){
-            alert("some fields have been left empty. Please fill them up")
+            alert("some fields have been left empty. Please fill them up");
         } else {
 
             var id = title + "-" + currentTime;
@@ -162,15 +154,13 @@ const ShowForm = (props) => {
                 "columns": indicatorNumber,
                 "columnHeaders": colHeaders,
                 "cellData" : cellData,
-            }
+            };
 
-            console.log(JSON.stringify(payload));
-            console.log("report: " + report.id);
             editExistingReport(payload, report.id);
 
         }
 
-    }
+    };
 
     const editRowNames = (index) => {
         var newName = prompt("enter new cell name");
@@ -180,9 +170,8 @@ const ShowForm = (props) => {
         } else {
             //tableCell.innerHTML = newName;
             report.cellData[index].rowDetails.name = newName;
-            setDummy(newName);
         }
-    }
+    };
 
     const editColumnNames = (index) => {
         var newName = prompt("enter new cell name");
@@ -192,21 +181,19 @@ const ShowForm = (props) => {
         } else {
             //tableCell.innerHTML = newName;
             report.columnHeaders[index].name = newName;
-            setDummy(newName);
         }
-    }
+    };
 
-    const handleItemClick = (indicator, id, index1, index2) =>{
-        console.log(indicator.name)
+    const handleItemClick = (indicator, id, index1, index2) => {
+        //console.log(indicator.name)
         report.cellData[index1].rowData[index2].indicatorID = indicator.id;
         report.cellData[index1].rowData[index2].indicatorName = indicator.name;
-        console.log(report);
-        setDummy(indicator.name);
-    }
+        //console.log(report);
+    };
 
-    const showTable =()=>{
+    const showTable = () => {
         setShowPreview(true);
-    }
+    };
 
     const ReportPreview = () => (
         <MDBCard >
@@ -280,7 +267,7 @@ const ShowForm = (props) => {
             </MDBCardFooter>
 
         </MDBCard>
-    )
+    );
 
     return (
         <div>

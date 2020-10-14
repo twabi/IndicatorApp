@@ -9,12 +9,12 @@ import {
     MDBCardTitle,
     MDBCol, MDBTable, MDBTableBody, MDBTableHead
 } from "mdbreact";
-import 'antd/dist/antd.css'
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import jsPDF from 'jspdf'
+import "antd/dist/antd.css";
+import MenuItem from "@material-ui/core/MenuItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import jsPDF from "jspdf";
 import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
 import { MDBContainer, MDBRow } from "mdbreact";
 import Tabs from "react-bootstrap/Tabs";
@@ -22,14 +22,13 @@ import Tab from "react-bootstrap/Tab";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
-import 'react-dropdown-tree-select/dist/styles.css'
-import 'react-dropdown-tree-select/dist/styles.css'
-import {DatePicker, TreeSelect} from 'antd';
+import "react-dropdown-tree-select/dist/styles.css";
+import {DatePicker, TreeSelect} from "antd";
 import "jspdf-autotable";
 import html2canvas from "html2canvas";
 import NavBar from "../NavBar";
 
-
+//styles for the material ui components
 const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(0.5),
@@ -52,58 +51,65 @@ const MenuProps = {
     },
 };
 
-
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+//authentication for the namis api
+const basicAuth = "Basic " + btoa("ahmed:@Ahmed20");
 
 const ShowAnalysis = (props) => {
     const classes = useStyles();
     var initState = props.organization;
     var initReport = props.reportProps;
+
+    //array for the financial year dropdown
     var financial = [
           "THIS_FINANCIAL_YEAR",
-        "LAST_FINANCIAL_YEAR", "LAST_5_FINANCIAL_YEARS"]
+        "LAST_FINANCIAL_YEAR", "LAST_5_FINANCIAL_YEARS"];
 
-    var max = new Date().getFullYear();
-    var min = max - 100;
-
+    //get the week numbers by simply iterating and adding to the array
     var myArray = [];
     var array3 = [];
-    for(var i=0; i<54; i++){
+    var i;
+    for(i=0; i<54; i++){
         array3.push(i.toString())
     }
     var weekNumbers = array3;
 
-    for(var i=min; i<=max; i++){
-        myArray.push(i.toString());
+    //create an array of years for the years dropdown
+    // And simply iterate and add to the array to have the years from smallest to largest.
+    var max = new Date().getFullYear();
+    var min = max - 100;
+    var y;
+    for(y=min; y<=max; y++){
+        myArray.push(y.toString());
     }
-
     var allYears = myArray.reverse();
 
-    var weeks = [ "THIS_WEEK", "LAST_WEEK", "LAST_4_WEEKS", "LAST_12_WEEKS", "LAST_52_WEEKS"]
-    var quarters = ["THIS_QUARTER", "LAST_QUARTER", "QUARTERS_THIS_YEAR", "QUARTERS_LAST_YEAR", "LAST_4_QUARTERS",]
-    var bimonth = ["THIS_BIMONTH", "LAST_BIMONTH", "LAST_6_BIMONTHS"]
-    var month = ["THIS_MONTH", "LAST_MONTH", "LAST_3_MONTHS", "MONTHS_THIS_YEAR",  "MONTHS_LAST_YEAR", "LAST_12_MONTHS"]
-    var array2 = ["Weeks", "Months", "Years", "Quarters", "Financial Years", "Bi-Months", "Six-Months"]
-    var sixmonth = ["THIS_SIX_MONTH", "LAST_SIX_MONTH", "LAST_2_SIXMONTHS"]
-    var year = ["THIS_YEAR", "LAST_YEAR", "LAST_5_YEARS"]
+    //some other arrays for the relative periods dropdowns
+    var weeks = [ "THIS_WEEK", "LAST_WEEK", "LAST_4_WEEKS", "LAST_12_WEEKS", "LAST_52_WEEKS"];
+    var quarters = ["THIS_QUARTER", "LAST_QUARTER", "QUARTERS_THIS_YEAR", "QUARTERS_LAST_YEAR", "LAST_4_QUARTERS"];
+    var bimonth = ["THIS_BIMONTH", "LAST_BIMONTH", "LAST_6_BIMONTHS"];
+    var month = ["THIS_MONTH", "LAST_MONTH", "LAST_3_MONTHS", "MONTHS_THIS_YEAR",  "MONTHS_LAST_YEAR", "LAST_12_MONTHS"];
+    var array2 = ["Weeks", "Months", "Years", "Quarters", "Financial Years", "Bi-Months", "Six-Months"];
+    var sixmonth = ["THIS_SIX_MONTH", "LAST_SIX_MONTH", "LAST_2_SIXMONTHS"];
+    var year = ["THIS_YEAR", "LAST_YEAR", "LAST_5_YEARS"];
 
+    //hooks variables to be used throughout the component
     const [reports, setReports] = React.useState(initReport);
     const [orgUnits, setOrgUnits] = React.useState(initState);
     const [searchValue, setSearchValue] = React.useState([]);
-    const [reportValue, setReportValue] = React.useState("")
-    const [periodTypes, setPeriodTypes] = React.useState([])
-    const [key, setKey] = React.useState('home');
+    const [reportValue, setReportValue] = React.useState("");
+    const [periodTypes, setPeriodTypes] = React.useState([]);
+    const [key, setKey] = React.useState("home");
     const [relativeTime, setRelativePeriods] = React.useState([]);
     const [relCategories, setRelCategories] = React.useState(array2);
     const [relCategoriesTitle, setRelCategoriesTitle] = React.useState("Period Type");
     const [relTimeTitle, setRelTimeTitle] = React.useState("Actual Period");
     const [fixPeriodType, setFixPeriodType] = React.useState("period Type");
-    const [selectedReport, setSelectedReport] =  React.useState({})
-    const [selectedFixedtime, setSelectedFixedtime] = React.useState("")
+    const [selectedReport, setSelectedReport] =  React.useState({});
+    const [selectedFixedtime, setSelectedFixedtime] = React.useState("");
     const [fixedYears, setfixedYears] = React.useState(["2020"]);
     const [showAnalysis, setShowAnalysis] = React.useState(false);
-    const [periodNumber, setPeriodNumber] = React.useState([])
-    const [numberTitle, setNumberTitle] = React.useState("NaN")
+    const [periodNumber, setPeriodNumber] = React.useState([]);
+    const [numberTitle, setNumberTitle] = React.useState("NaN");
     const [showMenu, setShowMenu] = React.useState(true);
     const [analytics, setAnalytics] = React.useState([]);
     const [fixedTimeClicked, setFixedTimeClicked] = React.useState(false);
@@ -120,52 +126,52 @@ const ShowAnalysis = (props) => {
 
     const handleChange = (event) => {
         setfixedYears(event.target.value);
-        console.log(event.target.value);
     };
 
     function onChange(date, dateString) {
-        console.log(dateString.replace(/-/g,""));
         setDateString(dateString.replace(/-/g,""));
     }
 
+    //the function that runs the analytics api is this one, carrying with it are the parameters orgunits etc
     const getAnalytics = (item, row, pe, ouID,  callBack) => {
         var dxID = row.indicatorID;
         //var analysis = [];
 
         return fetch(`https://cors-anywhere.herokuapp.com/https://www.namis.org/namis1/api/29/analytics.json?dimension=pe:${pe}&dimension=ou:${ouID}&filter=dx:${dxID}&displayProperty=NAME&outputIdScheme=NAME`, {
-            method: 'GET',
-            mode: 'cors',
+            method: "GET",
+            mode: "cors",
             headers: {
-                'Authorization' : basicAuth,
-                'Content-type': 'application/json',
+                "Authorization" : basicAuth,
+                "Content-type": "application/json",
 
             }
 
-        }).then(response => response.json())
-            .then((result) =>{
-                callBack(item, row, result);
+        }).then((response) => response.json())
+            .then((result) => {
+                callBack(item, row, result); //initiate the callback method
 
 
-        }).catch(error => {
+        }).catch((error) => {
             alert("oops an error occurred: " + error + " .Try reloading your page");
 
-        })
+        });
     };
 
-
-    React.useEffect(()=>{
-        console.log(props.organization);
+    //some variables that need use effect for the data that comes in late after the component has already rendered
+    React.useEffect(() => {
         setReports(props.reportProps);
-        setOrgUnits(props.organization)
-        setPeriodTypes(props.periodProps)
+        setOrgUnits(props.organization);
+        setPeriodTypes(props.periodProps);
 
-    }, [ props.organization, props.periodProps, props.reportProps])
+    }, [ props.organization, props.periodProps, props.reportProps]);
 
+    //the back button in the analysis layout
+    //checks whether the user is in table view mode or not .
     const handleButton = () => {
 
-        if(showMenu == true){
+        if(showMenu === true){
             //props.buttonCallback();
-        } else if(showMenu == false){
+        } else if(showMenu === false){
             setVariable([]);
             setSearchValue([]);
             setShowMenu(true);
@@ -175,6 +181,7 @@ const ShowAnalysis = (props) => {
     }
 
 
+    //the function that implements the reports filtering
     function handleReportSearch({ target: { value } }) {
 
         // Set captured value to input
@@ -218,6 +225,8 @@ const ShowAnalysis = (props) => {
         setSelectedReport(value);
     }
 
+    //when a period type is clicked, the adjacent dropdown's values should change based on the value of the category
+    // chosen in the first dropdown
     const periodTypeClick =(value)=>{
         setRelCategoriesTitle(value)
         if(value === "Weeks"){
@@ -242,8 +251,9 @@ const ShowAnalysis = (props) => {
             setRelativePeriods(financial)
 
         }
-    }
+    };
 
+    //the functions that prints the table to pdf format
     const exportPDF = (title) => {
         setShowDownloading(true);
         const input = document.getElementById('tableDiv');
@@ -267,6 +277,7 @@ const ShowAnalysis = (props) => {
         setFixedTimeClicked(false);
     }
 
+    //same method as above but this one is for fixed periods
     const handleFixedTime = (value) => {
         setFixPeriodType(value)
         setFixedTimeClicked(true);
@@ -384,6 +395,8 @@ const ShowAnalysis = (props) => {
         setNumberTitle(value)
     }
 
+    //this is the method that handles the callback that is returned from the fetch method above.
+    //it handles the analysis results and structures the data into the right format
     const Analysis = (report, timePeriod, orgUnit ) => {
 
         var analyzed = [];
@@ -392,25 +405,31 @@ const ShowAnalysis = (props) => {
                 alert("oops, an error occurred! Try reloading your page");
 
             }else {
+
+                //get the periods and the orgUnits that have been analysed, these are returned by the fetch request itself
                 var periods = result.metaData.dimensions.pe;
                 var ou = result.metaData.dimensions.ou;
-                console.log(ou);
                 var columns = [];
+                //place both the periods and orgUnits into an array of columns for easy identification later in the table
                 periods.map((pe)=>{
                     ou.map((unit)=>{
                         columns.push({"year" : pe, "unit": result.metaData.items[unit].name});
                     })
                 })
 
+                //making sure there's no duplication in the columns array and reverse it in ascending
                 var array = columns.slice().reverse().filter((v,i,a)=>a.findIndex(t=>(t.year === v.year))===i).reverse();
-                //console.log(array);
-                console.log(columns);
-                //columns = array;
+
+                //Now there's a reason i have two of these, the first one is for the year column headers in the table
+                //and the second one is for the row data...
+                //do I need two of these YearArrays?? yes definitely yes, If you have a better implementation,
+                // then be my guest but it was easier to implement the headers and the data separately
                 setYearArray(array);
                 setYearArray2(columns);
 
+                //now moving on to the actual data, the result rows should not be empty, if they are
                 if(result.rows == null || result.rows.length === 0){
-                    console.log("this year has no data!" + columns);
+                    //console.log("this year has no data!" + columns);
                     //row.indicatorValue = "-";
                     analyzed.push(item);
                     setAnalytics([...analyzed]);
@@ -418,13 +437,15 @@ const ShowAnalysis = (props) => {
                     columns.map((item)=>{
                         if(item.year.includes(year)){
                             //value.push(result.rows[i][1] +" : "+ result.rows[i][2]);
+                            //put a blank value if the result is empty
                             item.value = "-"
                         }
-                    })
+                    });
 
                 } else {
-                    console.log(result)
+                    //console.log(result)
 
+                    //if it has data on the other hand, place the data in the column where the period and orgUnits both match
                     for(var i =0; i<result.rows.length; i++){
 
                         var year = result.rows[i][0];
@@ -437,6 +458,9 @@ const ShowAnalysis = (props) => {
                         })
 
                     }
+
+                    //if any empty columns are found, as in columns with year and orgUnit but null dataValue, set the value to
+                    //a dash
                     columns.map((item)=>{
                         if(item.value == null || item.value === ""){
                             item.value = "-";
@@ -453,19 +477,18 @@ const ShowAnalysis = (props) => {
         }
 
 
-        report.cellData.map((item)=>{
-            item.rowData.map((row, index) =>{
+        //get the data back from the method above and then display the data got into the table
+        report.cellData.map((item)=> {
+            item.rowData.map((row, index) => {
 
                 getAnalytics(item, row, timePeriod, orgUnit, callback)
                     .then((r) => {
                         setAnalytics([...analyzed]);
                     })
-                    .then(()=>{
-                        console.log(analyzed)
+                    .then(() => {
                         setAnalytics([...analyzed]);
                         setShowAnalysis(true)
                         setShowMenu(false);
-                        console.log(report);
                         //setYearArray(yearArray.splice(0, analyzed.length));
                         setShowLoading(false);
                         setShowButton(true);
@@ -523,11 +546,9 @@ const ShowAnalysis = (props) => {
 
     const onSelect = (value, node) => {
 
-        console.log(value);
-        console.log(node);
         setVariable(variable => [...variable, node]);
 
-    }
+    };
 
     const AnalysisTable = (analytics) => {
         var analyzed = analytics.slice().reverse().filter((v,i,a)=>a.findIndex(t=>(t.rowDetails.id === v.rowDetails.id))===i).reverse();
@@ -614,7 +635,7 @@ const ShowAnalysis = (props) => {
             );
         }
 
-    }
+    };
 
     return (
 
@@ -870,7 +891,7 @@ const ShowAnalysis = (props) => {
                         {AnalysisTable(analytics)}
                     </Grid> : null }
         </div>
-    )
+    );
 
 }
 
