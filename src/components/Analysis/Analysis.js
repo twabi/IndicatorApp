@@ -498,47 +498,40 @@ const ShowAnalysis = (props) => {
         });
     }
 
+    //this is the method that triggers the analysis
     const handleAnalyze = () => {
-        console.log(variable);
 
         setShowLoading(true);
         var fixedTime = [];
 
-        fixedYears.map((item)=>(
+        //concat the periods selected into one string then push them into ana array
+        fixedYears.map((item) => (
             fixedTime.push(item + selectedFixedtime + numberTitle)
-        ))
+        ));
 
+        //place the orgUnits selected into one array, with their ids only
         var units = [];
         variable.map((item) => {
-            console.log(item);
             units.push(item.id);
-        })
-        console.log(units);
+        });
 
+        //check which time period has been selected, if its relative, set Fixed period to false and viceversa
+        //get the time period from the one that has been selected
+        //the join has been used because the analytics api accepts multiple orgUnits for example but the ids of the orgUnits should only be separated by ";"
         if(relTimeClicked === true ){
-            console.log(selectedReport);
-            console.log(relTimeTitle);
-            console.log(units.join(";"));
-            console.log("relative time")
-
             Analysis(selectedReport, relTimeTitle, units.join(";"));
 
         } else if(fixedTimeClicked === true){
 
+            //check if under the fixed time, the daily date has been selected or not, then get the appropriate data into the analysis method
             if(dateString !== ""){
-                console.log(dateString);
                 Analysis(selectedReport, dateString, units.join(";"));
             }else{
-                console.log(selectedReport);
-                console.log(units.join(";"));
-                console.log(fixedTime);
-                console.log("fixed time");
-
                 Analysis(selectedReport, fixedTime.join(";"), units.join(";"));
             }
 
         }
-    }
+    };
 
     const handle = (value, label, extra) => {
         setSearchValue(value)
@@ -550,9 +543,9 @@ const ShowAnalysis = (props) => {
 
     };
 
+    //this the table that gets the data from the analysis and displays it to the user
     const AnalysisTable = (analytics) => {
         var analyzed = analytics.slice().reverse().filter((v,i,a)=>a.findIndex(t=>(t.rowDetails.id === v.rowDetails.id))===i).reverse();
-        console.log(yearArray2);
         if(analyzed !== null && analyzed.length !== 0){
             return (
 
