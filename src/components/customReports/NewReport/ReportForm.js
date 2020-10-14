@@ -1,7 +1,6 @@
 import React from "react";
 import {
     MDBBox,
-    MDBRow,
     MDBCol,
     MDBInput,
     MDBBtn,
@@ -29,12 +28,10 @@ var currentTime = date + "T" + time;
 
 const FormPage = (props) => {
 
-    const [crops, setCrops] = React.useState([]);
     const [programs, setPrograms] = React.useState([])
-    const [cropNumber, setCropNumber] = React.useState(0);
+    const [rowNumber, setRowNumber] = React.useState(0);
     const [indicatorNumber, setIndicatorNumber] = React.useState(0);
     const [title, setTitle] =  React.useState("");
-    const [showTextFields, setShowTextFields] = React.useState(false);
     const [groups, setGroups] = React.useState([]);
     const [description, setDescription] = React.useState("");
     const [showPreview, setShowPreview] = React.useState(false);
@@ -46,7 +43,6 @@ const FormPage = (props) => {
 
     React.useEffect(() => {
         setPrograms(props.indicatorProps)
-        setCrops(props.arrayProps);
 
     }, [props.arrayProps, props.indicatorProps])
 
@@ -106,7 +102,6 @@ const FormPage = (props) => {
 
         }).then((response) => response.json())
             .then((result) =>{
-                //array.push(result);
                 array.name = result.name
                 array.id = result.id
 
@@ -122,10 +117,8 @@ const FormPage = (props) => {
         window.location.href="/customReports";
     }
 
-    const handleCropNumber = ({ target: { value } }) => {
-        setCropNumber(value);
-        console.log(value);
-        setShowTextFields(true);
+    const handleRowNumber = ({ target: { value } }) => {
+        setRowNumber(value);
 
         var numbers = []
         for(var i=0; i<value; i++){
@@ -251,8 +244,6 @@ const FormPage = (props) => {
             }
         }
 
-        //console.log(itemsList);
-
         itemsList.map((item) => {
             console.log(document.getElementById(item.id).value);
             arrayOfData.push(
@@ -260,10 +251,7 @@ const FormPage = (props) => {
         })
 
 
-        //console.log(arrayOfData.sort())
         var sortedArray = arrayOfData.sort(sortAlphaNum);
-        //console.log(sortedArray);
-        //console.log(chunkArray(sortedArray, rowHeaders.length));
         var rowArrays = chunkArray(sortedArray, rowHeaders.length);
 
         var rowdata = []
@@ -275,7 +263,7 @@ const FormPage = (props) => {
 
 
 
-        if((groups.length === 0) || (cropNumber === 0) || (title === "") || indicatorNumber === 0){
+        if((groups.length === 0) || (rowNumber === 0) || (title === "") || indicatorNumber === 0){
             alert("some fields have been left empty. Please fill them up")
         } else {
 
@@ -284,7 +272,7 @@ const FormPage = (props) => {
                 "id": id,
                 "title": title,
                 "description": description,
-                "rows": cropNumber,
+                "rows": rowNumber,
                 "columns": indicatorNumber,
                 "columnHeaders": colHeaders,
                 "cellData" : rowdata,
@@ -482,7 +470,7 @@ const FormPage = (props) => {
                                                 group
                                                 type="number"
                                                 value={indicatorNumber}
-                                                onChange={e => handleIndicatorNumber(e)}
+                                                onChange={(e) => handleIndicatorNumber(e)}
                                                 validate
                                                 error="wrong"
                                                 success="right"
@@ -494,8 +482,8 @@ const FormPage = (props) => {
                                                 group
                                                 type="number"
                                                 validate
-                                                value={cropNumber}
-                                                onChange={e => handleCropNumber(e)}
+                                                value={rowNumber}
+                                                onChange={(e) => handleRowNumber(e)}
                                                 error="wrong"
                                                 success="right"
                                             />
