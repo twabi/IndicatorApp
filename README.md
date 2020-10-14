@@ -1,10 +1,11 @@
 ## NAMIS INDICATOR APP
 
-###Intro
+### Intro
 This is an app that was made to manipulate the indicators for the NAMIS dhis2 platform. <br >
 The main components include : DisplayName, CustomReports, Analysis and Time Periods.
 
 ### Components
+
 #### DisplayName
 Basically, what this component does is give the user the ability to change the long displayNames the NAMIS indicators usually have.<br >
 In a table, the can edit the displayName to what ever they see fit
@@ -25,5 +26,5 @@ And when they trigger analysis, the analysis that is given in this component is 
 
 This component, in the future can be expanded to include analysing two time periods of both the user's choosing.
 
-###Project By
+### Project By
 This project was done by the computer science department (University of Malawi, Chancellor College) sanctioned by the ministry of Agriculture.
