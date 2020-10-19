@@ -44,30 +44,30 @@ status = 200
 
 [[redirects]]
 from = "/customReports"
-to = "/newReport"
+to = "/customReports/newReport"
 status = 200
 
 [[redirects]]
 from = "/customReports"
-to = "/editReport"
+to = "/customReports/editReport"
 status = 200
 
 [[redirects]]
-from = "/newReport"
+from = "/customReports/newReport"
 to = "/customReports"
 status = 200
 
 [[redirects]]
-from = "/editReport"
+from = "/customReports/editReport"
 to = "/customReports"
 status = 200
 
 [[redirects]]
-from = "/newReport"
+from = "/customReports/newReport"
 to = "/"
 status = 200
 
 [[redirects]]
-from = "/editReport"
+from = "/customReports/editReport"
 to = "/"
 status = 200
