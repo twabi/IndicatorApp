@@ -53,6 +53,16 @@ to = "/customReports/editReport"
 status = 200
 
 [[redirects]]
+from = "/customReports"
+to = "/customReports/*"
+status = 200
+
+[[redirects]]
+from = "/customReports/*"
+to = "/customReports"
+status = 200
+
+[[redirects]]
 from = "/customReports/newReport"
 to = "/customReports"
 status = 200
@@ -71,3 +81,8 @@ status = 200
 from = "/customReports/editReport"
 to = "/"
 status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/*"
+  status = 200
