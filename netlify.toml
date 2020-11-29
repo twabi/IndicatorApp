@@ -43,13 +43,23 @@ to = "/"
 status = 200
 
 [[redirects]]
-from = "/customReports"
+from = "/*"
 to = "/customReports/newReport"
 status = 200
 
 [[redirects]]
-from = "/customReports"
+from = "/*"
 to = "/customReports/editReport"
+status = 200
+
+[[redirects]]
+from = "/*"
+to = "/newReport"
+status = 200
+
+[[redirects]]
+from = "/*"
+to = "/editReport"
 status = 200
 
 [[redirects]]
@@ -63,22 +73,22 @@ to = "/customReports"
 status = 200
 
 [[redirects]]
-from = "/customReports/newReport"
+from = "/*"
 to = "/customReports"
 status = 200
 
 [[redirects]]
-from = "/customReports/editReport"
+from = "/*"
 to = "/customReports"
 status = 200
 
 [[redirects]]
-from = "/customReports/newReport"
+from = "/*"
 to = "/"
 status = 200
 
 [[redirects]]
-from = "/customReports/editReport"
+from = "/*"
 to = "/"
 status = 200
 
