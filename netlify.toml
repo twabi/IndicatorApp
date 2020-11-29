@@ -43,12 +43,12 @@ to = "/"
 status = 200
 
 [[redirects]]
-from = "/*"
+from = "/"
 to = "/customReports/newReport"
 status = 200
 
 [[redirects]]
-from = "/*"
+from = "/"
 to = "/customReports/editReport"
 status = 200
 
@@ -60,16 +60,6 @@ status = 200
 [[redirects]]
 from = "/*"
 to = "/editReport"
-status = 200
-
-[[redirects]]
-from = "/customReports"
-to = "/customReports/*"
-status = 200
-
-[[redirects]]
-from = "/customReports/*"
-to = "/customReports"
 status = 200
 
 [[redirects]]
