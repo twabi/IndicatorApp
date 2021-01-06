@@ -15,7 +15,7 @@
     "@welldone-software/why-did-you-render": "^4.2.7",
     "antd": "^4.6.1",
     "array-to-tree": "^3.3.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.0",
     "html2canvas": "^1.0.0-rc.7",
     "js-tree-list": "^1.2.2",
