@@ -36,7 +36,7 @@ class App extends PureComponent {
     componentDidMount(){
 
         //authentication for the namis api
-        const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+        const basicAuth = 'Basic ' + btoa('ahmed:Atwabi@20');
 
         //its been badly named but dashboards are the indicators, and this fetch just queried them
         Api.getDashboards()
@@ -60,7 +60,7 @@ class App extends PureComponent {
             });
 
         //this is a fetch request to get the crop names from the datastore, these crops are displayed in a dropdown in later components
-        fetch(`https://www.namis.org/namis1/api/29/dataStore/crops/crops`, {
+        fetch(`https://www.namis.org/main/api/29/dataStore/crops/crops`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -87,7 +87,7 @@ class App extends PureComponent {
         var arrayToTree = require('array-to-tree');
 
         //fetch org units with three fields, name, id and parent(for the array-to-tree to work)
-        fetch(`https://www.namis.org/namis1/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=parent`, {
+        fetch(`https://www.namis.org/main/api/29/organisationUnits.json?paging=false&fields=name&fields=id&fields=parent`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -133,7 +133,7 @@ class App extends PureComponent {
 
 
         //fetch custom-reports, now these are the reports that the app itself is creating each time a report is created, and is saved in the datastore
-        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/`, {
+        fetch(`https://www.namis.org/main/api/29/dataStore/customReports/`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -145,12 +145,12 @@ class App extends PureComponent {
             .then(response => response.json())
             .then((result) => {
                 console.log(result);
-                var array = []
-                result.map((item) => {
+                var array = [];
+                (result.httpStatusCode !== 404)&&result.map((item) => {
                     array.push(item);
 
                     // i dont remember what this second fetch inside here does, but it is essential---- do not touch!
-                    fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${item}`, {
+                    fetch(`https://www.namis.org/main/api/29/dataStore/customReports/${item}`, {
                         method: 'GET',
                         headers: {
                             'Authorization' : basicAuth,
@@ -184,7 +184,7 @@ class App extends PureComponent {
 
 
         //query the indicator groups, will be used in the customReports section
-        fetch(`https://www.namis.org/namis1/api/indicatorGroups.json?paging=false&fields=*`, {
+        fetch(`https://www.namis.org/main/api/indicatorGroups.json?paging=false&fields=*`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,
@@ -205,7 +205,7 @@ class App extends PureComponent {
         });
 
         //get the period types for the period dropdowns in analysis and timeperiods
-        fetch(`https://www.namis.org/namis1/api/periodTypes.json?paging=false&fields=*`, {
+        fetch(`https://www.namis.org/main/api/periodTypes.json?paging=false&fields=*`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,

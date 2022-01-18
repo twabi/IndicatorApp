@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'antd/dist/antd.css'
 import { BrowserRouter } from "react-router-dom";
 
-const developmentServer = 'https://www.namis.org/namis1';
+const developmentServer = 'https://www.namis.org/main';
 const rootElement = document.getElementById('root');
 
 const withBaseUrl = baseUrl => {
