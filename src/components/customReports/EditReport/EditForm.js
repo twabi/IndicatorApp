@@ -13,7 +13,7 @@ import NavBar from "../../NavBar";
 
 
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const basicAuth = 'Basic ' + btoa('ahmed:Atwabi@20');
 
 const EditForm = (props) => {
 
@@ -36,7 +36,7 @@ const EditForm = (props) => {
 
     const deleteReport = (key) => {
 
-        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${key}`, {
+        fetch(`https://www.namis.org/main/api/29/dataStore/customReports/${key}`, {
             method: 'DELETE',
             headers: {
                 'Authorization' : basicAuth,

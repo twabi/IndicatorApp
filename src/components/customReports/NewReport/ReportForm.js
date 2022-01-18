@@ -16,7 +16,7 @@ import NavBar from "../../NavBar";
 
 const moment = require('moment')
 
-const basicAuth = 'Basic ' + btoa('ahmed:@Ahmed20');
+const basicAuth = 'Basic ' + btoa('ahmed:Atwabi@20');
 
 let now = moment();
 
@@ -64,7 +64,7 @@ const FormPage = (props) => {
 
     const postNewReport = (jsonString, id) => {
 
-        fetch(`https://www.namis.org/namis1/api/29/dataStore/customReports/${id}`, {
+        fetch(`https://www.namis.org/main/api/29/dataStore/customReports/${id}`, {
             method: 'POST',
             body: JSON.stringify(jsonString),
             headers: {
@@ -91,7 +91,7 @@ const FormPage = (props) => {
 
         var array = {"name" : "", "id" : ""};
 
-        fetch(`https://www.namis.org/namis1/api/indicators/${id}.json?paging=false&fields=id&fields=name`, {
+        fetch(`https://www.namis.org/main/api/indicators/${id}.json?paging=false&fields=id&fields=name`, {
             method: 'GET',
             headers: {
                 'Authorization' : basicAuth,

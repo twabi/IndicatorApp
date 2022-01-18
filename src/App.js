@@ -78,7 +78,7 @@ class App extends PureComponent {
                     cropOptions : optionArray
                 });
             }).catch(error => {
-            alert("oops an error occurred: " + error + " .Try reloading your page");
+            //alert("oops an error occurred: " + error + " .Try reloading your page");
 
         });
 
@@ -127,7 +127,7 @@ class App extends PureComponent {
                 });
 
             }).catch(error => {
-            alert("oops an error occurred: " + error + " .Try reloading your page");
+            //alert("oops an error occurred: " + error + " .Try reloading your page");
 
         });
 
@@ -200,7 +200,7 @@ class App extends PureComponent {
                     programGroups : result.indicatorGroups
                 })
             }).catch(error => {
-            alert("oops an error occurred: " + error + " .Try reloading your page");
+            //alert("oops an error occurred: " + error + " .Try reloading your page");
 
         });
 
@@ -221,7 +221,7 @@ class App extends PureComponent {
                     periodTypes : result.periodTypes
                 })
             }).catch(error => {
-            alert("oops an error occurred: " + error + " .Try reloading your page");
+            //alert("oops an error occurred: " + error + " .Try reloading your page");
 
         });
 
